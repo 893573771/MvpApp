@@ -1,0 +1,9 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <!--顶部标题栏的 颜色-->
+    <dimen name="alex_title_height">56dp</dimen>
+    <!--顶部标题栏的 标题字体大小-->
+    <dimen name="alex_title_text_size">20sp</dimen>
+</resources>
