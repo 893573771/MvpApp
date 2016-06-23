@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="ripple_layout" parent="AppTheme">
+        <!--正常状态下的颜色  -->
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <!--焦点或者点击的覆盖色  -->
+        <item name="colorControlHighlight">#22000000</item>
+    </style>
+</resources>

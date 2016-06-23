@@ -1,0 +1,37 @@
+<resources>
+
+    <dimen name="qg_title_height">48dp</dimen>
+    <dimen name="qg_recoommdation_top_label_paddingTop">10dp</dimen>
+    <dimen name="qg_recoommdation_top_label_paddingBottom">10dp</dimen>
+    <dimen name="qg_recoommdation_top_label_drawablePadding">6dp</dimen>
+    <dimen name="qg_recoommdation_margin_lr">10dp</dimen>
+    <dimen name="qg_recoommdation_oval_size">20dp</dimen>
+    <dimen name="qg_item_layout_height">44dp</dimen>
+    <dimen name="qg_submit_button_height">46dp</dimen>
+
+    <!-- 匹配父窗体是 左右间距 -->
+    <dimen name="qg_margin_24dp">24dp</dimen>
+
+    <dimen name="qg_text_size_20sp">20sp</dimen>
+
+    <!-- 主标题 字体大小 -->
+    <dimen name="qg_text_size_18sp">18sp</dimen>
+
+    <!-- 副标题 字体大小 -->
+    <dimen name="qg_text_size_16sp">16sp</dimen>
+    <!-- 副标题 字体大小 -->
+    <dimen name="qg_text_size_15sp">15sp</dimen>
+
+    <!-- 默认内容 字体大小 -->
+    <dimen name="qg_text_size_14sp">14sp</dimen>
+
+    <!-- 较小内容 字体大小 -->
+    <dimen name="qg_text_size_13sp">13sp</dimen>
+    <!-- 较小内容 字体大小 -->
+    <dimen name="qg_text_size_12sp">12sp</dimen>
+
+    <!-- 很小内容 字体大小 -->
+    <dimen name="qg_text_size_10sp">10sp</dimen>
+
+
+</resources>

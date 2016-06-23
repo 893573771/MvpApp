@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/container"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/qg_title_height"
+                android:background="@color/qg_title_color"
+                tools:ignore="MergeRootFrame,ContentDescription,HardcodedText" >
+
+    <ImageView
+        android:id="@+id/iv_back"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:src="@drawable/selector_back" />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:singleLine="true"
+        android:text="标题"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp" />
+
+    <ImageView
+        android:id="@+id/iv_right"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:src="@mipmap/ic_notice"
+        android:visibility="invisible"
+        tools:ignore="ContentDescription" />
+
+    <View
+        android:id="@+id/dot_notice"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/shape_oval_red"
+        android:visibility="invisible" />
+
+</RelativeLayout>

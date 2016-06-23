@@ -3,8 +3,14 @@ package com.alex.mvpapp.baseui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.alex.mvpapp.R;
 
@@ -22,7 +28,7 @@ import github.alex.mvpview.IBaseHttpView;
  * @version 1.1
  * @blog http://www.jianshu.com/users/c3c4ea133871/latest_articles
  */
-public abstract class BaseActivity extends AppCompatActivity implements IBaseHttpView {
+public abstract class BaseActivity extends AppCompatActivity implements IBaseHttpView, View.OnClickListener{
     protected Context context;
 
     private LoadingDialog loadingDialog;
@@ -36,7 +42,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
         toastHelper = new ToastHelper();
         statusLayoutHelper = new StatusLayoutHelper(this);
         onGetIntentData();
-        setContentView(getLayoutResID());
+        if((StatusLayoutModel.resIdNo != getLayoutResID()) && (0 != getLayoutResID())){
+            setContentView(getLayoutResID());
+        }
         onGetStatusLayoutModel();
 
         getBodyViewId();
@@ -55,7 +63,11 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
      * 配置 布局文件的 资源 id
      */
     public abstract int getLayoutResID();
-
+    /**获取 主布局视图 的 id*/
+    @Override
+    public int getBodyViewId() {
+        return StatusLayoutModel.layoutResIdNo;
+    }
     /**
      * 获取启动者通过Intent传递过来的 数据
      */
@@ -107,9 +119,20 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
 
     }
 
+    /**处理点击事件*/
     @Override
-    public int getBodyViewId() {
-        return StatusLayoutModel.layoutResIdNo;
+    public void onClick(View view) {
+
+    }
+
+    /**启动服务*/
+    public void startActivity(@NonNull Class clazz) {
+        if(clazz == null){
+            Log.e(BaseActivity.class.getSimpleName(), "当前Class为空");
+            return ;
+        }
+        Intent intent = new Intent(this, clazz);
+        startActivity(intent);
     }
 
     public StatusLayoutModel onGetStatusLayoutModel() {
@@ -146,6 +169,29 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
         statusLayoutHelper.setFailMessage(message);
     }
 
+    /**给文本控件设置文本*/
+    public void setText(View view, String text){
+        if(view == null){
+            Log.e(BaseActivity.class.getSimpleName(), "view 为空 ");
+        }
+        if(view instanceof TextView){
+            TextView textView = (TextView)view;
+            if((textView!=null) && (!TextUtils.isEmpty(text)) && (!"null".equalsIgnoreCase(text))){
+                textView.setText(text);
+            }
+        }else  if(view instanceof Button){
+            Button button = (Button)view;
+            if((button!=null) && (!TextUtils.isEmpty(text)) && (!"null".equalsIgnoreCase(text))){
+                button.setText(text);
+            }
+        }else{
+            Log.e(BaseActivity.class.getSimpleName(), "view 不能被强转成 TextView  或 Button");
+        }
+    }
+    /**给文本控件设置文本*/
+    public void setText(@IdRes int id, String text){
+        setText(findView(id), text);
+    }
     @Override
     public void showFailLayout() {
         statusLayoutHelper.showFailLayout();

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <style name="qg_item_layout_match_1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/qg_item_layout_height</item>
+    </style>
+
+    <style name="qg_input_layout_match_1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/qg_item_layout_height</item>
+        <item name="android:background">#FFFFFF</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:textColor">@color/qg_text_gray_33</item>
+        <item name="android:textColorHint">@color/qg_text_gray_33</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="qg_text_wrap_base_gray">
+        <item name="android:textColor">@color/qg_text_gray_33</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="qg_item_text_match_1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingLeft">24dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingRight">8dp</item>
+        <item name="android:textColor">@color/qg_text_gray_33</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">@drawable/selector_item_layout</item>
+    </style>
+
+    <style name="qg_submit_base">
+        <item name="android:clickable">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:background">@drawable/selector_submit_oval_red</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="qg_submit_one" parent="qg_submit_base">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/qg_submit_button_height</item>
+        <item name="android:layout_marginLeft">26dp</item>
+        <item name="android:layout_marginRight">26dp</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:background">@drawable/selector_submit_oval_red</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="qg_text_wrap_item_base">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textColor">@color/qg_text_gray_33</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="qg_text_wrap_item_align_right">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:gravity">right|center_vertical</item>
+        <item name="android:textColor">@color/qg_text_gray_33</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="qg_text_wrap_item_bg_white">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:background">#FFFFFF</item>
+        <item name="android:textColor">@color/qg_text_gray_33</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="qg_text_wrap_44_item_left">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">24dp</item>
+        <item name="android:paddingRight">24dp</item>
+        <item name="android:background">#FFFFFF</item>
+        <item name="android:textColor">@color/qg_text_gray_33</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="qg_text_match_item">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">24dp</item>
+        <item name="android:paddingRight">24dp</item>
+        <item name="android:background">@drawable/selector_item_layout</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">@color/qg_text_gray_33</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="qg_text_match_item_right">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="android:background">@drawable/selector_item_layout</item>
+        <item name="android:gravity">right|center_vertical</item>
+        <item name="android:paddingRight">24dp</item>
+        <item name="android:textColor">@color/qg_text_gray_33</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="my_wealth_item">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">44dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">16dp</item>
+        <item name="android:paddingRight">16dp</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:drawablePadding">9dp</item>
+    </style>
+
+    <!-- 精彩推荐_一级页面_顶部功能按钮的样式 -->
+    <style name="recommendation_top_action">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:clickable">true</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">@drawable/selector_item_layout</item>
+        <item name="android:paddingTop">@dimen/qg_recoommdation_top_label_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/qg_recoommdation_top_label_paddingBottom</item>
+        <item name="android:drawablePadding">@dimen/qg_recoommdation_top_label_drawablePadding</item>
+    </style>
+
+</resources>

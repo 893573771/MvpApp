@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="true" android:state_pressed="true">
+        <!--引用方式android:stateListAnimator="@drawable/selector_anim_material_gray"-->
+        <set>
+            <objectAnimator android:duration="100"
+                            android:propertyName="translationZ"
+                            android:valueTo="2dp"
+                            android:valueType="floatType"/>
+            <objectAnimator android:duration="0"
+                            android:propertyName="elevation"
+                            android:valueTo="0dp"
+                            android:valueType="floatType"/>
+        </set>
+    </item>
+    <!-- base state -->
+    <item android:state_enabled="true">
+        <set>
+            <objectAnimator android:duration="100"
+                            android:propertyName="translationZ"
+                            android:startDelay="100"
+                            android:valueTo="0"
+                            android:valueType="floatType"/>
+            <!-- android:valueTo 常态阴影效果的高度-->
+            <objectAnimator android:duration="0"
+                            android:propertyName="elevation"
+                            android:valueTo="1dp"
+                            android:valueType="floatType"/>
+        </set>
+    </item>
+    <item>
+        <set>
+            <objectAnimator android:duration="0"
+                            android:propertyName="translationZ"
+                            android:valueTo="0"
+                            android:valueType="floatType"/>
+            <objectAnimator android:duration="0"
+                            android:propertyName="elevation"
+                            android:valueTo="0"
+                            android:valueType="floatType"/>
+        </set>
+    </item>
+</selector>

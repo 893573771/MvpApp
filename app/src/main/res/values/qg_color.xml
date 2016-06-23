@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 状态栏颜色 -->
+    <color name="qg_title_color_status_bar">#2d2432</color>
+    <!-- 底部虚拟键颜色 -->
+    <color name="qg_title_color_navigation_bar">#2d2432</color>
+    <!-- 标题颜色 -->
+    <color name="qg_title_color">#F64922</color>
+    <!-- 白色，不透明度  20% -->
+    <color name="qg_white_alpha_20">#33FFFFFF</color>
+    <!-- 白色，不透明度  15% -->
+    <color name="qg_white_alpha_15">#26FFFFFF</color>
+    <!-- 白色，不透明度  45% -->
+    <color name="qg_white_alpha_45">#72FFFFFF</color>
+    <color name="qg_dot_yellow">#FFCE09</color>
+    <!-- 分割线的 颜色 -->
+    <color name="qg_line_1">#E8E8E8</color>
+    <!-- 文本颜色 -->
+    <color name="qg_text_gray_33">#333333</color>
+    <!-- 文本颜色 -->
+    <color name="qg_text_red_f6">#F64922</color>
+    <!-- 标题颜色 -->
+    <color name="qg_body_color">#EEEEEE</color>
+    <color name="qg_item_layout">#FFFFFF</color>
+    <color name="qg_item_layout_press">#F7F7F7</color>
+    <color name="qg_item_layout_ripple">#E1E1E1</color>
+    <!-- 标题颜色 -->
+    <color name="qg_submit_red">#F64922</color>
+    <color name="qg_submit_red_press">#BBF64922</color>
+    <color name="qg_submit_red_ripple">#E51C23</color>
+    <color name="qg_submit_yellow">#FFCE09</color>
+    <color name="qg_submit_yellow_press">#BBFFCE09</color>
+    <color name="qg_submit_yellow_ripple">#FFEB3B</color>
+    <color name="qg_submit_gray">#999999</color>
+    <color name="qg_submit_gray_press">#BDBDBD</color>
+    <color name="qg_submit_gray_ripple">#757575</color>
+
+</resources>

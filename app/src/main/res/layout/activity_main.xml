@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -29,18 +28,26 @@
 
     <TextView
         android:id="@+id/tv_content"
-        android:layout_below="@+id/layout_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/tv_foot_navi"
+        android:layout_above="@+id/tv_login"
+        android:layout_below="@+id/layout_title"
         android:padding="32dp"
         android:text="你好 mvp"/>
 
     <TextView
-        android:id="@+id/tv_foot_navi"
+        android:id="@+id/tv_login"
+        style="@style/Widget.AppCompat.Button"
         android:layout_width="match_parent"
         android:layout_height="56dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="24dp"
         android:layout_alignParentBottom="true"
-
-        android:background="#009688"/>
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/selector_submit_oval_red"
+        android:gravity="center"
+        android:stateListAnimator="@drawable/selector_anim_material_gray"
+        android:text="登录"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/qg_text_size_20sp"/>
 </RelativeLayout>

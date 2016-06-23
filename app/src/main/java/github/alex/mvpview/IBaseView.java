@@ -20,7 +20,9 @@ public interface IBaseView {
     int getBodyViewId();
 
     /**
+     * 执行在 onCreateView 中
      * 通过 findViewById 初始主视图化控件
+     * 初始化所有基础数据，
      */
     void onCreateData();
 
