@@ -8,7 +8,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_centerInParent="true"
-        app:matProg_barColor="#1FBCD9"
+        app:matProg_barColor="#FF5722"
         app:matProg_barSpinCycleTime="500"
         app:matProg_barWidth="5dip"
         app:matProg_circleRadius="40dip"

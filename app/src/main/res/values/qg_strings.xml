@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="qg_user_man_phone">请输入11位手机号码</string>
+    <string name="qg_user_man_login_pwd">请输入6-18位登录密码</string>
+    <string name="qg_user_man_sms_code">请输入短信验证码</string>
+    <string name="qg_img_code_error">图形验证码错误</string>
+    <string name="qg_real_name">请输入您的真实姓名</string>
+    <string name="qg_id_card">请输入您的身份证号码</string>
+    <string name="qg_bank_id">请输入银行卡号</string>
+    <string name="qg_bank_name">请选择开户银行</string>
+    <string name="qg_bank_id_end_6">请输银行卡号后6位</string>
+    <string name="qg_user_man_pwd_not_same">两次密码输入不一致</string>
+    <string name="qg_feedback">请您留下宝贵意见</string>
+    <string name="qg_user_man_nick_name">请输入2-18位昵称</string>
+    <string name="qg_cash_pwd_old" tools:ignore="TypographyDashes">请输入6位原始数字交易密码</string>
+    <string name="qg_cash_pwd" tools:ignore="TypographyDashes">请输入6位数字交易密码</string>
+    <string name="qg_agree_register_protocal">请同意服务条款</string>
+</resources>

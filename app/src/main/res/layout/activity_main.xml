@@ -6,7 +6,6 @@
     android:orientation="vertical"
     >
 
-
     <RelativeLayout
         android:id="@+id/layout_title"
         android:layout_width="match_parent"
@@ -33,13 +32,13 @@
         android:layout_above="@+id/tv_login"
         android:layout_below="@+id/layout_title"
         android:padding="32dp"
-        android:text="你好 mvp"/>
+        android:text="最终报价: 200元 rmb"/>
 
     <TextView
         android:id="@+id/tv_login"
         style="@style/Widget.AppCompat.Button"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="48dp"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_alignParentBottom="true"
@@ -49,5 +48,5 @@
         android:stateListAnimator="@drawable/selector_anim_material_gray"
         android:text="登录"
         android:textColor="#FFFFFF"
-        android:textSize="@dimen/qg_text_size_20sp"/>
+        android:textSize="@dimen/qg_text_size_16sp"/>
 </RelativeLayout>

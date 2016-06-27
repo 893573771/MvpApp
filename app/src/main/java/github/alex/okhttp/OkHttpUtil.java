@@ -98,7 +98,7 @@ public class OkHttpUtil {
                 Iterator<?> iterator = stringHeadMap.entrySet().iterator();
                 while (iterator.hasNext()) {
                     @SuppressWarnings("rawtypes")
-                    java.util.Map.Entry entry = (java.util.Map.Entry) iterator.next();
+                    Map.Entry entry = (Map.Entry) iterator.next();
                     requestBuilder.addHeader(entry.getKey() + "", entry.getValue() + "");
                     Logger.e(entry.getKey() + "  "+entry.getValue() + "");
                 }

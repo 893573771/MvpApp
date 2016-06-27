@@ -2,24 +2,28 @@ package com.alex.mvpapp.baseui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.alex.mvpapp.R;
+import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import github.alex.callback.OnHttpCallback;
 import github.alex.dialog.LoadingDialog;
-import github.alex.helper.StatusLayoutHelper;
+import github.alex.dialog.basedialog.BaseDialog;
+import github.alex.dialog.callback.DialogOnKeyListener;
 import github.alex.helper.ToastHelper;
+import github.alex.helper.ViewHelper;
 import github.alex.model.StatusLayoutModel;
-import github.alex.mvpview.IBaseHttpView;
+import github.alex.mvpview.BaseHttpView;
 
 /**
  * mvx 模式开发的 基类
@@ -28,29 +32,32 @@ import github.alex.mvpview.IBaseHttpView;
  * @version 1.1
  * @blog http://www.jianshu.com/users/c3c4ea133871/latest_articles
  */
-public abstract class BaseActivity extends AppCompatActivity implements IBaseHttpView, View.OnClickListener{
+public abstract class BaseActivity extends AppCompatActivity implements BaseHttpView, View.OnClickListener {
     protected Context context;
 
     private LoadingDialog loadingDialog;
     private ToastHelper toastHelper;
-    private StatusLayoutHelper statusLayoutHelper;
+    private ViewHelper viewHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
         toastHelper = new ToastHelper();
-        statusLayoutHelper = new StatusLayoutHelper(this);
+        viewHelper = new ViewHelper(this);
         onGetIntentData();
-        if((StatusLayoutModel.resIdNo != getLayoutResID()) && (0 != getLayoutResID())){
+        if ((StatusLayoutModel.resIdNo != getLayoutResID()) && (0 != getLayoutResID())) {
             setContentView(getLayoutResID());
         }
+        viewHelper.setOnLeftTitleViewClickListener(getLeftTitleViewId());
+        viewHelper.setOnRightTitleViewClickListener(getRightTitleViewId());
         onGetStatusLayoutModel();
-
         getBodyViewId();
-        statusLayoutHelper.initMultiModeBodyLayout(this, getBodyViewId());
+        viewHelper.initMultiModeBodyLayout(this, getBodyViewId());
+        initStatusBar();
         onCreateData();
     }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -63,11 +70,15 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
      * 配置 布局文件的 资源 id
      */
     public abstract int getLayoutResID();
-    /**获取 主布局视图 的 id*/
+
+    /**
+     * 获取 主布局视图 的 id
+     */
     @Override
     public int getBodyViewId() {
         return StatusLayoutModel.layoutResIdNo;
     }
+
     /**
      * 获取启动者通过Intent传递过来的 数据
      */
@@ -79,7 +90,7 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
      * 展示吐司
      */
     @Override
-    public void onShowToast(String text) {
+    public void showToast(String text) {
         if ((toastHelper != null) && (context != null)) {
             toastHelper.showToast(context, text);
         }
@@ -95,7 +106,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
 
     @Override
     public void onInitLoadingDialog() {
-
+        loadingDialog = new LoadingDialog(this);
+        loadingDialog.setCancelable(true);
+        loadingDialog.setOnKeyListener(new DialogOnKeyListener(this, DialogOnKeyListener.DialogOnKeyType.dismissKillActivity));
     }
 
     /**
@@ -103,7 +116,10 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
      */
     @Override
     public void showLoadingDialog() {
-
+        if (loadingDialog == null) {
+            loadingDialog = new LoadingDialog(this);
+        }
+        loadingDialog.show(BaseDialog.AnimType.centerNormal);
     }
 
     /**
@@ -111,7 +127,9 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
      */
     @Override
     public void dismissLoadingDialog() {
-
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+        }
     }
 
     @Override
@@ -119,82 +137,75 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
 
     }
 
-    /**处理点击事件*/
+    /**
+     * 处理点击事件
+     */
     @Override
-    public void onClick(View view) {
+    public void onClick(View v) {
 
     }
 
-    /**启动服务*/
+    /**
+     * 启动服务
+     */
     public void startActivity(@NonNull Class clazz) {
-        if(clazz == null){
+        if (clazz == null) {
             Log.e(BaseActivity.class.getSimpleName(), "当前Class为空");
-            return ;
+            return;
         }
         Intent intent = new Intent(this, clazz);
         startActivity(intent);
     }
 
     public StatusLayoutModel onGetStatusLayoutModel() {
-        StatusLayoutModel statusLayoutModel = new StatusLayoutModel()
-        .setDefaultLayoutId(R.layout.alex_layout_default).setDefaultImageViewId(R.id.iv_logo).setDefaultTextViewId(R.id.tv_content)
-        .setLoadingLayoutId(R.layout.alex_layout_loading_circle_orange).setLoadingViewId(StatusLayoutModel.resIdNo).setLoadingTextViewId(StatusLayoutModel.resIdNo)
-        .setEmptyLayoutId(R.layout.alex_layout_empty).setEmptyImageViewId(R.id.iv_logo).setEmptyTextViewId(R.id.tv_content)
-        .setFailLayoutId(R.layout.alex_layout_fail).setFailImageViewId(R.id.iv_logo).setFailTextViewId(R.id.tv_content);
+        StatusLayoutModel statusLayoutModel = new StatusLayoutModel().setDefaultLayoutId(R.layout.alex_layout_default).setDefaultImageViewId(R.id.iv_logo).setDefaultTextViewId(R.id.tv_content).setLoadingLayoutId(R.layout.alex_layout_loading_circle_orange).setLoadingViewId(StatusLayoutModel.resIdNo).setLoadingTextViewId(StatusLayoutModel.resIdNo).setEmptyLayoutId(R.layout.alex_layout_empty).setEmptyImageViewId(R.id.iv_logo).setEmptyTextViewId(R.id.tv_content).setFailLayoutId(R.layout.alex_layout_fail).setFailImageViewId(R.id.iv_logo).setFailTextViewId(R.id.tv_content);
         return statusLayoutModel;
     }
 
     @Override
     public void showDefaultLayout() {
-        statusLayoutHelper.showDefaultLayout();
+        viewHelper.showDefaultLayout();
     }
 
     @Override
     public void showLoadingLayout() {
-        statusLayoutHelper.showLoadingLayout();
+        viewHelper.showLoadingLayout();
     }
 
     @Override
     public void showSuccessLayout() {
-        statusLayoutHelper.showSuccessLayout();
+        viewHelper.showSuccessLayout();
     }
 
     @Override
     public void showEmptyLayout() {
-        statusLayoutHelper.showEmptyLayout();
+        viewHelper.showEmptyLayout();
     }
 
     @Override
     public void onSetFailMessage(String message) {
-        statusLayoutHelper.setFailMessage(message);
+        viewHelper.setFailMessage(message);
     }
 
-    /**给文本控件设置文本*/
-    public void setText(View view, String text){
-        if(view == null){
-            Log.e(BaseActivity.class.getSimpleName(), "view 为空 ");
-        }
-        if(view instanceof TextView){
-            TextView textView = (TextView)view;
-            if((textView!=null) && (!TextUtils.isEmpty(text)) && (!"null".equalsIgnoreCase(text))){
-                textView.setText(text);
-            }
-        }else  if(view instanceof Button){
-            Button button = (Button)view;
-            if((button!=null) && (!TextUtils.isEmpty(text)) && (!"null".equalsIgnoreCase(text))){
-                button.setText(text);
-            }
-        }else{
-            Log.e(BaseActivity.class.getSimpleName(), "view 不能被强转成 TextView  或 Button");
-        }
+    /**
+     * 给文本控件设置文本
+     */
+    @Override
+    public void setText(View view, String text) {
+        viewHelper.setText(view, text);
     }
-    /**给文本控件设置文本*/
-    public void setText(@IdRes int id, String text){
-        setText(findView(id), text);
+
+    /**
+     * 给文本控件设置文本
+     */
+    @Override
+    public void setText(@IdRes int id, String text) {
+        viewHelper.setText(findView(id), text);
     }
+
     @Override
     public void showFailLayout() {
-        statusLayoutHelper.showFailLayout();
+        viewHelper.showFailLayout();
     }
 
     @Override
@@ -229,5 +240,45 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseHtt
     @Override
     public void onStatusLayoutClick(int status) {
 
+    }
+
+    @Override
+    public int getLeftTitleViewId() {
+        return 0;
+    }
+
+    @Override
+    public void onClickLeftTitleView(@IdRes int id) {
+        finish();
+    }
+
+    @Override
+    public int getRightTitleViewId() {
+        return 0;
+    }
+
+    @Override
+    public void onClickRightTitleView(@IdRes int id) {
+
+    }
+
+    /**
+     * 设置沉浸式状态栏
+     */
+    protected void initStatusBar() {
+        ViewGroup contentFrameLayout = (ViewGroup) findViewById(Window.ID_ANDROID_CONTENT);
+        View parentView = contentFrameLayout.getChildAt(0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (parentView != null) {
+                parentView.setFitsSystemWindows(true);
+            }
+
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            SystemBarTintManager tintManager = new SystemBarTintManager(this);
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager.setNavigationBarTintEnabled(true);
+            tintManager.setStatusBarTintResource(R.color.qg_title_color_status_bar);
+            tintManager.setNavigationBarTintResource(R.color.qg_title_color_navigation_bar);
+        }
     }
 }

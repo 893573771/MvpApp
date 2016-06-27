@@ -12,7 +12,7 @@ import github.alex.annotation.LayoutStatus;
  * @version 1.1
  * @blog http://www.jianshu.com/users/c3c4ea133871/latest_articles
  */
-public interface IBaseView {
+public interface BaseView {
 
     /**
      * 获取bodyView的 资源id
@@ -32,7 +32,7 @@ public interface IBaseView {
      *
      * @param text 吐司内容
      */
-    void onShowToast(String text);
+    void showToast(String text);
 
     /**
      * 多状态布局的 点击事件

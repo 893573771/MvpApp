@@ -2,11 +2,11 @@
 <resources>
 
     <!-- 状态栏颜色 -->
-    <color name="qg_title_color_status_bar">#2d2432</color>
+    <color name="qg_title_color_status_bar">#FF5722</color>
     <!-- 底部虚拟键颜色 -->
-    <color name="qg_title_color_navigation_bar">#2d2432</color>
+    <color name="qg_title_color_navigation_bar">#FF5722</color>
     <!-- 标题颜色 -->
-    <color name="qg_title_color">#F64922</color>
+    <color name="qg_title_color">#FF5722</color>
     <!-- 白色，不透明度  20% -->
     <color name="qg_white_alpha_20">#33FFFFFF</color>
     <!-- 白色，不透明度  15% -->

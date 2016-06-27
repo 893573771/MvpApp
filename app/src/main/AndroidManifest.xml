@@ -53,7 +53,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/alex_theme_no_title">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:theme="@style/alex_theme_no_title"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

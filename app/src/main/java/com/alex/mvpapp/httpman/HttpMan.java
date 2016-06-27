@@ -24,6 +24,6 @@ public interface HttpMan {
     Observable<LoginBean> loginQg(@Path("phone") String phone, @Path("pwd") String pwd);
 
     @GET("appBid/loginPhone/{phone}&{pwd}")
-    Observable<LoginBean> loginQgV2(@Path("phone") String phone, @Path("pwd") String pwd);
+    Observable<LoginBean> login(@Path("phone") String phone, @Path("pwd") String pwd);
 
 }

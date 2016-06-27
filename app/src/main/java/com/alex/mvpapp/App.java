@@ -3,6 +3,7 @@ package com.alex.mvpapp;
 import android.app.Application;
 
 import com.orhanobut.logger.Logger;
+import com.squareup.leakcanary.LeakCanary;
 
 /**
  * Created by hasee on 2016/6/22.
@@ -14,6 +15,7 @@ public class App extends Application {
         super.onCreate();
         app = this;
         Logger.init();
+        LeakCanary.install(this);
     }
 
     public static App getApp() {

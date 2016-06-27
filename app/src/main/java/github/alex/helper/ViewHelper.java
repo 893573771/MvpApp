@@ -1,16 +1,20 @@
 package github.alex.helper;
 
 import android.content.Context;
+import android.support.annotation.IdRes;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.alex.mvpapp.R;
+import com.alex.mvpapp.baseui.BaseActivity;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -23,7 +27,7 @@ import github.alex.mvpview.BaseHttpView;
 /**
  * Created by Alex on 2016/6/20.
  */
-public class StatusLayoutHelper {
+public class ViewHelper {
     private BaseHttpView iBaseHttpView;
     private Map<String, View> layoutMap;
 
@@ -33,7 +37,7 @@ public class StatusLayoutHelper {
     private static final String sFailLayout = "sFailLayout";
     private static final String sEmptyLayout = "sEmptyLayout";
 
-    public StatusLayoutHelper(BaseHttpView iBaseHttpView) {
+    public ViewHelper(BaseHttpView iBaseHttpView) {
         this.iBaseHttpView = iBaseHttpView;
     }
 
@@ -131,6 +135,30 @@ public class StatusLayoutHelper {
         switchLayout(sEmptyLayout);
     }
 
+    /**给文本控件设置文本*/
+    public void setText(View view, String text){
+        if(view == null){
+            Log.e(getClass().getSimpleName(), "view 为空 ");
+        }
+        if(view instanceof TextView){
+            TextView textView = (TextView)view;
+            if((textView!=null) && (!TextUtils.isEmpty(text)) && (!"null".equalsIgnoreCase(text))){
+                textView.setText(text);
+            }
+        }else  if(view instanceof Button){
+            Button button = (Button)view;
+            if((button!=null) && (!TextUtils.isEmpty(text)) && (!"null".equalsIgnoreCase(text))){
+                button.setText(text);
+            }
+        }else{
+            Log.e(BaseActivity.class.getSimpleName(), "view 不能被强转成 TextView  或 Button");
+        }
+    }
+    /**给文本控件设置文本*/
+    public void setText(@IdRes int id, String text){
+        setText(iBaseHttpView.findView(id), text);
+    }
+
     /**
      * 展示加载失败的布局
      */
@@ -139,6 +167,9 @@ public class StatusLayoutHelper {
     }
 
     private void switchLayout(String layoutName) {
+        if(layoutMap == null){
+            return ;
+        }
         Set<Map.Entry<String, View>> entrySet = layoutMap.entrySet();
         for (Iterator<Map.Entry<String, View>> ir = entrySet.iterator(); ir.hasNext(); ) {
             Map.Entry<String, View> mapEntry = ir.next();
@@ -157,6 +188,19 @@ public class StatusLayoutHelper {
         }
     }
 
+    public void setOnLeftTitleViewClickListener(@IdRes int id){
+        View view = iBaseHttpView.findView(id);
+        if(view != null){
+            view.setOnClickListener(new MyOnClickListener("左部"));
+        }
+    }
+    public void setOnRightTitleViewClickListener(@IdRes int id){
+        View view = iBaseHttpView.findView(id);
+        if(view != null){
+            view.setOnClickListener(new MyOnClickListener("右部"));
+        }
+    }
+
     private final class MyOnClickListener implements View.OnClickListener {
         private String layoutName;
 
@@ -170,7 +214,12 @@ public class StatusLayoutHelper {
                 iBaseHttpView.onStatusLayoutClick(StatusLayoutModel.layoutStatusFail);
             } else if (sEmptyLayout.equals(layoutName)) {
                 iBaseHttpView.onStatusLayoutClick(StatusLayoutModel.layoutStatusEmpty);
+            }else if("左部".equals(layoutName)){
+                iBaseHttpView.onClickLeftTitleView(view.getId());
+            }else if("右部".equals(layoutName)){
+                iBaseHttpView.onClickRightTitleView(view.getId());
             }
         }
     }
+
 }
