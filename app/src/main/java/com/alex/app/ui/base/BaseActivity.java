@@ -24,7 +24,6 @@ import github.alex.dialog.callback.DialogOnKeyListener;
 import github.alex.helper.ToastHelper;
 import github.alex.helper.ViewHelper;
 import github.alex.model.StatusLayoutModel;
-import github.alex.mvp.BaseContract;
 import github.alex.mvp.BaseHttpContract;
 
 /**
@@ -34,7 +33,7 @@ import github.alex.mvp.BaseHttpContract;
  * @version 1.1
  * @blog http://www.jianshu.com/users/c3c4ea133871/latest_articles
  */
-public abstract class BaseActivity extends AppCompatActivity implements BaseContract.View, BaseHttpContract.View, View.OnClickListener {
+public abstract class BaseActivity extends AppCompatActivity implements BaseHttpContract.View, View.OnClickListener {
     protected Context context;
     private LoadingDialog loadingDialog;
     private ToastHelper toastHelper;
@@ -132,7 +131,11 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseCont
             loadingDialog.dismiss();
         }
     }
-
+    /**
+     * 执行在 onCreateView 中
+     * 通过 findViewById 初始主视图化控件
+     * 初始化所有基础数据，
+     */
     @Override
     public void onCreateData() {
 

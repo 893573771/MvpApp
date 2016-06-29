@@ -58,8 +58,8 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void startIndexActivity() {
-        view.onStartIndexActivity();
+    public void startGoalActivity() {
+        view.onStartGoalActivity();
     }
 
     private final class MyHttpSubscriber extends HttpSubscriber<LoginBean> {
@@ -76,7 +76,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         public void onSuccess(LoginBean result) {
             KLog.e(""+result.phone+" "+result.uid);
             view.dismissLoadingDialog();
-            startIndexActivity();
+            startGoalActivity();
         }
     }
 

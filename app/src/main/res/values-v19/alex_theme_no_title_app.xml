@@ -9,6 +9,5 @@
                 <item name="android:windowNoTitle">true</item>
                 <item name="android:windowTranslucentStatus">true</item>
                 <item name="android:windowTranslucentNavigation">true</item>
-                <item name="android:windowBackground">@drawable/cold_start_bg</item>
         </style>
 </resources>

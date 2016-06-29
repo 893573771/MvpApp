@@ -5,10 +5,10 @@ import com.alex.app.model.UserBean;
 import com.alex.app.model.qianguan.LoginBean;
 
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
 import retrofit2.http.Path;
 import rx.Observable;
 
@@ -25,8 +25,8 @@ public interface HttpMan {
     @POST("andApi")
     Observable<LoginBean> login(@Body UserBean bean);
 
-    @Multipart
+    @FormUrlEncoded
     @POST("andApi")
-    Observable<LoginBean> login(@Part("phone") String phone, @Part("pwd") String pwd);
+    Observable<LoginBean> login(@Field("phone") String phone, @Field("pwd") String pwd);
 
 }

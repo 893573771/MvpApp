@@ -27,27 +27,10 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/tv_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/tv_login"
-        android:layout_below="@+id/layout_title"
-        android:padding="32dp"
-        android:text="你好 mvp"/>
-
-    <TextView
         android:id="@+id/tv_login"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="24dp"
+        style="@style/submit_match_red"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/selector_submit_oval_red"
-        android:gravity="center"
-        android:stateListAnimator="@drawable/selector_anim_material_gray"
         android:text="登录"
-        android:textColor="#FFFFFF"
         android:textSize="@dimen/qg_text_size_16sp"/>
 </RelativeLayout>

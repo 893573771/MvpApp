@@ -1,13 +1,19 @@
 package github.alex.okhttp;
 
-import com.alex.app.BuildConfig;
-import com.socks.library.KLog;
+import android.content.Context;
+import android.os.Environment;
+import android.text.TextUtils;
+import android.util.Log;
 
+import com.alex.app.BuildConfig;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -23,8 +29,12 @@ public class OkHttpUtil {
     private static final long writeTimeout = 10 * 1000;
     private static OkHttpUtil instance;
     public static OkHttpClient okHttpClient;
+    private static final String TAG = "网络请求结果";
+    private static String cacheDir;
+    private static long maxSize;
 
     private OkHttpUtil() {
+
     }
 
     /**
@@ -39,25 +49,35 @@ public class OkHttpUtil {
                 instance = (instance == null) ? new OkHttpUtil() : instance;
             }
         }
+        cacheDir = "OkHttpUtil";
+        maxSize = 1024 * 1024 * 100;
         return instance;
     }
+
     public OkHttpClient getOkHttpClient() {
-        return getOkHttpClient(null, null);
+        return getOkHttpClient(null, null, null, cacheDir, maxSize);
     }
+
     public OkHttpClient getOkHttpClient(final HttpLoggingInterceptor.Logger logInterceptor) {
-        return getOkHttpClient(logInterceptor, null);
+        return getOkHttpClient(logInterceptor, null, null, cacheDir, maxSize);
     }
+
     public OkHttpClient getOkHttpClient(HeadParams headParams) {
-        return getOkHttpClient(null, headParams);
+        return getOkHttpClient(null, headParams, null, cacheDir, maxSize);
     }
+
     public OkHttpClient getOkHttpClient(final HttpLoggingInterceptor.Logger logInterceptor, HeadParams headParams) {
+        return getOkHttpClient(null, headParams, null, cacheDir, maxSize);
+    }
+
+    public OkHttpClient getOkHttpClient(final HttpLoggingInterceptor.Logger logInterceptor, HeadParams headParams, Context context, String cacheDir, long cacheMaxSize) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         if (BuildConfig.DEBUG) {
             // Log信息拦截器
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                 @Override
                 public void log(String message) {
-                    KLog.e(message);
+                    Log.e(TAG, message);
                     if (logInterceptor != null) {
                         logInterceptor.log(message);
                     }
@@ -67,9 +87,14 @@ public class OkHttpUtil {
             //设置 Debug Log 模式
             builder.addInterceptor(loggingInterceptor);
         }
-        if(headParams != null){
+        if (headParams != null) {
             builder.addInterceptor(new HeadInterceptor(headParams));
         }
+        if ((context != null) && (TextUtils.isEmpty(cacheDir)) && (cacheMaxSize > 0)) {
+            Cache cache = new Cache(getDiskCacheDir(context, cacheDir), cacheMaxSize);
+            builder.cache(cache);
+        }
+
         OkHttpClient okHttpClient = builder.build();
         OkHttpClient.Builder newBuilder = okHttpClient.newBuilder();
         /**设置请求超时时间*/
@@ -77,36 +102,45 @@ public class OkHttpUtil {
         newBuilder.readTimeout(readTimeout, TimeUnit.MILLISECONDS);
         newBuilder.writeTimeout(writeTimeout, TimeUnit.MILLISECONDS);
         newBuilder.retryOnConnectionFailure(true);
+
         return okHttpClient;
     }
 
+
     private final class HeadInterceptor implements Interceptor {
         private HeadParams headParams;
+
         public HeadInterceptor(HeadParams headParams) {
             this.headParams = headParams;
         }
 
         @Override
         public Response intercept(Chain chain) throws IOException {
-            Request.Builder requestBuilder = chain.request().newBuilder()
-                    .addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-                    .addHeader("Accept-Encoding", "gzip, deflate")
-                    .addHeader("Connection", "keep-alive")
-                    .addHeader("Accept", "*/*")
-                    .addHeader("Cookie", "add cookies here");
-            Map<String, String>  stringHeadMap = headParams.getHeadMap();
+            Request.Builder requestBuilder = chain.request().newBuilder().addHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8").addHeader("Accept-Encoding", "gzip, deflate").addHeader("Connection", "keep-alive").addHeader("Accept", "*/*");
+            Map<String, String> stringHeadMap = headParams.getHeadMap();
              /*解析文本请求头*/
             if ((stringHeadMap != null) && (stringHeadMap.size() > 0)) {
                 Iterator<?> iterator = stringHeadMap.entrySet().iterator();
                 while (iterator.hasNext()) {
-                    @SuppressWarnings("rawtypes")
-                    Map.Entry entry = (Map.Entry) iterator.next();
+                    @SuppressWarnings("rawtypes") Map.Entry entry = (Map.Entry) iterator.next();
                     requestBuilder.addHeader(entry.getKey() + "", entry.getValue() + "");
                 }
             }
-            //Request request =
-            //.build();
             return chain.proceed(requestBuilder.build());
         }
+    }
+
+    private static File getDiskCacheDir(Context context, String cacheDir) {
+        String cachePath;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || !Environment.isExternalStorageRemovable()) {
+            if (context.getExternalCacheDir() != null) {
+                cachePath = context.getExternalCacheDir().getAbsolutePath();
+            } else {
+                cachePath = Environment.getExternalStorageDirectory().getAbsolutePath();
+            }
+        } else {
+            cachePath = context.getCacheDir().getPath();
+        }
+        return new File(cachePath + File.separator + cacheDir);
     }
 }

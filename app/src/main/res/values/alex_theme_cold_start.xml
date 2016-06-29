@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--这串代码 加给Activity的主题，不是Application-->
+    <style name="alex_theme_cold_start" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/layer_cold_start</item>
+    </style>
+</resources>

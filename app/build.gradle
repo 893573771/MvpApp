@@ -35,5 +35,6 @@ dependencies {
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
     compile files('libs/SystemBarTint-1.0.3.jar')
     compile files('libs/KLog-1.4.0.jar')
-    compile files('libs/EventBus-3.0.jar')
+    compile files('libs/glide-3.7.0.jar')
+    compile project(':galleryfinal')
 }

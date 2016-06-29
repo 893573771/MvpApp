@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.alex.app.R;
 import com.alex.app.ui.base.BaseActivity;
-import com.alex.app.ui.index.IndexActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,8 +74,8 @@ public class LoginActivity extends BaseActivity implements LoginContract.View {
     }
 
     @Override
-    public void onStartIndexActivity() {
-        startActivity(IndexActivity.class);
+    public void onStartGoalActivity() {
+        startActivity(UserDetailActivity.class);
     }
 
 }

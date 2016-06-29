@@ -1,5 +1,7 @@
 package github.alex.rxjava;
 
+import android.util.Log;
+
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscriber;
 
@@ -7,6 +9,7 @@ import rx.Subscriber;
  * Created by Alex on 2016/6/21.
  */
 public abstract class HttpSubscriber<T> extends Subscriber<T> {
+    public static String TAG = "#HttpSubscriber#";
     /**
      * @param tag 网络请求的标志位
      */
@@ -28,6 +31,7 @@ public abstract class HttpSubscriber<T> extends Subscriber<T> {
     @Override
     public void onError(Throwable e) {
         int code = 0;
+        Log.e(TAG, "有异常："+e.getMessage());
         if (e instanceof HttpException) {
             HttpException httpException = (HttpException) e;
             code = httpException.code();
