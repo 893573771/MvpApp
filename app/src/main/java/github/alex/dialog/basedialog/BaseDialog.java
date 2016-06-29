@@ -11,7 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
-import com.alex.mvpapp.R;
+import com.alex.app.R;
 
 
 public class BaseDialog extends Dialog

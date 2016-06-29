@@ -6,6 +6,7 @@
     android:orientation="vertical"
     >
 
+
     <RelativeLayout
         android:id="@+id/layout_title"
         android:layout_width="match_parent"
@@ -32,7 +33,7 @@
         android:layout_above="@+id/tv_login"
         android:layout_below="@+id/layout_title"
         android:padding="32dp"
-        android:text="最终报价: 200元 rmb"/>
+        android:text="你好 mvp"/>
 
     <TextView
         android:id="@+id/tv_login"

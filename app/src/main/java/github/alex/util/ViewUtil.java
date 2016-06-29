@@ -286,6 +286,5 @@ public class ViewUtil
 		}
 		return dp * context.getResources().getDisplayMetrics().density;
 	}
-
-
+	
 }

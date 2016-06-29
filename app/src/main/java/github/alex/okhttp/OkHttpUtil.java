@@ -1,7 +1,7 @@
 package github.alex.okhttp;
 
-import com.alex.mvpapp.BuildConfig;
-import com.orhanobut.logger.Logger;
+import com.alex.app.BuildConfig;
+import com.socks.library.KLog;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -47,6 +47,9 @@ public class OkHttpUtil {
     public OkHttpClient getOkHttpClient(final HttpLoggingInterceptor.Logger logInterceptor) {
         return getOkHttpClient(logInterceptor, null);
     }
+    public OkHttpClient getOkHttpClient(HeadParams headParams) {
+        return getOkHttpClient(null, headParams);
+    }
     public OkHttpClient getOkHttpClient(final HttpLoggingInterceptor.Logger logInterceptor, HeadParams headParams) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
         if (BuildConfig.DEBUG) {
@@ -54,7 +57,7 @@ public class OkHttpUtil {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                 @Override
                 public void log(String message) {
-                    //KLog.e(message);
+                    KLog.e(message);
                     if (logInterceptor != null) {
                         logInterceptor.log(message);
                     }
@@ -64,7 +67,6 @@ public class OkHttpUtil {
             //设置 Debug Log 模式
             builder.addInterceptor(loggingInterceptor);
         }
-        Logger.e("headParams = "+(headParams==null));
         if(headParams != null){
             builder.addInterceptor(new HeadInterceptor(headParams));
         }
@@ -100,7 +102,6 @@ public class OkHttpUtil {
                     @SuppressWarnings("rawtypes")
                     Map.Entry entry = (Map.Entry) iterator.next();
                     requestBuilder.addHeader(entry.getKey() + "", entry.getValue() + "");
-                    Logger.e(entry.getKey() + "  "+entry.getValue() + "");
                 }
             }
             //Request request =

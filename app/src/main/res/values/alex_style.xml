@@ -7,4 +7,16 @@
         <!--焦点或者点击的覆盖色  -->
         <item name="colorControlHighlight">#22000000</item>
     </style>
+    <style name="rb_activity_index_foot_navi">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">@dimen/footNavi_item_text_size</item>
+        <item name="android:button">@null</item>
+        <item name="android:paddingTop">@dimen/footNavi_item_paddingTop</item>
+        <item name="android:paddingBottom">@dimen/footNavi_item_paddingBottom</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@drawable/selector_activity_index_foot_text_color</item>
+    </style>
 </resources>

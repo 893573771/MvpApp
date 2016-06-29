@@ -3,7 +3,7 @@ package github.alex.dialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 
-import com.alex.mvpapp.R;
+import com.alex.app.R;
 
 import github.alex.dialog.basedialog.BaseDialog;
 import github.alex.dialog.basedialog.StatusBarUtils;

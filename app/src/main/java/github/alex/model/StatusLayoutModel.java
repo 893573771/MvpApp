@@ -43,34 +43,7 @@ public class StatusLayoutModel {
     @IdRes
     /**空数据视图的  文本控件 资源 id*/
     public int emptyTextViewId;
-    /**
-     * 默认
-     */
-    public static final int layoutStatusDefault = 0;
-    /**
-     * 主布局
-     */
-    public static final int layoutStatusLoading = 1;
-    /**
-     * 主布局
-     */
-    public static final int layoutStatusSuccess = 2;
-    /**
-     * 失败布局
-     */
-    public static final int layoutStatusFail = 3;
-    /**
-     * 空数据布局
-     */
-    public static final int layoutStatusEmpty = 4;
-    /**
-     * 布局文件不存在
-     */
-    public static final int layoutResIdNo = -1;
-    /**
-     * 布局文件不存在
-     */
-    public static final int resIdNo = -1;
+
 
     public StatusLayoutModel setDefaultLayoutId(int defaultLayoutId){
         this.defaultLayoutId = defaultLayoutId;

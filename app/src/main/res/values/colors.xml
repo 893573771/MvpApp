@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="alex_title_color">#FF5722</color>
+    <color name="subzero_foot_color">#F2F2F2</color>
 </resources>

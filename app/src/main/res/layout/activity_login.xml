@@ -44,6 +44,7 @@
                 android:digits="0123456789"
                 android:drawableLeft="@mipmap/ic_user_man_contact"
                 android:hint="请输入您的手机号码"
+                android:text="13146008029"
                 android:inputType="phone"
                 android:maxLength="11"/>
 
@@ -54,6 +55,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:paddingLeft="16dp"
+
                 android:paddingRight="28dp"
                 android:src="@mipmap/ic_login_clear"/>
         </RelativeLayout>
@@ -72,6 +74,7 @@
             <EditText
                 android:id="@+id/et_pwd"
                 style="@style/qg_input_layout_match_1"
+                android:text="123456"
                 android:layout_toLeftOf="@+id/iv_see"
                 android:digits="_0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 android:drawableLeft="@mipmap/ic_user_man_pwd_normal"

@@ -10,21 +10,21 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.alex.mvpapp.R;
+import com.alex.app.R;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import github.alex.model.StatusLayoutModel;
-import github.alex.mvpview.BaseHttpView;
+import github.alex.annotation.LayoutStatus;
+import github.alex.mvp.BaseHttpContract;
 
 /**
  * Created by Alex on 2016/6/20.
  */
 public class StatusLayoutHelper {
-    private BaseHttpView iBaseHttpView;
+    private BaseHttpContract.View view;
     private Map<String, View> layoutMap;
 
     private static final String sDefaultLayout = "sDefaultLayout";
@@ -33,16 +33,16 @@ public class StatusLayoutHelper {
     private static final String sFailLayout = "sFailLayout";
     private static final String sEmptyLayout = "sEmptyLayout";
 
-    public StatusLayoutHelper(BaseHttpView iBaseHttpView) {
-        this.iBaseHttpView = iBaseHttpView;
+    public StatusLayoutHelper(BaseHttpContract.View view) {
+        this.view = view;
     }
 
     public void initMultiModeBodyLayout(Context context, int bodyLayoutId) {
-        if (bodyLayoutId == StatusLayoutModel.layoutResIdNo) {
+        if (bodyLayoutId == LayoutStatus.layoutResIdNo) {
             return;
         }
         layoutMap = new HashMap<>();
-        View bodyLayout = iBaseHttpView.findView(bodyLayoutId);
+        View bodyLayout = view.findView(bodyLayoutId);
         ViewGroup.LayoutParams bodyParentParams = bodyLayout.getLayoutParams();
         ViewGroup bodyParentLayout = (ViewGroup) bodyLayout.getParent();
         int index = bodyParentLayout.indexOfChild(bodyLayout);
@@ -57,22 +57,22 @@ public class StatusLayoutHelper {
         /*FrameLayout 第二层视图*/
 
         /**默认 布局*/
-        if (iBaseHttpView.onGetStatusLayoutModel().defaultLayoutId != StatusLayoutModel.layoutResIdNo) {
-            View layout = LayoutInflater.from(context).inflate(iBaseHttpView.onGetStatusLayoutModel().defaultLayoutId, null);
+        if (view.onGetStatusLayoutModel().defaultLayoutId != LayoutStatus.layoutResIdNo) {
+            View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().defaultLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layoutMap.put(sDefaultLayout, layout);
         }
 
         /**loading布局*/
-        if (iBaseHttpView.onGetStatusLayoutModel().loadingLayoutId != StatusLayoutModel.layoutResIdNo) {
-            View layout = LayoutInflater.from(context).inflate(iBaseHttpView.onGetStatusLayoutModel().loadingLayoutId, null);
+        if (view.onGetStatusLayoutModel().loadingLayoutId != LayoutStatus.layoutResIdNo) {
+            View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().loadingLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layoutMap.put(sLoadingLayout, layout);
         }
 
         /**空数据 布局*/
-        if (iBaseHttpView.onGetStatusLayoutModel().emptyLayoutId != StatusLayoutModel.layoutResIdNo) {
-            View layout = LayoutInflater.from(context).inflate(iBaseHttpView.onGetStatusLayoutModel().emptyLayoutId, null);
+        if (view.onGetStatusLayoutModel().emptyLayoutId != LayoutStatus.layoutResIdNo) {
+            View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().emptyLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setOnClickListener(new MyOnClickListener(sEmptyLayout));
             layoutMap.put(sEmptyLayout, layout);
@@ -80,8 +80,8 @@ public class StatusLayoutHelper {
         }
 
         /**加载出错 布局*/
-        if (iBaseHttpView.onGetStatusLayoutModel().failLayoutId != StatusLayoutModel.layoutResIdNo) {
-            View layout = LayoutInflater.from(context).inflate(iBaseHttpView.onGetStatusLayoutModel().failLayoutId, null);
+        if (view.onGetStatusLayoutModel().failLayoutId != LayoutStatus.layoutResIdNo) {
+            View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().failLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setOnClickListener(new MyOnClickListener(sFailLayout));
             context.getTheme().resolveAttribute(R.attr.selectableItemBackgroundBorderless, new TypedValue(), true);
@@ -96,7 +96,7 @@ public class StatusLayoutHelper {
      * 展示出错消息
      */
     public void setFailMessage(String message) {
-        TextView textView = iBaseHttpView.findView(iBaseHttpView.onGetStatusLayoutModel().failTextViewId);
+        TextView textView = view.findView(view.onGetStatusLayoutModel().failTextViewId);
         if ((textView == null) || TextUtils.isEmpty(message)) {
             return;
         }
@@ -167,9 +167,9 @@ public class StatusLayoutHelper {
         @Override
         public void onClick(View view) {
             if (sFailLayout.equals(layoutName)) {
-                iBaseHttpView.onStatusLayoutClick(StatusLayoutModel.layoutStatusFail);
+                StatusLayoutHelper.this.view.onStatusLayoutClick(LayoutStatus.layoutStatusFail);
             } else if (sEmptyLayout.equals(layoutName)) {
-                iBaseHttpView.onStatusLayoutClick(StatusLayoutModel.layoutStatusEmpty);
+                StatusLayoutHelper.this.view.onStatusLayoutClick(LayoutStatus.layoutStatusEmpty);
             }
         }
     }
