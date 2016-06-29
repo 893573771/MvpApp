@@ -16,6 +16,7 @@ import github.hanks.checkbox.MaterialCheckBox;
 
 /**
  * Created by alex on 2016/6/23.
+ *
  */
 public class LoginActivity extends BaseActivity implements LoginContract.View {
 

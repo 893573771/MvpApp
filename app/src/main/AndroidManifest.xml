@@ -53,7 +53,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/alex_theme_no_title">
-        <activity android:name=".ui.MainActivity"
+        <activity
+            android:name=".ui.MainActivity"
             android:theme="@style/alex_theme_no_title"
             >
             <intent-filter>
@@ -68,6 +69,13 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             />
+        <!--默认首页-->
+        <activity
+            android:name=".ui.index.IndexActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            />
+
     </application>
 
 </manifest>

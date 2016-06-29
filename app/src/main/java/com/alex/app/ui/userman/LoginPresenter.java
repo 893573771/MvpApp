@@ -2,16 +2,13 @@ package com.alex.app.ui.userman;
 
 import android.support.annotation.NonNull;
 
-import com.alex.app.ui.App;
 import com.alex.app.config.AppConst;
 import com.alex.app.config.Url;
 import com.alex.app.httpman.HttpMan;
+import com.alex.app.model.UserBean;
 import com.alex.app.model.qianguan.LoginBean;
+import com.alex.app.ui.App;
 import com.socks.library.KLog;
-
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import github.alex.okhttp.HeadParams;
 import github.alex.okhttp.OkHttpUtil;
@@ -54,17 +51,16 @@ public class LoginPresenter implements LoginContract.Presenter {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
                 .build();
         HttpMan httpMan = retrofit.create(HttpMan.class);
-        Map<String,String> params = new LinkedHashMap<>();
-        params.put("phone",phone);
-        params.put("pwd",pwd);
-        httpMan.login(params).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
+        UserBean userBean = new UserBean();
+        userBean.phone = phone;
+        userBean.pwd = pwd;
+        httpMan.login(phone, pwd).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
     }
 
     @Override
     public void startIndexActivity() {
         view.onStartIndexActivity();
     }
-
 
     private final class MyHttpSubscriber extends HttpSubscriber<LoginBean> {
         @Override
@@ -73,11 +69,12 @@ public class LoginPresenter implements LoginContract.Presenter {
         }
         @Override
         public void onFailure(int code, String message) {
-            KLog.e(code+" "+message);
+            view.showToast(message);
             view.dismissLoadingDialog();
         }
         @Override
         public void onSuccess(LoginBean result) {
+            KLog.e(""+result.phone+" "+result.uid);
             view.dismissLoadingDialog();
             startIndexActivity();
         }

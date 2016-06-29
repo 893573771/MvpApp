@@ -1,6 +1,5 @@
 package github.alex.rxjava;
 
-
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscriber;
 
@@ -32,10 +31,10 @@ public abstract class HttpSubscriber<T> extends Subscriber<T> {
         if (e instanceof HttpException) {
             HttpException httpException = (HttpException) e;
             code = httpException.code();
+            onFailure(code, ErrorUtil.getErrorMessage(code));
         } else {
-            code = 404;
+            onFailure(-1000, e.getMessage());
         }
-        onFailure(code, ErrorUtil.getErrorMessage(code));
     }
 
     @Override

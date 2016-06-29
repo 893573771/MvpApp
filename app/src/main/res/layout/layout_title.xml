@@ -35,7 +35,7 @@
         android:layout_alignParentRight="true"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:src="@mipmap/ic_notice"
+        android:src="@drawable/ic_notice"
         android:visibility="invisible"
         tools:ignore="ContentDescription" />
 
