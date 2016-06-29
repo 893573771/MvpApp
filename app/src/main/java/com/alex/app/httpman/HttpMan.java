@@ -28,4 +28,5 @@ public interface HttpMan {
     @Multipart
     @POST("andApi")
     Observable<LoginBean> login(@Part("phone") String phone, @Part("pwd") String pwd);
+
 }

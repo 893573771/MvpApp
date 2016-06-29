@@ -35,8 +35,5 @@ dependencies {
     apt 'com.jakewharton:butterknife-compiler:8.1.0'
     compile files('libs/SystemBarTint-1.0.3.jar')
     compile files('libs/KLog-1.4.0.jar')
-    compile files('libs/andserver1.0.1.jar')
-    compile files('libs/commons-fileupload.jar')
     compile files('libs/EventBus-3.0.jar')
-    compile files('libs/org.apache.http.legacy.jar')
 }
