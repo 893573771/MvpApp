@@ -57,7 +57,7 @@ public interface BaseHttpContract {
         /**
          * 展示出错消息
          */
-        void onSetFailMessage(String message);
+        void setFailMessage(String message);
 
         /**
          * 展示加载失败的布局

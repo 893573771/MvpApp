@@ -15,10 +15,6 @@ public interface LoginContract {
          */
         void onLocalValidateError(String message);
 
-        /**
-         * 跳转到 目标 页面
-         */
-        void onStartGoalActivity();
 
     }
 
@@ -33,9 +29,5 @@ public interface LoginContract {
          */
         void login(@NonNull String phone, @NonNull String pwd);
 
-        /**
-         * 跳转到  目标页面
-         */
-        void startGoalActivity();
     }
 }

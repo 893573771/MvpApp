@@ -84,7 +84,7 @@ public class FunctionConfig implements Cloneable{
         private boolean forceCropEdit;//强制裁剪后是否可对图片编辑，默认不可以
         private boolean preview;//预览
 
-        protected Builder setMutiSelect(boolean mutiSelect) {
+        public Builder setMutiSelect(boolean mutiSelect) {
             this.mutiSelect = mutiSelect;
             return this;
         }

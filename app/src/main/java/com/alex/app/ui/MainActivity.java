@@ -6,6 +6,7 @@ import android.widget.TextView;
 import com.alex.app.R;
 import com.alex.app.ui.base.BaseActivity;
 import com.alex.app.ui.userman.LoginActivity;
+import com.alex.app.ui.userman.UserDetailActivity;
 
 public class MainActivity extends BaseActivity {
 
@@ -20,6 +21,7 @@ public class MainActivity extends BaseActivity {
     public void onCreateData() {
         tvContent = findView(R.id.tv_content);
         findView(R.id.tv_login).setOnClickListener(this);
+        findView(R.id.tv_add_img).setOnClickListener(this);
     }
 
     @Override
@@ -27,7 +29,8 @@ public class MainActivity extends BaseActivity {
         super.onClick(v);
         if (R.id.tv_login == v.getId()) {
             startActivity(LoginActivity.class);
+        } else if (R.id.tv_add_img == v.getId()) {
+            startActivity(UserDetailActivity.class);
         }
     }
-
 }

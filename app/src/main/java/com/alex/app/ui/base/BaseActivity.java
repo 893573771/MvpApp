@@ -16,7 +16,7 @@ import android.view.WindowManager;
 import com.alex.app.R;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
-import github.alex.annotation.LayoutStatus;
+import github.alex.annotation.Status;
 import github.alex.callback.OnHttpCallback;
 import github.alex.dialog.LoadingDialog;
 import github.alex.dialog.basedialog.BaseDialog;
@@ -46,7 +46,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
         toastHelper = new ToastHelper();
         viewHelper = new ViewHelper(this);
         onGetIntentData();
-        if ((LayoutStatus.resIdNo != getLayoutResID()) && (0 != getLayoutResID())) {
+        if ((Status.resIdNo != getLayoutResID()) && (0 != getLayoutResID())) {
             setContentView(getLayoutResID());
         }
         viewHelper.setOnLeftTitleViewClickListener(getLeftTitleViewId());
@@ -76,7 +76,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
      */
     @Override
     public int getBodyViewId() {
-        return LayoutStatus.layoutResIdNo;
+        return Status.layoutResIdNo;
     }
 
     /**
@@ -131,6 +131,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
             loadingDialog.dismiss();
         }
     }
+
     /**
      * 执行在 onCreateView 中
      * 通过 findViewById 初始主视图化控件
@@ -162,7 +163,19 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
     }
 
     public StatusLayoutModel onGetStatusLayoutModel() {
-        StatusLayoutModel statusLayoutModel = new StatusLayoutModel().setDefaultLayoutId(R.layout.alex_layout_default).setDefaultImageViewId(R.id.iv_logo).setDefaultTextViewId(R.id.tv_content).setLoadingLayoutId(R.layout.alex_layout_loading_circle_orange).setLoadingViewId(LayoutStatus.resIdNo).setLoadingTextViewId(LayoutStatus.resIdNo).setEmptyLayoutId(R.layout.alex_layout_empty).setEmptyImageViewId(R.id.iv_logo).setEmptyTextViewId(R.id.tv_content).setFailLayoutId(R.layout.alex_layout_fail).setFailImageViewId(R.id.iv_logo).setFailTextViewId(R.id.tv_content);
+        StatusLayoutModel statusLayoutModel = new StatusLayoutModel()
+                .setDefaultLayoutId(R.layout.alex_layout_default)
+                .setDefaultImageViewId(R.id.iv_logo)
+                .setDefaultTextViewId(R.id.tv_content)
+                .setLoadingLayoutId(R.layout.alex_layout_loading_circle_orange)
+                .setLoadingViewId(Status.resIdNo)
+                .setLoadingTextViewId(Status.resIdNo)
+                .setEmptyLayoutId(R.layout.alex_layout_empty)
+                .setEmptyImageViewId(R.id.iv_logo)
+                .setEmptyTextViewId(R.id.tv_content)
+                .setFailLayoutId(R.layout.alex_layout_fail)
+                .setFailImageViewId(R.id.iv_logo)
+                .setFailTextViewId(R.id.tv_content);
         return statusLayoutModel;
     }
 
@@ -187,7 +200,8 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
     }
 
     @Override
-    public void onSetFailMessage(String message) {
+    public void setFailMessage(String message) {
+        viewHelper.showFailLayout();
         viewHelper.setFailMessage(message);
     }
 

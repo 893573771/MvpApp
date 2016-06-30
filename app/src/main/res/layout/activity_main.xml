@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,8 +29,14 @@
     <TextView
         android:id="@+id/tv_login"
         style="@style/submit_match_red"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
         android:text="登录"
-        android:textSize="@dimen/qg_text_size_16sp"/>
-</RelativeLayout>
+        />
+
+    <TextView
+        android:id="@+id/tv_add_img"
+        style="@style/submit_match_red"
+        android:layout_marginTop="16dp"
+        android:text="添加图片"
+        />
+</LinearLayout>

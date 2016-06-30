@@ -104,5 +104,4 @@ public class StatusLayoutModel {
         return this;
     }
 
-
 }

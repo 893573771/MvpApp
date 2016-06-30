@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
-import github.alex.annotation.LayoutStatus;
+import github.alex.annotation.Status;
 import github.alex.callback.OnHttpCallback;
 import github.alex.model.StatusLayoutModel;
 import github.alex.mvp.BaseHttpContract;
@@ -60,7 +60,7 @@ public abstract class BaseFragment extends Fragment implements BaseHttpContract.
     }
 
     @Override
-    public void onSetFailMessage(String message) {
+    public void setFailMessage(String message) {
 
     }
 
@@ -85,7 +85,7 @@ public abstract class BaseFragment extends Fragment implements BaseHttpContract.
     }
 
     @Override
-    public void onStatusLayoutClick(@LayoutStatus int status) {
+    public void onStatusLayoutClick(@Status int status) {
 
     }
 

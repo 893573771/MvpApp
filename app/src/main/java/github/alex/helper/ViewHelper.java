@@ -15,13 +15,14 @@ import android.widget.TextView;
 
 import com.alex.app.R;
 import com.alex.app.ui.base.BaseActivity;
+import com.socks.library.KLog;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import github.alex.annotation.LayoutStatus;
+import github.alex.annotation.Status;
 import github.alex.mvp.BaseHttpContract;
 
 /**
@@ -42,7 +43,7 @@ public class ViewHelper {
     }
 
     public void initMultiModeBodyLayout(Context context, int bodyLayoutId) {
-        if (bodyLayoutId == LayoutStatus.layoutResIdNo) {
+        if (bodyLayoutId == Status.layoutResIdNo) {
             return;
         }
         layoutMap = new HashMap<>();
@@ -61,34 +62,37 @@ public class ViewHelper {
         /*FrameLayout 第二层视图*/
 
         /**默认 布局*/
-        if (view.onGetStatusLayoutModel().defaultLayoutId != LayoutStatus.layoutResIdNo) {
+        if (view.onGetStatusLayoutModel().defaultLayoutId != Status.layoutResIdNo) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().defaultLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
+            layout.setVisibility(View.GONE);
             layoutMap.put(sDefaultLayout, layout);
         }
 
         /**loading布局*/
-        if (view.onGetStatusLayoutModel().loadingLayoutId != LayoutStatus.layoutResIdNo) {
+        if (view.onGetStatusLayoutModel().loadingLayoutId != Status.layoutResIdNo) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().loadingLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
+            layout.setVisibility(View.GONE);
             layoutMap.put(sLoadingLayout, layout);
         }
 
         /**空数据 布局*/
-        if (view.onGetStatusLayoutModel().emptyLayoutId != LayoutStatus.layoutResIdNo) {
+        if (view.onGetStatusLayoutModel().emptyLayoutId != Status.layoutResIdNo) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().emptyLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setOnClickListener(new MyOnClickListener(sEmptyLayout));
+            layout.setVisibility(View.GONE);
             layoutMap.put(sEmptyLayout, layout);
-
         }
 
         /**加载出错 布局*/
-        if (view.onGetStatusLayoutModel().failLayoutId != LayoutStatus.layoutResIdNo) {
+        if (view.onGetStatusLayoutModel().failLayoutId != Status.layoutResIdNo) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().failLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setOnClickListener(new MyOnClickListener(sFailLayout));
             context.getTheme().resolveAttribute(R.attr.selectableItemBackgroundBorderless, new TypedValue(), true);
+            layout.setVisibility(View.GONE);
             layoutMap.put(sFailLayout, layout);
         }
         bodyParentLayout.addView(bodyFrameLayout, index, bodyParentParams);
@@ -100,7 +104,9 @@ public class ViewHelper {
      * 展示出错消息
      */
     public void setFailMessage(String message) {
-        TextView textView = view.findView(view.onGetStatusLayoutModel().failTextViewId);
+        TextView textView = (TextView) layoutMap.get(sFailLayout).findViewById(view.onGetStatusLayoutModel().failTextViewId);
+
+        KLog.e("textView = "+(textView == null)+" message = "+message);
         if ((textView == null) || TextUtils.isEmpty(message)) {
             return;
         }
@@ -211,9 +217,9 @@ public class ViewHelper {
         @Override
         public void onClick(View view) {
             if (sFailLayout.equals(layoutName)) {
-                ViewHelper.this.view.onStatusLayoutClick(LayoutStatus.layoutStatusFail);
+                ViewHelper.this.view.onStatusLayoutClick(Status.FAIL);
             } else if (sEmptyLayout.equals(layoutName)) {
-                ViewHelper.this.view.onStatusLayoutClick(LayoutStatus.layoutStatusEmpty);
+                ViewHelper.this.view.onStatusLayoutClick(Status.EMPTY);
             }else if("左部".equals(layoutName)){
                 ViewHelper.this.view.onClickLeftTitleView(view.getId());
             }else if("右部".equals(layoutName)){

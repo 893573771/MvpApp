@@ -73,9 +73,4 @@ public class LoginActivity extends BaseActivity implements LoginContract.View {
         showToast(message);
     }
 
-    @Override
-    public void onStartGoalActivity() {
-        startActivity(UserDetailActivity.class);
-    }
-
 }

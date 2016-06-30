@@ -1,10 +1,9 @@
 package github.alex.mvp;
 
 import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 
-import github.alex.annotation.LayoutStatus;
+import github.alex.annotation.Status;
 
 /**
  * Created by hasee on 2016/6/28.
@@ -14,7 +13,7 @@ public interface BaseContract {
         /**
          * 获取bodyView的 资源id
          */
-        @LayoutRes
+        @IdRes
         int getBodyViewId();
 
         /**
@@ -35,7 +34,7 @@ public interface BaseContract {
          * 多状态布局的 点击事件
          */
 
-        void onStatusLayoutClick(@LayoutStatus int status);
+        void onStatusLayoutClick(@Status int status);
 
         /**
          * 给文本控件设置文本
