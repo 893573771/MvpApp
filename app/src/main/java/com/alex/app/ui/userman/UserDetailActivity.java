@@ -79,12 +79,11 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
         super.onStatusLayoutClick(status);
         if(Status.FAIL == status){
             File file = new File(photoPath);
-            presenter.upLoadFile(file);
+            presenter.upLoadFile(file, "Alex");
         }
     }
 
     private final class MyOnHanlderResultCallback implements GalleryFinal.OnHanlderResultCallback {
-
         /**
          * 处理成功
          *
@@ -97,7 +96,7 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
             photoPath = resultList.get(0).getPhotoPath();
             iv0.setImageURI(Uri.parse(photoPath));
             File file = new File(photoPath);
-            presenter.upLoadFile(file);
+            presenter.upLoadFile(file, "Alex");
         }
 
         /**

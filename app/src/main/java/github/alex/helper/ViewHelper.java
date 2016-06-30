@@ -40,6 +40,7 @@ public class ViewHelper {
 
     public ViewHelper(BaseHttpContract.View view) {
         this.view = view;
+
     }
 
     public void initMultiModeBodyLayout(Context context, int bodyLayoutId) {

@@ -59,6 +59,9 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
     }
 
 
+    public void main(){
+
+    }
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);

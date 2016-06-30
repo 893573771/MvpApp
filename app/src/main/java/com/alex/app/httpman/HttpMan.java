@@ -4,8 +4,8 @@ package com.alex.app.httpman;
 import com.alex.app.model.UserBean;
 import com.alex.app.model.qianguan.LoginBean;
 
-import java.io.File;
-
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
@@ -20,6 +20,11 @@ import rx.Observable;
  * Created by Alex on 2016/6/19.
  */
 public interface HttpMan {
+    //public static final String doMainApi = "http://172.28.115.6:4477/";
+    //public static final String doMainApi = "http://172.28.115.2:4477/";
+    public static final String doMainApi = "http://172.27.23.4:4477/";
+    //public static final String doMainApi = "http://192.168.5.244:4477/";
+    //public static final String doMainApi = "http://192.168.191.3:4477/";
 
     //钱罐儿 登录
     @GET("homePhone/loginPhone/{phone}-{pwd}")
@@ -35,6 +40,6 @@ public interface HttpMan {
 
     @Multipart
     @POST("upload")
-    Observable<LoginBean> upLoad(@Part("userLogo") File userLogo);
+    Observable<LoginBean> upLoad(@Part MultipartBody.Part photo, @Part("userName") RequestBody userName);
 
 }

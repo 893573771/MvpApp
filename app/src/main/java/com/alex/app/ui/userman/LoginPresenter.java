@@ -3,7 +3,6 @@ package com.alex.app.ui.userman;
 import android.support.annotation.NonNull;
 
 import com.alex.app.config.AppConst;
-import com.alex.app.config.Url;
 import com.alex.app.httpman.HttpMan;
 import com.alex.app.model.UserBean;
 import com.alex.app.model.qianguan.LoginBean;
@@ -47,7 +46,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public void login(@NonNull String phone, @NonNull String pwd) {
         OkHttpClient okHttpClient =  OkHttpUtil.getInstance().getOkHttpClient(new HeadParams().addHeader("phoneNum",phone).addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp())));
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(Url.doMainApi).client(okHttpClient).addConverterFactory(GsonConverterFactory.create())//添加 json 转换器
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient).addConverterFactory(GsonConverterFactory.create())//添加 json 转换器
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
                 .build();
         HttpMan httpMan = retrofit.create(HttpMan.class);
