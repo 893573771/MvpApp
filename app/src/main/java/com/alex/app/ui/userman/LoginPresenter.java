@@ -22,7 +22,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by hasee on 2016/6/21.
+ * Created by alex on 2016/6/21.
  */
 public class LoginPresenter implements LoginContract.Presenter {
     private LoginContract.View view;
@@ -30,13 +30,14 @@ public class LoginPresenter implements LoginContract.Presenter {
     public LoginPresenter(@NonNull LoginContract.View view) {
         this.view = view;
     }
+
     @Override
     public void localValidateLoginInfo(String phone, String pwd) {
-        if(!StringUtil.isPhoneNum(phone)){
+        if (!StringUtil.isPhoneNum(phone)) {
             view.onLocalValidateError(AppConst.userManPhone);
             return;
         }
-        if(!StringUtil.isLengthOK(pwd, AppConst.loginPwdMinLength, AppConst.loginPwdMaxLength)){
+        if (!StringUtil.isLengthOK(pwd, AppConst.loginPwdMinLength, AppConst.loginPwdMaxLength)) {
             view.onLocalValidateError(AppConst.userLoginPwd);
             return;
         }
@@ -45,7 +46,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void login(@NonNull String phone, @NonNull String pwd) {
-        OkHttpClient okHttpClient =  OkHttpUtil.getInstance().getOkHttpClient(new HeadParams().addHeader("phoneNum",phone).addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp())));
+        OkHttpClient okHttpClient = OkHttpUtil.getInstance().setHeadParams(new HeadParams().addHeader("phoneNum", phone).addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp()))).build();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient).addConverterFactory(GsonConverterFactory.create())//添加 json 转换器
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
                 .build();
@@ -56,23 +57,22 @@ public class LoginPresenter implements LoginContract.Presenter {
         httpMan.login(phone, pwd).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
     }
 
-
     private final class MyHttpSubscriber extends HttpSubscriber<LoginBean> {
         @Override
         public void onStart() {
             view.showLoadingDialog();
         }
+
         @Override
         public void onFailure(int code, String message) {
             view.showToast(message);
             view.dismissLoadingDialog();
         }
+
         @Override
         public void onSuccess(LoginBean result) {
-            KLog.e(""+result.phone+" "+result.uid);
+            KLog.e("" + result.phone + " " + result.uid);
             view.dismissLoadingDialog();
-
         }
     }
-
 }

@@ -8,7 +8,7 @@ import com.squareup.leakcanary.LeakCanary;
 import github.alex.helper.CrashHandler;
 
 /**
- * Created by hasee on 2016/6/22.
+ * Created by alex on 2016/6/22.
  */
 public class App extends Application {
     private static App app;

@@ -1,5 +1,6 @@
 package com.alex.app.ui.base;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -38,7 +39,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
     private LoadingDialog loadingDialog;
     private ToastHelper toastHelper;
     private ViewHelper viewHelper;
-
+    private SystemBarTintManager tintManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -289,17 +290,35 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
     protected void initStatusBar() {
         ViewGroup contentFrameLayout = (ViewGroup) findViewById(Window.ID_ANDROID_CONTENT);
         View parentView = contentFrameLayout.getChildAt(0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (parentView != null) {
-                parentView.setFitsSystemWindows(true);
-            }
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            //getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-            SystemBarTintManager tintManager = new SystemBarTintManager(this);
-            tintManager.setStatusBarTintEnabled(true);
-            //tintManager.setNavigationBarTintEnabled(true);
-            tintManager.setStatusBarTintResource(R.color.qg_title_color_status_bar);
-            //tintManager.setNavigationBarTintResource(R.color.qg_title_color_navigation_bar);
+        if (parentView != null) {
+            parentView.setFitsSystemWindows(true);
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            setTranslucentStatus(true);
+            tintManager = new SystemBarTintManager(this);
+            tintManager.setStatusBarTintEnabled(true);
+            tintManager.setStatusBarTintResource(R.color.qg_title_color_status_bar);
+        }
+    }
+    /**
+     * 设置状态栏的颜色值
+     *
+     * @param colorId 颜色id
+     */
+    public void setStatusBarTintResource(int colorId) {
+        if (tintManager != null)
+            tintManager.setStatusBarTintResource(colorId);
+    }
+    @TargetApi(19)
+    private void setTranslucentStatus(boolean on) {
+        Window win = getWindow();
+        WindowManager.LayoutParams winParams = win.getAttributes();
+        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+        if (on) {
+            winParams.flags |= bits;
+        } else {
+            winParams.flags &= ~bits;
+        }
+        win.setAttributes(winParams);
     }
 }

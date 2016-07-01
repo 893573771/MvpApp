@@ -23,7 +23,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Created by hasee on 2016/6/21.
+ * Created by alex on 2016/6/21.
  */
 public class UserDetailPresenter implements UserDetailContract.Presenter {
     private UserDetailContract.View view;
@@ -34,7 +34,10 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
 
     @Override
     public void upLoadFile(File file, String userName) {
-        OkHttpClient okHttpClient =  OkHttpUtil.getInstance().getOkHttpClient(new HeadParams().addHeader("phoneNum","13146008029").addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp())));
+
+        OkHttpClient okHttpClient =  OkHttpUtil.getInstance()
+                .setHeadParams(new HeadParams().addHeader("phoneNum","13146008029").addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp())))
+                .build();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient).addConverterFactory(GsonConverterFactory.create())//添加 json 转换器
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
                 .build();

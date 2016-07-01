@@ -1,11 +1,6 @@
 package github.alex.okhttp;
 
-import android.content.Context;
-import android.os.Environment;
-import android.text.TextUtils;
 import android.util.Log;
-
-import com.alex.app.BuildConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,20 +16,24 @@ import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
- * Created by hasee on 2016/6/22.
+ * Created by alex on 2016/6/22.
  */
 public class OkHttpUtil {
-    private static final long connectTimeout = 10 * 1000;
-    private static final long readTimeout = 10 * 1000;
-    private static final long writeTimeout = 10 * 1000;
     private static OkHttpUtil instance;
     public static OkHttpClient okHttpClient;
     private static final String TAG = "网络请求结果";
-    private static String cacheDir;
-    private static long maxSize;
+
+    private HttpLoggingInterceptor.Logger logInterceptor;
+    private HeadParams headParams;
+    private long connectTimeout;
+    private long readTimeout;
+    private long writeTimeout;
+    private boolean retryOnConnectionFailure;
+    private File cacheDir;
+    private long cacheMaxSize;
 
     private OkHttpUtil() {
-
+        cacheMaxSize = 1024 * 1024 * 100;
     }
 
     /**
@@ -49,63 +48,115 @@ public class OkHttpUtil {
                 instance = (instance == null) ? new OkHttpUtil() : instance;
             }
         }
-        cacheDir = "OkHttpUtil";
-        maxSize = 1024 * 1024 * 100;
         return instance;
     }
 
-    public OkHttpClient getOkHttpClient() {
-        return getOkHttpClient(null, null, null, cacheDir, maxSize);
+    /**
+     * 设置 日志 拦截器
+     */
+    public OkHttpUtil setHttpLoggingInterceptor(HttpLoggingInterceptor.Logger logInterceptor) {
+        this.logInterceptor = logInterceptor;
+        return this;
     }
 
-    public OkHttpClient getOkHttpClient(final HttpLoggingInterceptor.Logger logInterceptor) {
-        return getOkHttpClient(logInterceptor, null, null, cacheDir, maxSize);
+    /**
+     * 设置请求头
+     */
+    public OkHttpUtil setHeadParams(HeadParams headParams) {
+        this.headParams = headParams;
+        return this;
     }
 
-    public OkHttpClient getOkHttpClient(HeadParams headParams) {
-        return getOkHttpClient(null, headParams, null, cacheDir, maxSize);
+    /**
+     * 设置连接超时时间
+     */
+    public OkHttpUtil setConnectTimeout(long connectTimeout) {
+        this.connectTimeout = connectTimeout;
+        return this;
     }
 
-    public OkHttpClient getOkHttpClient(final HttpLoggingInterceptor.Logger logInterceptor, HeadParams headParams) {
-        return getOkHttpClient(null, headParams, null, cacheDir, maxSize);
+    /**
+     * 设置读取超时时间
+     */
+    public OkHttpUtil setReadTimeout(long readTimeout) {
+        this.readTimeout = readTimeout;
+        return this;
     }
 
-    public OkHttpClient getOkHttpClient(final HttpLoggingInterceptor.Logger logInterceptor, HeadParams headParams, Context context, String cacheDir, long cacheMaxSize) {
+    /**
+     * 设置写入超时时间
+     */
+    public OkHttpUtil setWriteTimeout(long writeTimeout) {
+        this.writeTimeout = writeTimeout;
+        return this;
+    }
+
+    /**
+     * 连接失败自动重试
+     */
+    public OkHttpUtil setRetryOnConnectionFailure(boolean retryOnConnectionFailure) {
+        this.retryOnConnectionFailure = retryOnConnectionFailure;
+        return this;
+    }
+
+    /**
+     * 设置缓存路径
+     */
+    public OkHttpUtil setCacheDir(File cacheDir) {
+        this.cacheDir = cacheDir;
+        return this;
+    }
+
+    /**
+     * 设置缓存大小
+     */
+    public OkHttpUtil setCacheMaxSize(long cacheMaxSize) {
+        this.cacheMaxSize = cacheMaxSize;
+        return this;
+    }
+
+    /**得到 OkHttpClient 对象*/
+    public OkHttpClient build() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        if (BuildConfig.DEBUG) {
-            // Log信息拦截器
-            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
-                @Override
-                public void log(String message) {
-                    Log.e(TAG, message);
-                    if (logInterceptor != null) {
-                        logInterceptor.log(message);
-                    }
-                }
-            });
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-            //设置 Debug Log 模式
-            builder.addInterceptor(loggingInterceptor);
-        }
+        OkHttpClient okHttpClient = builder.build();
+        // Log信息拦截器
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptorLogger());
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        //设置 Debug Log 模式
+        builder.addInterceptor(loggingInterceptor);
         if (headParams != null) {
             builder.addInterceptor(new HeadInterceptor(headParams));
         }
-        if ((context != null) && (TextUtils.isEmpty(cacheDir)) && (cacheMaxSize > 0)) {
-            Cache cache = new Cache(getDiskCacheDir(context, cacheDir), cacheMaxSize);
+        if(cacheDir!=null){
+            if(cacheMaxSize <0){
+                cacheMaxSize = 1024 *1024 *128;
+            }
+            Cache cache = new Cache(cacheDir, cacheMaxSize);
             builder.cache(cache);
         }
-
-        OkHttpClient okHttpClient = builder.build();
         OkHttpClient.Builder newBuilder = okHttpClient.newBuilder();
-        /**设置请求超时时间*/
-        newBuilder.connectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
-        newBuilder.readTimeout(readTimeout, TimeUnit.MILLISECONDS);
-        newBuilder.writeTimeout(writeTimeout, TimeUnit.MILLISECONDS);
-        newBuilder.retryOnConnectionFailure(true);
-
+        if(connectTimeout>0){
+            newBuilder.connectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
+        }
+        if(readTimeout >0){
+            newBuilder.readTimeout(readTimeout, TimeUnit.MILLISECONDS);
+        }
+        if(writeTimeout > 0){
+            newBuilder.writeTimeout(writeTimeout, TimeUnit.MILLISECONDS);
+        }
+        newBuilder.retryOnConnectionFailure(retryOnConnectionFailure);
         return okHttpClient;
     }
 
+    private final class HttpLoggingInterceptorLogger implements HttpLoggingInterceptor.Logger {
+        @Override
+        public void log(String message) {
+            Log.d(TAG, "网络响应："+message);
+            if (logInterceptor != null) {
+                logInterceptor.log(message);
+            }
+        }
+    }
 
     private final class HeadInterceptor implements Interceptor {
         private HeadParams headParams;
@@ -128,19 +179,5 @@ public class OkHttpUtil {
             }
             return chain.proceed(requestBuilder.build());
         }
-    }
-
-    private static File getDiskCacheDir(Context context, String cacheDir) {
-        String cachePath;
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || !Environment.isExternalStorageRemovable()) {
-            if (context.getExternalCacheDir() != null) {
-                cachePath = context.getExternalCacheDir().getAbsolutePath();
-            } else {
-                cachePath = Environment.getExternalStorageDirectory().getAbsolutePath();
-            }
-        } else {
-            cachePath = context.getCacheDir().getPath();
-        }
-        return new File(cachePath + File.separator + cacheDir);
     }
 }
