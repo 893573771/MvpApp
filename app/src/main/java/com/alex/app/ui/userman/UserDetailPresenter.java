@@ -3,9 +3,8 @@ package com.alex.app.ui.userman;
 import android.support.annotation.NonNull;
 
 import com.alex.app.httpman.HttpMan;
-import com.alex.app.model.UserBean;
-import com.alex.app.model.qianguan.LoginBean;
 import com.alex.app.ui.App;
+import com.socks.library.KLog;
 
 import java.io.File;
 import java.util.HashMap;
@@ -13,15 +12,14 @@ import java.util.Map;
 
 import github.alex.okhttp.HeadParams;
 import github.alex.okhttp.OkHttpUtil;
+import github.alex.retrofit.StringConverterFactory;
 import github.alex.rxjava.HttpSubscriber;
 import github.alex.util.DeviceUtil;
 import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -41,7 +39,7 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
 
         OkHttpClient okHttpClient = OkHttpUtil.getInstance().headParams(new HeadParams().addHeader("phoneNum", "13146008029").addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp()))).build();
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient).addConverterFactory(GsonConverterFactory.create())//添加 json 转换器
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient).addConverterFactory(StringConverterFactory.create())//添加 json 转换器
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
                 .build();
         HttpMan httpMan = retrofit.create(HttpMan.class);
@@ -56,7 +54,7 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
         httpMan.upLoad2(fileBodyMap, phoneBody, pwdBody).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
     }
 
-    private final class MyHttpSubscriber extends HttpSubscriber<LoginBean> {
+    private final class MyHttpSubscriber extends HttpSubscriber<String> {
         @Override
         public void onStart() {
             view.showLoadingDialog();
@@ -69,7 +67,9 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
         }
 
         @Override
-        public void onSuccess(LoginBean result) {
+        public void onSuccess(String result) {
+            KLog.e(result);
+
             view.dismissLoadingDialog();
             view.showToast("上传成功");
         }

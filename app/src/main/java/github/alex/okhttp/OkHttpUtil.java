@@ -2,23 +2,17 @@ package github.alex.okhttp;
 
 import android.util.Log;
 
-import com.alex.app.BuildConfig;
-import com.socks.library.KLog;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
 import okhttp3.Interceptor;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
@@ -137,7 +131,7 @@ public class OkHttpUtil {
                     }
                 }
             });
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
             /*要在 OkHttpClient.Builder().build(); 之前，否则日志出不来*/
             builder.addInterceptor(loggingInterceptor);
         }

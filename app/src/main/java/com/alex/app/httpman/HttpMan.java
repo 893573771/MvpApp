@@ -2,7 +2,6 @@ package com.alex.app.httpman;
 
 
 import com.alex.app.model.UserBean;
-import com.alex.app.model.qianguan.LoginBean;
 
 import java.util.Map;
 
@@ -28,29 +27,29 @@ public interface HttpMan {
     public static final String doMainApi = "http://172.27.23.4:8080/AlexApp/";
     //public static final String doMainApi = "http://192.168.4.39:8080/AlexApp/";
     @GET("login/{phone}-{pwd}")
-    Observable<LoginBean> loginQg(@Path("phone") String phone, @Path("pwd") String pwd);
+    Observable<String> loginQg(@Path("phone") String phone, @Path("pwd") String pwd);
 
     @GET("login")
-    Observable<LoginBean> loginGet1(@Query("phone") String phone, @Query("pwd") String pwd);
+    Observable<String> loginGet1(@Query("phone") String phone, @Query("pwd") String pwd);
 
     @GET("login")
-    Observable<LoginBean> loginGet2(@QueryMap Map<String, String> params);
+    Observable<String> loginGet2(@QueryMap Map<String, String> params);
 
     @POST("login")
-    Observable<LoginBean> loginPost1(@Body Map<String, String> params);
+    Observable<String> loginPost1(@Body Map<String, String> params);
 
     @POST("login")
-    Observable<LoginBean> loginPost2(@Body UserBean bean);
+    Observable<String> loginPost2(@Body UserBean bean);
 
     @FormUrlEncoded
     @POST("login")
-    Observable<LoginBean> loginPost3(@Field("phone") String phone, @Field("pwd") String pwd);
+    Observable<String> loginPost3(@Field("phone") String phone, @Field("pwd") String pwd);
 
     @Multipart
     @POST("upload")
-    Observable<LoginBean> upLoad(@Part MultipartBody.Part userLogo, @Part("phone") RequestBody phoneBody, @Part("pwd") RequestBody pwdBody);
+    Observable<String> upLoad(@Part MultipartBody.Part userLogo, @Part("phone") RequestBody phoneBody, @Part("pwd") RequestBody pwdBody);
 
     @Multipart
     @POST("upload")
-    Observable<LoginBean> upLoad2(@PartMap Map<String, RequestBody> fileBodyMap, @Part("phone") RequestBody phoneBody, @Part("pwd") RequestBody pwdBody);
+    Observable<String> upLoad2(@PartMap Map<String, RequestBody> fileBodyMap, @Part("phone") RequestBody phoneBody, @Part("pwd") RequestBody pwdBody);
 }
