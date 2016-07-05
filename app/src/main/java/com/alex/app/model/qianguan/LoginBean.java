@@ -9,16 +9,15 @@ public class LoginBean {
 
 
     /**
-     * phone : 13146008029
-     * uid : uid13146008029
+     * pwd : 123123
      * name : Alex
      */
 
-    public String phone;
-    public String uid;
+    public String pwd;
     public String name;
 
     public static LoginBean objectFromData(String str) {
+
         return new Gson().fromJson(str, LoginBean.class);
     }
 }

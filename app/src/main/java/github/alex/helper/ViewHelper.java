@@ -106,8 +106,6 @@ public class ViewHelper {
      */
     public void setFailMessage(String message) {
         TextView textView = (TextView) layoutMap.get(sFailLayout).findViewById(view.onGetStatusLayoutModel().failTextViewId);
-
-        KLog.e("textView = "+(textView == null)+" message = "+message);
         if ((textView == null) || TextUtils.isEmpty(message)) {
             return;
         }
@@ -146,10 +144,11 @@ public class ViewHelper {
     public void setText(View view, String text){
         if(view == null){
             Log.e(getClass().getSimpleName(), "view 为空 ");
+            return ;
         }
         if(view instanceof TextView){
             TextView textView = (TextView)view;
-            if((textView!=null) && (!TextUtils.isEmpty(text)) && (!"null".equalsIgnoreCase(text))){
+            if(!TextUtils.isEmpty(text) && (!"null".equalsIgnoreCase(text))){
                 textView.setText(text);
             }
         }else  if(view instanceof Button){

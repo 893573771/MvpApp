@@ -54,6 +54,7 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
         super.onCreateData();
         ButterKnife.bind(this);
         presenter = new UserDetailPresenter(this);
+
         findView(R.id.tv_left).setOnClickListener(this);
         findView(R.id.tv_right).setOnClickListener(this);
     }
@@ -79,7 +80,7 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
         super.onStatusLayoutClick(status);
         if(Status.FAIL == status){
             File file = new File(photoPath);
-            presenter.upLoadFile(file, "Alex");
+            presenter.upLoadFile(file, "13146008029", "123456");
         }
     }
 
@@ -96,7 +97,7 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
             photoPath = resultList.get(0).getPhotoPath();
             iv0.setImageURI(Uri.parse(photoPath));
             File file = new File(photoPath);
-            presenter.upLoadFile(file, "Alex");
+            presenter.upLoadFile(file, "13146008029", "123456");
         }
 
         /**

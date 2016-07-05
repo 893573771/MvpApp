@@ -1,5 +1,6 @@
 package com.alex.app.ui.base;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -9,10 +10,12 @@ import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 
 import com.alex.app.R;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
@@ -40,10 +43,12 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
     private ToastHelper toastHelper;
     private ViewHelper viewHelper;
     private SystemBarTintManager tintManager;
+    private InputMethodManager inputMethodManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
+        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         toastHelper = new ToastHelper();
         viewHelper = new ViewHelper(this);
         onGetIntentData();
@@ -320,5 +325,35 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
             winParams.flags &= ~bits;
         }
         win.setAttributes(winParams);
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            return canhiddenKeyPad();
+        }
+        return false;
+    }
+    @SuppressLint("ClickableViewAccessibility")
+    public final class ScrollOnTouchListener implements View.OnTouchListener
+    {
+        @Override
+        public boolean onTouch(View v, MotionEvent event)
+        {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                return canhiddenKeyPad();
+            }
+            return false;
+        }
+
+    }
+    /**隐藏输入法*/
+    private boolean canhiddenKeyPad(){
+        if (getCurrentFocus() != null) {
+            if (getCurrentFocus().getWindowToken() != null) {
+                inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                return true;
+            }
+        }
+        return false;
     }
 }

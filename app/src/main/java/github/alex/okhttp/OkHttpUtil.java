@@ -2,27 +2,33 @@ package github.alex.okhttp;
 
 import android.util.Log;
 
+import com.alex.app.BuildConfig;
+import com.socks.library.KLog;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
 import okhttp3.Interceptor;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * Created by alex on 2016/6/22.
+ * OkHttpUtil for Retrofit
  */
 public class OkHttpUtil {
     private static OkHttpUtil instance;
-    public static OkHttpClient okHttpClient;
-    private static final String TAG = "网络请求结果";
-
+    private static final String TAG = "日志拦截器";
+    private static final boolean DEBUG = true;
     private HttpLoggingInterceptor.Logger logInterceptor;
     private HeadParams headParams;
     private long connectTimeout;
@@ -54,7 +60,7 @@ public class OkHttpUtil {
     /**
      * 设置 日志 拦截器
      */
-    public OkHttpUtil setHttpLoggingInterceptor(HttpLoggingInterceptor.Logger logInterceptor) {
+    public OkHttpUtil httpLoggingInterceptor(HttpLoggingInterceptor.Logger logInterceptor) {
         this.logInterceptor = logInterceptor;
         return this;
     }
@@ -62,7 +68,7 @@ public class OkHttpUtil {
     /**
      * 设置请求头
      */
-    public OkHttpUtil setHeadParams(HeadParams headParams) {
+    public OkHttpUtil headParams(HeadParams headParams) {
         this.headParams = headParams;
         return this;
     }
@@ -70,7 +76,7 @@ public class OkHttpUtil {
     /**
      * 设置连接超时时间
      */
-    public OkHttpUtil setConnectTimeout(long connectTimeout) {
+    public OkHttpUtil connectTimeout(long connectTimeout) {
         this.connectTimeout = connectTimeout;
         return this;
     }
@@ -78,7 +84,7 @@ public class OkHttpUtil {
     /**
      * 设置读取超时时间
      */
-    public OkHttpUtil setReadTimeout(long readTimeout) {
+    public OkHttpUtil readTimeout(long readTimeout) {
         this.readTimeout = readTimeout;
         return this;
     }
@@ -86,7 +92,7 @@ public class OkHttpUtil {
     /**
      * 设置写入超时时间
      */
-    public OkHttpUtil setWriteTimeout(long writeTimeout) {
+    public OkHttpUtil writeTimeout(long writeTimeout) {
         this.writeTimeout = writeTimeout;
         return this;
     }
@@ -94,7 +100,7 @@ public class OkHttpUtil {
     /**
      * 连接失败自动重试
      */
-    public OkHttpUtil setRetryOnConnectionFailure(boolean retryOnConnectionFailure) {
+    public OkHttpUtil retryOnConnectionFailure(boolean retryOnConnectionFailure) {
         this.retryOnConnectionFailure = retryOnConnectionFailure;
         return this;
     }
@@ -102,7 +108,7 @@ public class OkHttpUtil {
     /**
      * 设置缓存路径
      */
-    public OkHttpUtil setCacheDir(File cacheDir) {
+    public OkHttpUtil cacheDir(File cacheDir) {
         this.cacheDir = cacheDir;
         return this;
     }
@@ -110,55 +116,58 @@ public class OkHttpUtil {
     /**
      * 设置缓存大小
      */
-    public OkHttpUtil setCacheMaxSize(long cacheMaxSize) {
+    public OkHttpUtil cacheMaxSize(long cacheMaxSize) {
         this.cacheMaxSize = cacheMaxSize;
         return this;
     }
 
-    /**得到 OkHttpClient 对象*/
+    /**
+     * 得到 OkHttpClient 对象
+     */
     public OkHttpClient build() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        OkHttpClient okHttpClient = builder.build();
-        // Log信息拦截器
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptorLogger());
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        //设置 Debug Log 模式
-        builder.addInterceptor(loggingInterceptor);
+        if (DEBUG) {
+            // Log信息拦截器
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+                @Override
+                public void log(String message) {
+                    Log.e(TAG, message);
+                    if (logInterceptor != null) {
+                        logInterceptor.log(message);
+                    }
+                }
+            });
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            /*要在 OkHttpClient.Builder().build(); 之前，否则日志出不来*/
+            builder.addInterceptor(loggingInterceptor);
+        }
         if (headParams != null) {
             builder.addInterceptor(new HeadInterceptor(headParams));
         }
-        if(cacheDir!=null){
-            if(cacheMaxSize <0){
-                cacheMaxSize = 1024 *1024 *128;
+        if (cacheDir != null) {
+            if (cacheMaxSize < 0) {
+                cacheMaxSize = 1024 * 1024 * 128;
             }
             Cache cache = new Cache(cacheDir, cacheMaxSize);
             builder.cache(cache);
         }
+        OkHttpClient okHttpClient = builder.build();
         OkHttpClient.Builder newBuilder = okHttpClient.newBuilder();
-        if(connectTimeout>0){
+        if (connectTimeout > 0) {
             newBuilder.connectTimeout(connectTimeout, TimeUnit.MILLISECONDS);
         }
-        if(readTimeout >0){
+        if (readTimeout > 0) {
             newBuilder.readTimeout(readTimeout, TimeUnit.MILLISECONDS);
         }
-        if(writeTimeout > 0){
+        if (writeTimeout > 0) {
             newBuilder.writeTimeout(writeTimeout, TimeUnit.MILLISECONDS);
         }
         newBuilder.retryOnConnectionFailure(retryOnConnectionFailure);
         return okHttpClient;
     }
 
-    private final class HttpLoggingInterceptorLogger implements HttpLoggingInterceptor.Logger {
-        @Override
-        public void log(String message) {
-            Log.d(TAG, "网络响应："+message);
-            if (logInterceptor != null) {
-                logInterceptor.log(message);
-            }
-        }
-    }
 
-    private final class HeadInterceptor implements Interceptor {
+    final class HeadInterceptor implements Interceptor {
         private HeadParams headParams;
 
         public HeadInterceptor(HeadParams headParams) {
@@ -180,4 +189,5 @@ public class OkHttpUtil {
             return chain.proceed(requestBuilder.build());
         }
     }
+
 }

@@ -234,8 +234,7 @@ public class ViewUtil
 	public static int getYLocationOnScreen(View view){
 		int[] location = new int[2]; 
 		view.getLocationOnScreen(location);
-		@SuppressWarnings("unused")
-		int x = location[0];
+
 		int y = location[1];
 		return y;
 	}
@@ -277,6 +276,21 @@ public class ViewUtil
 				}
 			}
 		});
+	}
+	/**将光标移至文字尾
+	 * @param  view
+	 * */
+	public static void setSelection(View view){
+		if(view == null){
+			return ;
+		}
+		if(view instanceof EditText){
+			EditText editText = (EditText) view;
+			String text = editText.getText().toString();
+			if(text!=null){
+				editText.setSelection(text.length());
+			}
+		}
 	}
 	/**数据转换: dp---->px*/
 	private static float dp2Px(Context context, float dp)

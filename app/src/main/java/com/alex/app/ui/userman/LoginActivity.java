@@ -11,6 +11,7 @@ import com.alex.app.ui.base.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import github.alex.util.ViewUtil;
 import github.hanks.checkbox.MaterialCheckBox;
 
 /**
@@ -58,7 +59,11 @@ public class LoginActivity extends BaseActivity implements LoginContract.View {
         materialCheckBox.setDoneShapeColor(Color.parseColor("#FF5722"));
         materialCheckBox.setPaintCenterColor(Color.parseColor("#FFFFFF"));
         materialCheckBox.setBorderColor(Color.parseColor("#E8E8E8"));
+
+        ViewUtil.setSelection(etPhone);
+        ViewUtil.setSelection(etPwd);
         findView(R.id.tv_login).setOnClickListener(this);
+
     }
 
     @Override

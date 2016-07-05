@@ -9,6 +9,8 @@ import com.alex.app.model.qianguan.LoginBean;
 import com.alex.app.ui.App;
 import com.socks.library.KLog;
 
+import java.util.HashMap;
+
 import github.alex.okhttp.HeadParams;
 import github.alex.okhttp.OkHttpUtil;
 import github.alex.rxjava.HttpSubscriber;
@@ -46,15 +48,19 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void login(@NonNull String phone, @NonNull String pwd) {
-        OkHttpClient okHttpClient = OkHttpUtil.getInstance().setHeadParams(new HeadParams().addHeader("phoneNum", phone).addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp()))).build();
+        OkHttpClient okHttpClient = OkHttpUtil.getInstance().headParams(new HeadParams().addHeader("phoneNum", phone).addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp()))).build();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient).addConverterFactory(GsonConverterFactory.create())//添加 json 转换器
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
                 .build();
         HttpMan httpMan = retrofit.create(HttpMan.class);
-        UserBean userBean = new UserBean();
-        userBean.phone = phone;
-        userBean.pwd = pwd;
-        httpMan.login(phone, pwd).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
+        UserBean bean = new UserBean();
+        bean.phone = phone;
+        bean.pwd = pwd;
+        HashMap map = new HashMap();
+        map.put("phone", phone);
+        map.put("pwd", pwd);
+
+        httpMan.loginPost3(phone,pwd).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
     }
 
     private final class MyHttpSubscriber extends HttpSubscriber<LoginBean> {
@@ -71,7 +77,8 @@ public class LoginPresenter implements LoginContract.Presenter {
 
         @Override
         public void onSuccess(LoginBean result) {
-            KLog.e("" + result.phone + " " + result.uid);
+            KLog.e("" + result.name + " " + result.pwd);
+            view.showToast("登录成功");
             view.dismissLoadingDialog();
         }
     }

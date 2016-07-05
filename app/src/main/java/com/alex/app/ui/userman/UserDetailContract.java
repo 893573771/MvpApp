@@ -17,6 +17,6 @@ public interface UserDetailContract {
         /**
          * 上传图片文件
          */
-        void upLoadFile(File file, String userName);
+        void upLoadFile(File file, String phone, String pwd);
     }
 }
