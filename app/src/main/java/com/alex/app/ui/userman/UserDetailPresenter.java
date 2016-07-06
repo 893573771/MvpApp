@@ -8,6 +8,7 @@ import com.socks.library.KLog;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import github.alex.okhttp.HeadParams;
@@ -35,23 +36,31 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
 
 
     @Override
-    public void upLoadFile(File file, String phone, String pwd) {
+    public void upLoadFile(List<File> fileList, String phone, String pwd) {
 
+        if((fileList == null) || (fileList.size() <=0)){
+            KLog.e("文件为空");
+            return ;
+        }
         OkHttpClient okHttpClient = OkHttpUtil.getInstance().headParams(new HeadParams().addHeader("phoneNum", "13146008029").addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp()))).build();
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient).addConverterFactory(StringConverterFactory.create())//添加 json 转换器
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
                 .build();
         HttpMan httpMan = retrofit.create(HttpMan.class);
-
-        RequestBody photoBody = RequestBody.create(MediaType.parse("image/png"), file);
+        Map<String, RequestBody> paramsMap = new HashMap<>();
+        for (int i = 0; i < fileList.size(); i++) {
+            File file = fileList.get(i);
+            RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), fileList.get(i));
+            paramsMap.put("userLogo", fileBody);
+            paramsMap.put("file\"; filename=\""+file.getName()+".png", fileBody);
+        }
         RequestBody phoneBody = RequestBody.create(null, phone);
         RequestBody pwdBody = RequestBody.create(null, pwd);
-        Map<String, RequestBody> fileBodyMap = new HashMap();
-        fileBodyMap.put("photo", photoBody);
-        fileBodyMap.put("photos\"; fileName=\"icon.png", photoBody);
-        fileBodyMap.put("username",  RequestBody.create(null, "abc"));
-        httpMan.upLoad2(fileBodyMap, phoneBody, pwdBody).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
+
+        paramsMap.put("phone", phoneBody);
+        paramsMap.put("pwd", pwdBody);
+        httpMan.upLoad2(paramsMap).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
     }
 
     private final class MyHttpSubscriber extends HttpSubscriber<String> {
@@ -62,6 +71,7 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
 
         @Override
         public void onFailure(int code, String message) {
+            KLog.e(message);
             view.setFailMessage(message);
             view.dismissLoadingDialog();
         }

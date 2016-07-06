@@ -1,6 +1,7 @@
 package com.alex.app.ui.userman;
 
 import java.io.File;
+import java.util.List;
 
 import github.alex.mvp.BaseHttpContract;
 
@@ -17,6 +18,6 @@ public interface UserDetailContract {
         /**
          * 上传图片文件
          */
-        void upLoadFile(File file, String phone, String pwd);
+        void upLoadFile(List<File> fileList, String phone, String pwd);
     }
 }

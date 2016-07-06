@@ -35,6 +35,7 @@ import cn.finalteam.toolsfinal.io.FileUtils;
  * Desction:
  * Author:pengjianbo
  * Date:15/12/2 上午11:05
+ * @link https://github.com/pengjianbo/GalleryFinal
  */
 public class GalleryFinal {
     static final int TAKE_REQUEST_CODE = 1001;
@@ -46,7 +47,7 @@ public class GalleryFinal {
     private static ThemeConfig mThemeConfig;
     private static CoreConfig mCoreConfig;
 
-    private static OnHanlderResultCallback mCallback;
+    private static OnHandlerResultCallback mCallback;
     private static int mRequestCode;
 
     public static void init(CoreConfig coreConfig) {
@@ -83,13 +84,13 @@ public class GalleryFinal {
      * @param requestCode
      * @param callback
      */
-    public static void openGallerySingle(int requestCode, OnHanlderResultCallback callback) {
+    public static void openGallerySingle(int requestCode, OnHandlerResultCallback callback) {
         FunctionConfig config = copyGlobalFuncationConfig();
         if (config != null) {
             openGallerySingle(requestCode, config, callback);
         } else {
             if(callback != null) {
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             ILogger.e("FunctionConfig null");
         }
@@ -101,18 +102,18 @@ public class GalleryFinal {
      * @param config
      * @param callback
      */
-    public static void openGallerySingle(int requestCode, FunctionConfig config, OnHanlderResultCallback callback) {
+    public static void openGallerySingle(int requestCode, FunctionConfig config, OnHandlerResultCallback callback) {
         if ( mCoreConfig.getImageLoader() == null ) {
             ILogger.e("Please init GalleryFinal.");
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             return;
         }
 
         if ( config == null && mGlobalFunctionConfig == null) {
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             return;
         }
@@ -137,14 +138,14 @@ public class GalleryFinal {
      * @param maxSize
      * @param callback
      */
-    public static void openGalleryMuti(int requestCode, int maxSize, OnHanlderResultCallback callback) {
+    public static void openGalleryMuti(int requestCode, int maxSize, OnHandlerResultCallback callback) {
         FunctionConfig config = copyGlobalFuncationConfig();
         if (config != null) {
             config.maxSize = maxSize;
             openGalleryMuti(requestCode, config, callback);
         } else {
             if(callback != null) {
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             ILogger.e("Please init GalleryFinal.");
         }
@@ -156,32 +157,32 @@ public class GalleryFinal {
      * @param config
      * @param callback
      */
-    public static void openGalleryMuti(int requestCode, FunctionConfig config, OnHanlderResultCallback callback) {
+    public static void openGalleryMuti(int requestCode, FunctionConfig config, OnHandlerResultCallback callback) {
         if ( mCoreConfig.getImageLoader() == null ) {
             ILogger.e("Please init GalleryFinal.");
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             return;
         }
 
         if ( config == null && mGlobalFunctionConfig == null) {
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             return;
         }
 
         if ( config.getMaxSize() <= 0) {
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.maxsize_zero_tip));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.maxsize_zero_tip));
             }
             return;
         }
 
         if (config.getSelectedList() != null && config.getSelectedList().size() > config.getMaxSize()) {
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.select_max_tips));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.select_max_tips));
             }
             return;
         }
@@ -208,13 +209,13 @@ public class GalleryFinal {
      * @param requestCode
      * @param callback
      */
-    public static void openCamera(int requestCode, OnHanlderResultCallback callback) {
+    public static void openCamera(int requestCode, OnHandlerResultCallback callback) {
         FunctionConfig config = copyGlobalFuncationConfig();
         if (config != null) {
             openCamera(requestCode, config, callback);
         } else {
             if(callback != null) {
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             ILogger.e("Please init GalleryFinal.");
         }
@@ -225,18 +226,18 @@ public class GalleryFinal {
      * @param config
      * @param callback
      */
-    public static void openCamera(int requestCode, FunctionConfig config, OnHanlderResultCallback callback) {
+    public static void openCamera(int requestCode, FunctionConfig config, OnHandlerResultCallback callback) {
         if ( mCoreConfig.getImageLoader() == null ) {
             ILogger.e("Please init GalleryFinal.");
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             return;
         }
 
         if ( config == null && mGlobalFunctionConfig == null) {
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             return;
         }
@@ -264,13 +265,13 @@ public class GalleryFinal {
      * @param photoPath
      * @param callback
      */
-    public static void openCrop(int requestCode, String photoPath, OnHanlderResultCallback callback) {
+    public static void openCrop(int requestCode, String photoPath, OnHandlerResultCallback callback) {
         FunctionConfig config = copyGlobalFuncationConfig();
         if (config != null) {
             openCrop(requestCode, config, photoPath, callback);
         } else {
             if(callback != null) {
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             ILogger.e("Please init GalleryFinal.");
         }
@@ -283,18 +284,18 @@ public class GalleryFinal {
      * @param photoPath
      * @param callback
      */
-    public static void openCrop(int requestCode, FunctionConfig config, String photoPath, OnHanlderResultCallback callback) {
+    public static void openCrop(int requestCode, FunctionConfig config, String photoPath, OnHandlerResultCallback callback) {
         if ( mCoreConfig.getImageLoader() == null ) {
             ILogger.e("Please init GalleryFinal.");
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             return;
         }
 
         if ( config == null && mGlobalFunctionConfig == null) {
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             return;
         }
@@ -335,13 +336,13 @@ public class GalleryFinal {
      * @param photoPath
      * @param callback
      */
-    public static void openEdit(int requestCode, String photoPath, OnHanlderResultCallback callback) {
+    public static void openEdit(int requestCode, String photoPath, OnHandlerResultCallback callback) {
         FunctionConfig config = copyGlobalFuncationConfig();
         if (config != null) {
             openEdit(requestCode, config, photoPath, callback);
         } else {
             if(callback != null) {
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             ILogger.e("Please init GalleryFinal.");
         }
@@ -354,18 +355,18 @@ public class GalleryFinal {
      * @param photoPath
      * @param callback
      */
-    public static void openEdit(int requestCode, FunctionConfig config, String photoPath, OnHanlderResultCallback callback) {
+    public static void openEdit(int requestCode, FunctionConfig config, String photoPath, OnHandlerResultCallback callback) {
         if ( mCoreConfig.getImageLoader() == null ) {
             ILogger.e("Please init GalleryFinal.");
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             return;
         }
 
         if ( config == null && mGlobalFunctionConfig == null) {
             if(callback != null){
-                callback.onHanlderFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
+                callback.onFailure(requestCode, mCoreConfig.getContext().getString(R.string.open_gallery_fail));
             }
             return;
         }
@@ -421,26 +422,26 @@ public class GalleryFinal {
         return mRequestCode;
     }
 
-    public static OnHanlderResultCallback getCallback() {
+    public static OnHandlerResultCallback getCallback() {
         return mCallback;
     }
 
     /**
      * 处理结果
      */
-    public static interface OnHanlderResultCallback {
+    public static interface OnHandlerResultCallback {
         /**
          * 处理成功
-         * @param reqeustCode
+         * @param requestCode
          * @param resultList
          */
-        public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList);
+        public void onSuccess(int requestCode, List<PhotoInfo> resultList);
 
         /**
          * 处理失败或异常
          * @param requestCode
-         * @param errorMsg
+         * @param message
          */
-        public void onHanlderFailure(int requestCode, String errorMsg);
+        public void onFailure(int requestCode, String message);
     }
 }

@@ -28,8 +28,8 @@ public class FinalUtil {
         return theme;
     }
 
-    public static FunctionConfig getFunctionConfig() {
-        FunctionConfig functionConfig = new FunctionConfig.Builder().setMutiSelectMaxSize(3).build();
+    public static FunctionConfig getFunctionConfig(int mutiSelectMaxSize) {
+        FunctionConfig functionConfig = new FunctionConfig.Builder().setMutiSelectMaxSize(mutiSelectMaxSize).build();
         return functionConfig;
     }
 }

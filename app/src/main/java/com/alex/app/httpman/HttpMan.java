@@ -3,6 +3,7 @@ package com.alex.app.httpman;
 
 import com.alex.app.model.UserBean;
 
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.MultipartBody;
@@ -51,5 +52,12 @@ public interface HttpMan {
 
     @Multipart
     @POST("upload")
-    Observable<String> upLoad2(@PartMap Map<String, RequestBody> fileBodyMap, @Part("phone") RequestBody phoneBody, @Part("pwd") RequestBody pwdBody);
+    Observable<String> upLoad2(@PartMap Map<String, RequestBody> params);
+
+    @Multipart
+    @POST("upload")
+    Observable<String> upLoad3(@Part List<MultipartBody.Part> userLogoList, @Part("phone") RequestBody phoneBody, @Part("pwd") RequestBody pwdBody);
+
+
+
 }

@@ -5,14 +5,16 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.alex.app.R;
+import com.alex.app.httpman.HttpMan;
 import com.alex.app.ui.base.BaseActivity;
 import com.socks.library.KLog;
 
+import org.xutils.http.RequestParams;
+
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import cn.finalteam.galleryfinal.CoreConfig;
 import cn.finalteam.galleryfinal.FunctionConfig;
 import cn.finalteam.galleryfinal.GalleryFinal;
@@ -22,22 +24,19 @@ import cn.finalteam.galleryfinal.model.PhotoInfo;
 import github.alex.annotation.Status;
 import github.alex.helper.GlideImageLoader;
 import github.alex.util.FinalUtil;
+import github.alex.xutils.BaseStringCallback;
 
 /**
  * Created by alex on 2016/6/29.
  */
 public class UserDetailActivity extends BaseActivity implements UserDetailContract.View {
-
-    @BindView(R.id.iv_0)
-    ImageView iv0;
-    @BindView(R.id.iv_1)
-    ImageView iv1;
-    @BindView(R.id.iv_2)
-    ImageView iv2;
     private final int requestCodeGallery = 1001;
     private UserDetailPresenter presenter;
-    /**文件 路径*/
-    private String photoPath;
+    /**
+     * 文件 路径
+     */
+    private List<PhotoInfo> photoPathList;
+    private List<Integer> ivIdList;
 
     @Override
     public int getBodyViewId() {
@@ -52,9 +51,12 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
     @Override
     public void onCreateData() {
         super.onCreateData();
-        ButterKnife.bind(this);
+        ivIdList = new ArrayList<>();
+        photoPathList = new ArrayList<>();
         presenter = new UserDetailPresenter(this);
-
+        ivIdList.add(R.id.iv_0);
+        ivIdList.add(R.id.iv_1);
+        ivIdList.add(R.id.iv_2);
         findView(R.id.tv_left).setOnClickListener(this);
         findView(R.id.tv_right).setOnClickListener(this);
     }
@@ -64,51 +66,88 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
         super.onClick(v);
         if (R.id.tv_left == v.getId()) {
             ThemeConfig theme = FinalUtil.getThemeConfig();
-            FunctionConfig config = FinalUtil.getFunctionConfig();
+            FunctionConfig config = FinalUtil.getFunctionConfig(3);
             ImageLoader imageloader = new GlideImageLoader();
             CoreConfig coreConfig = new CoreConfig.Builder(context, imageloader, theme).setFunctionConfig(config).build();
             GalleryFinal.init(coreConfig);
-            GalleryFinal.openGallerySingle(requestCodeGallery, config, new MyOnHanlderResultCallback());
+            GalleryFinal.openGallerySingle(requestCodeGallery, config, new MyOnHandlerResultCallback());
         } else if (R.id.tv_right == v.getId()) {
-
-
+            ThemeConfig theme = FinalUtil.getThemeConfig();
+            FunctionConfig config = FinalUtil.getFunctionConfig(3);
+            ImageLoader imageloader = new GlideImageLoader();
+            CoreConfig coreConfig = new CoreConfig.Builder(context, imageloader, theme).setFunctionConfig(config).build();
+            GalleryFinal.init(coreConfig);
+            GalleryFinal.openGalleryMuti(requestCodeGallery, config, new MyOnHandlerResultCallback());
         }
     }
 
     @Override
     public void onStatusLayoutClick(int status) {
         super.onStatusLayoutClick(status);
-        if(Status.FAIL == status){
-            File file = new File(photoPath);
-            presenter.upLoadFile(file, "13146008029", "123456");
+        if (Status.FAIL == status) {
+            List<File> fileList = new ArrayList<>();
+            for (int i = 0; (i < ivIdList.size()) && (photoPathList != null) && (i < photoPathList.size()); i++) {
+                fileList.add(new File(photoPathList.get(i).getPhotoPath()));
+            }
+            //presenter.upLoadFile(fileList, "13146008029", "123456");
         }
     }
 
-    private final class MyOnHanlderResultCallback implements GalleryFinal.OnHanlderResultCallback {
+    private final class MyOnHandlerResultCallback implements GalleryFinal.OnHandlerResultCallback {
         /**
          * 处理成功
          *
-         * @param reqeustCode
+         * @param requestCode
          * @param resultList
          */
         @Override
-        public void onHanlderSuccess(int reqeustCode, List<PhotoInfo> resultList) {
-            KLog.e("" + photoPath);
-            photoPath = resultList.get(0).getPhotoPath();
-            iv0.setImageURI(Uri.parse(photoPath));
-            File file = new File(photoPath);
-            presenter.upLoadFile(file, "13146008029", "123456");
+        public void onSuccess(int requestCode, List<PhotoInfo> resultList) {
+            photoPathList = resultList;
+            List<File> fileList = new ArrayList<>();
+            RequestParams params = new RequestParams(HttpMan.doMainApi+"upload");
+            for (int i = 0; (i < ivIdList.size()) && (photoPathList != null) && (i < photoPathList.size()); i++) {
+                ((ImageView) findView(ivIdList.get(i))).setImageURI(Uri.parse(photoPathList.get(i).getPhotoPath()));
+                fileList.add(new File(photoPathList.get(i).getPhotoPath()));
+                params.addBodyParameter("photo", fileList.get(i));
+            }
+            params.setMultipart(true);
+            params.addBodyParameter("phone","13146008029");
+            params.addBodyParameter("pwd","123456");
+           presenter.upLoadFile(fileList, "13146008029", "123456");
+            //x.http().post(params, new MyBaseStringCallback());
         }
 
         /**
          * 处理失败或异常
          *
          * @param requestCode
-         * @param errorMsg
+         * @param message
          */
         @Override
-        public void onHanlderFailure(int requestCode, String errorMsg) {
-            showToast(errorMsg);
+        public void onFailure(int requestCode, String message) {
+            showToast(message);
+        }
+    }
+    private final class MyBaseStringCallback extends BaseStringCallback{
+        @Override
+        public void onStarted() {
+            super.onStarted();
+            showLoadingDialog();
+        }
+
+        @Override
+        public void onError(int code, String message) {
+            super.onError(code, message);
+            dismissLoadingDialog();
+            KLog.e(message);
+
+        }
+
+        @Override
+        public void onSuccess(String result) {
+            super.onSuccess(result);
+            dismissLoadingDialog();
+            KLog.e(result);
         }
     }
 }

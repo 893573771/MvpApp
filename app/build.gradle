@@ -17,6 +17,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets { main { jni.srcDirs = ['src/main/jni', 'src/main/jni/'] } }
 }
 
 dependencies {
@@ -37,4 +38,5 @@ dependencies {
     compile files('libs/KLog-1.4.0.jar')
     compile files('libs/glide-3.7.0.jar')
     compile project(':galleryfinal')
+    compile files('libs/xUtils-3.3.32.jar')
 }

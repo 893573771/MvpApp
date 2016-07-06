@@ -19,6 +19,7 @@ public class App extends Application {
         CrashHandler crashHandler = new CrashHandler(this,"mvp模式/cash.java" );
         crashHandler.setOnCrashListener(new MyOnCrashListener());
         LeakCanary.install(this);
+        org.xutils.x.Ext.init(this);
     }
 
     public static App getApp() {
