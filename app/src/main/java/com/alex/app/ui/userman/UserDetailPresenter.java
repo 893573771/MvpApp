@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import github.alex.mvp.CancelablePresenter;
 import github.alex.okhttp.HeadParams;
 import github.alex.okhttp.OkHttpUtil;
 import github.alex.retrofit.StringConverterFactory;
@@ -27,7 +28,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by alex on 2016/6/21.
  */
-public class UserDetailPresenter implements UserDetailContract.Presenter {
+public class UserDetailPresenter extends CancelablePresenter implements UserDetailContract.Presenter {
     private UserDetailContract.View view;
 
     public UserDetailPresenter(@NonNull UserDetailContract.View view) {
@@ -38,9 +39,9 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
     @Override
     public void upLoadFile(List<File> fileList, String phone, String pwd) {
 
-        if((fileList == null) || (fileList.size() <=0)){
+        if ((fileList == null) || (fileList.size() <= 0)) {
             KLog.e("文件为空");
-            return ;
+            return;
         }
         OkHttpClient okHttpClient = OkHttpUtil.getInstance().headParams(new HeadParams().addHeader("phoneNum", "13146008029").addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp()))).build();
 
@@ -48,20 +49,22 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
                 .build();
         HttpMan httpMan = retrofit.create(HttpMan.class);
+
         Map<String, RequestBody> paramsMap = new HashMap<>();
         for (int i = 0; i < fileList.size(); i++) {
             File file = fileList.get(i);
             RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), fileList.get(i));
-            paramsMap.put("userLogo", fileBody);
-            paramsMap.put("file\"; filename=\""+file.getName()+".png", fileBody);
+            paramsMap.put("userLogo\"; filename=\"" + file.getName() + ".png", fileBody);
         }
         RequestBody phoneBody = RequestBody.create(null, phone);
         RequestBody pwdBody = RequestBody.create(null, pwd);
 
         paramsMap.put("phone", phoneBody);
         paramsMap.put("pwd", pwdBody);
-        httpMan.upLoad2(paramsMap).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
+        subscription = httpMan.upLoad2(paramsMap).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
+
     }
+
 
     private final class MyHttpSubscriber extends HttpSubscriber<String> {
         @Override
@@ -85,4 +88,8 @@ public class UserDetailPresenter implements UserDetailContract.Presenter {
         }
     }
 
+    @Override
+    public void cancel() {
+
+    }
 }

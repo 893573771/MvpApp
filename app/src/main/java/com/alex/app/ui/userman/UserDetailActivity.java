@@ -5,11 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.alex.app.R;
-import com.alex.app.httpman.HttpMan;
 import com.alex.app.ui.base.BaseActivity;
-import com.socks.library.KLog;
-
-import org.xutils.http.RequestParams;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,7 +20,6 @@ import cn.finalteam.galleryfinal.model.PhotoInfo;
 import github.alex.annotation.Status;
 import github.alex.helper.GlideImageLoader;
 import github.alex.util.FinalUtil;
-import github.alex.xutils.BaseStringCallback;
 
 /**
  * Created by alex on 2016/6/29.
@@ -89,7 +84,7 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
             for (int i = 0; (i < ivIdList.size()) && (photoPathList != null) && (i < photoPathList.size()); i++) {
                 fileList.add(new File(photoPathList.get(i).getPhotoPath()));
             }
-            //presenter.upLoadFile(fileList, "13146008029", "123456");
+            presenter.upLoadFile(fileList, "13146008029", "123456");
         }
     }
 
@@ -104,17 +99,12 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
         public void onSuccess(int requestCode, List<PhotoInfo> resultList) {
             photoPathList = resultList;
             List<File> fileList = new ArrayList<>();
-            RequestParams params = new RequestParams(HttpMan.doMainApi+"upload");
             for (int i = 0; (i < ivIdList.size()) && (photoPathList != null) && (i < photoPathList.size()); i++) {
                 ((ImageView) findView(ivIdList.get(i))).setImageURI(Uri.parse(photoPathList.get(i).getPhotoPath()));
                 fileList.add(new File(photoPathList.get(i).getPhotoPath()));
-                params.addBodyParameter("photo", fileList.get(i));
+
             }
-            params.setMultipart(true);
-            params.addBodyParameter("phone","13146008029");
-            params.addBodyParameter("pwd","123456");
-           presenter.upLoadFile(fileList, "13146008029", "123456");
-            //x.http().post(params, new MyBaseStringCallback());
+            presenter.upLoadFile(fileList, "13146008029", "123456");
         }
 
         /**
@@ -128,26 +118,14 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
             showToast(message);
         }
     }
-    private final class MyBaseStringCallback extends BaseStringCallback{
-        @Override
-        public void onStarted() {
-            super.onStarted();
-            showLoadingDialog();
-        }
 
-        @Override
-        public void onError(int code, String message) {
-            super.onError(code, message);
-            dismissLoadingDialog();
-            KLog.e(message);
 
-        }
-
-        @Override
-        public void onSuccess(String result) {
-            super.onSuccess(result);
-            dismissLoadingDialog();
-            KLog.e(result);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (presenter != null) {
+            presenter.cancel();
+            presenter = null;
         }
     }
 }

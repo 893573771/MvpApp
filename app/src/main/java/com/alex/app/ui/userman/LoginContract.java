@@ -15,7 +15,6 @@ public interface LoginContract {
          */
         void onLocalValidateError(String message);
 
-
     }
 
     interface Presenter extends BaseHttpContract.Presenter {

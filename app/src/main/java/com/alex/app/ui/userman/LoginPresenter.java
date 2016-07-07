@@ -10,6 +10,7 @@ import com.socks.library.KLog;
 
 import java.util.HashMap;
 
+import github.alex.mvp.CancelablePresenter;
 import github.alex.okhttp.HeadParams;
 import github.alex.okhttp.OkHttpUtil;
 import github.alex.retrofit.StringConverterFactory;
@@ -25,7 +26,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by alex on 2016/6/21.
  */
-public class LoginPresenter implements LoginContract.Presenter {
+public class LoginPresenter extends CancelablePresenter implements LoginContract.Presenter {
     private LoginContract.View view;
 
     public LoginPresenter(@NonNull LoginContract.View view) {
@@ -60,7 +61,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         map.put("phone", phone);
         map.put("pwd", pwd);
 
-        httpMan.loginPost3(phone,pwd).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
+        subscription = httpMan.loginPost3(phone,pwd).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
     }
 
     private final class MyHttpSubscriber extends HttpSubscriber<String> {

@@ -21,8 +21,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
  */
 public class OkHttpUtil {
     private static OkHttpUtil instance;
-    private static final String TAG = "日志拦截器";
-    private static final boolean DEBUG = true;
+    private static final String TAG = "#日志拦截器#";
+    private boolean debug = true;
     private HttpLoggingInterceptor.Logger logInterceptor;
     private HeadParams headParams;
     private long connectTimeout;
@@ -31,9 +31,12 @@ public class OkHttpUtil {
     private boolean retryOnConnectionFailure;
     private File cacheDir;
     private long cacheMaxSize;
+    private HttpLoggingInterceptor.Level level;
 
     private OkHttpUtil() {
         cacheMaxSize = 1024 * 1024 * 100;
+        level = HttpLoggingInterceptor.Level.BASIC;
+        debug = true;
     }
 
     /**
@@ -115,12 +118,23 @@ public class OkHttpUtil {
         return this;
     }
 
+    /**设置log的等级*/
+    public OkHttpUtil level(HttpLoggingInterceptor.Level level){
+        this.level = level;
+        return this;
+    }
+    /**设置处于 debug */
+    public OkHttpUtil debug(boolean debug){
+        this.debug = debug;
+        return this;
+    }
+
     /**
      * 得到 OkHttpClient 对象
      */
     public OkHttpClient build() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        if (DEBUG) {
+        if (debug) {
             // Log信息拦截器
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
                 @Override
@@ -131,7 +145,7 @@ public class OkHttpUtil {
                     }
                 }
             });
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
+            loggingInterceptor.setLevel(level);
             /*要在 OkHttpClient.Builder().build(); 之前，否则日志出不来*/
             builder.addInterceptor(loggingInterceptor);
         }
