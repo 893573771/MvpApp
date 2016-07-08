@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 
 public class MainActivity extends BaseActivity {
@@ -34,10 +35,21 @@ public class MainActivity extends BaseActivity {
         tvContent = findView(R.id.tv_content);
         findView(R.id.tv_login).setOnClickListener(this);
         findView(R.id.tv_add_img).setOnClickListener(this);
-        /*使用 repeatWhen 延时6s 后，重订阅一次*/
-        Observable.range(1, 5)
-                .repeatWhen(new MyFunc1())
+        Observable.timer(2000, 2000, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new ObjectSubscriber());
+        Observable<Long> observable1 = Observable.timer(0, 1000, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Func1<Long, Long>() {
+                    @Override
+                    public Long call(Long aLong) {
+                        return aLong * 5;
+                    }
+                }).take(5);
+        /*使用 repeatWhen 延时6s 后，重订阅一次*/
+       /* Observable.range(1, 5)
+                .repeatWhen(new MyFunc1())
+                .subscribe(new ObjectSubscriber());*/
 
     }
 
@@ -58,7 +70,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private final class ObjectSubscriber extends Subscriber<Integer> {
+    private final class ObjectSubscriber extends Subscriber<Long> {
         @Override
         public void onCompleted() {
             KLog.e("执行到... onCompleted");
@@ -70,7 +82,7 @@ public class MainActivity extends BaseActivity {
         }
 
         @Override
-        public void onNext(Integer result) {
+        public void onNext(Long result) {
             KLog.e("onNext = " + result);
         }
     }
