@@ -71,7 +71,7 @@ public class LoginPresenter extends CancelablePresenter implements LoginContract
         }
 
         @Override
-        public void onFailure(int code, String message) {
+        public void onError(int code, String message) {
             view.showToast(message);
             view.dismissLoadingDialog();
         }

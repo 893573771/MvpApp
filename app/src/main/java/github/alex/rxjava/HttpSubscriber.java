@@ -2,6 +2,7 @@ package github.alex.rxjava;
 
 import android.util.Log;
 
+import github.alex.util.HttpErrorUtil;
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Subscriber;
 
@@ -23,6 +24,7 @@ public abstract class HttpSubscriber<T> extends Subscriber<T> {
         this.tag = tag;
     }
 
+    /**网络请求结束，包含成功 和  异常*/
     @Override
     public void onCompleted() {
 
@@ -30,14 +32,11 @@ public abstract class HttpSubscriber<T> extends Subscriber<T> {
 
     @Override
     public void onError(Throwable e) {
-        int code = 0;
-        Log.e(TAG, "有异常："+e.getMessage());
+        Log.e(TAG, "有异常：" + e.getMessage());
         if (e instanceof HttpException) {
-            HttpException httpException = (HttpException) e;
-            code = httpException.code();
-            onFailure(code, ErrorUtil.getErrorMessage(code));
+            onError(HttpErrorUtil.getMessage(((HttpException)e).code()));
         } else {
-            onFailure(-1000, e.getMessage());
+            onError(HttpErrorUtil.getMessage(e));
         }
     }
 
@@ -54,10 +53,9 @@ public abstract class HttpSubscriber<T> extends Subscriber<T> {
     /**
      * 网络请求失败
      *
-     * @param code    当前的状态码
      * @param message 请求失败的消息
      */
-    public abstract void onFailure(int code, String message);
+    public abstract void onError(String message);
 
     /**
      * 网络请求成功

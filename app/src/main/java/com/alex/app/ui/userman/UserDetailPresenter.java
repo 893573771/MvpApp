@@ -73,7 +73,7 @@ public class UserDetailPresenter extends CancelablePresenter implements UserDeta
         }
 
         @Override
-        public void onFailure(int code, String message) {
+        public void onError(int code, String message) {
             KLog.e(message);
             view.setFailMessage(message);
             view.dismissLoadingDialog();

@@ -31,7 +31,7 @@ public abstract class CancelablePresenter {
     }
 
     /**
-     * 取消网络请求
+     * 取消订阅事件
      */
     public void cancel(){
         if (subscription != null) {

@@ -15,7 +15,6 @@ import android.widget.TextView;
 
 import com.alex.app.R;
 import com.alex.app.ui.base.BaseActivity;
-import com.socks.library.KLog;
 
 import java.util.HashMap;
 import java.util.Iterator;
