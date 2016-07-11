@@ -2,6 +2,7 @@ package github.alex.helper;
 
 import android.content.Context;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
@@ -10,11 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.alex.app.R;
-import com.alex.app.ui.base.BaseActivity;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -22,12 +23,14 @@ import java.util.Map;
 import java.util.Set;
 
 import github.alex.annotation.Status;
+import github.alex.mvp.BaseContract;
 import github.alex.mvp.BaseHttpContract;
 
 /**
  * Created by Alex on 2016/6/20.
  */
-public class ViewHelper {
+public class ViewHelper implements BaseContract.DetachView {
+    private static final String TAG = "#ViewHelper#";
     private BaseHttpContract.View view;
     private Map<String, View> layoutMap;
 
@@ -37,13 +40,17 @@ public class ViewHelper {
     private static final String sFailLayout = "sFailLayout";
     private static final String sEmptyLayout = "sEmptyLayout";
 
-    public ViewHelper(BaseHttpContract.View view) {
+    public ViewHelper(@NonNull BaseHttpContract.View view) {
         this.view = view;
-
     }
 
-    public void initMultiModeBodyLayout(Context context, int bodyLayoutId) {
-        if (bodyLayoutId == Status.layoutResIdNo) {
+    public void initMultiModeBodyLayout(@NonNull  Context context, @IdRes int bodyLayoutId) {
+        if (bodyLayoutId == Status.LAYOUT_RES_ID_NO) {
+            Log.e(TAG, "主布局文件为空");
+            return;
+        }
+        if (context == null) {
+            Log.e(TAG, "上下文为空");
             return;
         }
         layoutMap = new HashMap<>();
@@ -62,7 +69,7 @@ public class ViewHelper {
         /*FrameLayout 第二层视图*/
 
         /**默认 布局*/
-        if (view.onGetStatusLayoutModel().defaultLayoutId != Status.layoutResIdNo) {
+        if (view.onGetStatusLayoutModel().defaultLayoutId != Status.LAYOUT_RES_ID_NO) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().defaultLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setVisibility(View.GONE);
@@ -70,7 +77,7 @@ public class ViewHelper {
         }
 
         /**loading布局*/
-        if (view.onGetStatusLayoutModel().loadingLayoutId != Status.layoutResIdNo) {
+        if (view.onGetStatusLayoutModel().loadingLayoutId != Status.LAYOUT_RES_ID_NO) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().loadingLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setVisibility(View.GONE);
@@ -78,7 +85,7 @@ public class ViewHelper {
         }
 
         /**空数据 布局*/
-        if (view.onGetStatusLayoutModel().emptyLayoutId != Status.layoutResIdNo) {
+        if (view.onGetStatusLayoutModel().emptyLayoutId != Status.LAYOUT_RES_ID_NO) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().emptyLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setOnClickListener(new MyOnClickListener(sEmptyLayout));
@@ -87,7 +94,7 @@ public class ViewHelper {
         }
 
         /**加载出错 布局*/
-        if (view.onGetStatusLayoutModel().failLayoutId != Status.layoutResIdNo) {
+        if (view.onGetStatusLayoutModel().failLayoutId != Status.LAYOUT_RES_ID_NO) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().failLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setOnClickListener(new MyOnClickListener(sFailLayout));
@@ -103,9 +110,10 @@ public class ViewHelper {
     /**
      * 展示出错消息
      */
-    public void setFailMessage(String message) {
+    public void setFailMessage(@NonNull String message) {
         TextView textView = (TextView) layoutMap.get(sFailLayout).findViewById(view.onGetStatusLayoutModel().failTextViewId);
         if ((textView == null) || TextUtils.isEmpty(message)) {
+            Log.e(TAG, "出错信息为空");
             return;
         }
         textView.setText(message);
@@ -139,28 +147,37 @@ public class ViewHelper {
         switchLayout(sEmptyLayout);
     }
 
-    /**给文本控件设置文本*/
-    public void setText(View view, String text){
-        if(view == null){
-            Log.e(getClass().getSimpleName(), "view 为空 ");
-            return ;
+    /**
+     * 给文本控件设置文本
+     */
+    public void setText(@NonNull View view, @NonNull String text) {
+        if (view == null) {
+            Log.e(TAG, "view 为空 ");
+            return;
         }
-        if(view instanceof TextView){
-            TextView textView = (TextView)view;
-            if(!TextUtils.isEmpty(text) && (!"null".equalsIgnoreCase(text))){
-                textView.setText(text);
-            }
-        }else  if(view instanceof Button){
-            Button button = (Button)view;
-            if((button!=null) && (!TextUtils.isEmpty(text)) && (!"null".equalsIgnoreCase(text))){
-                button.setText(text);
-            }
-        }else{
-            Log.e(BaseActivity.class.getSimpleName(), "view 不能被强转成 TextView  或 Button");
+        if (TextUtils.isEmpty(text)) {
+            Log.e(TAG, "文本 为空");
+            return;
+        }
+        if (view instanceof TextView) {
+            TextView textView = (TextView) view;
+            textView.setText(text);
+        } else if (view instanceof Button) {
+            Button button = (Button) view;
+            button.setText(text);
+        } else if (view instanceof EditText) {
+            EditText editText = (EditText) view;
+            editText.setText(text);
+            editText.setSelection(text.length());
+        } else {
+            Log.e(TAG, "view 不能被强转成 TextView  或 Button 或 EditText");
         }
     }
-    /**给文本控件设置文本*/
-    public void setText(@IdRes int id, String text){
+
+    /**
+     * 给文本控件设置文本
+     */
+    public void setText(@IdRes int id, @NonNull String text) {
         setText(view.findView(id), text);
     }
 
@@ -172,8 +189,8 @@ public class ViewHelper {
     }
 
     private void switchLayout(String layoutName) {
-        if(layoutMap == null){
-            return ;
+        if (layoutMap == null) {
+            return;
         }
         Set<Map.Entry<String, View>> entrySet = layoutMap.entrySet();
         for (Iterator<Map.Entry<String, View>> ir = entrySet.iterator(); ir.hasNext(); ) {
@@ -193,15 +210,16 @@ public class ViewHelper {
         }
     }
 
-    public void setOnLeftTitleViewClickListener(@IdRes int id){
+    public void setOnLeftTitleViewClickListener(@IdRes int id) {
         View view = this.view.findView(id);
-        if(view != null){
+        if (view != null) {
             view.setOnClickListener(new MyOnClickListener("左部"));
         }
     }
-    public void setOnRightTitleViewClickListener(@IdRes int id){
+
+    public void setOnRightTitleViewClickListener(@IdRes int id) {
         View view = this.view.findView(id);
-        if(view != null){
+        if (view != null) {
             view.setOnClickListener(new MyOnClickListener("右部"));
         }
     }
@@ -219,12 +237,29 @@ public class ViewHelper {
                 ViewHelper.this.view.onStatusLayoutClick(Status.FAIL);
             } else if (sEmptyLayout.equals(layoutName)) {
                 ViewHelper.this.view.onStatusLayoutClick(Status.EMPTY);
-            }else if("左部".equals(layoutName)){
+            } else if ("左部".equals(layoutName)) {
                 ViewHelper.this.view.onClickLeftTitleView(view.getId());
-            }else if("右部".equals(layoutName)){
+            } else if ("右部".equals(layoutName)) {
                 ViewHelper.this.view.onClickRightTitleView(view.getId());
             }
         }
     }
 
+    @Override
+    public void onDetachView() {
+        if (layoutMap != null) {
+            Set<Map.Entry<String, View>> entrySet = layoutMap.entrySet();
+            for (Iterator<Map.Entry<String, View>> ir = entrySet.iterator(); ir.hasNext(); ) {
+                Map.Entry<String, View> mapEntry = ir.next();
+                View view = mapEntry.getValue();
+                if (view != null) {
+                    view.destroyDrawingCache();
+                    view = null;
+                }
+            }
+            layoutMap.clear();
+            layoutMap = null;
+        }
+        view = null;
+    }
 }

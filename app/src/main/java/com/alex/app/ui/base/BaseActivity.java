@@ -2,10 +2,12 @@ package com.alex.app.ui.base;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +31,8 @@ import github.alex.helper.ToastHelper;
 import github.alex.helper.ViewHelper;
 import github.alex.model.StatusLayoutModel;
 import github.alex.mvp.BaseHttpContract;
+import rx.Subscription;
+import rx.internal.util.SubscriptionList;
 
 /**
  * mvx 模式开发的 基类
@@ -38,13 +42,18 @@ import github.alex.mvp.BaseHttpContract;
  * @blog http://www.jianshu.com/users/c3c4ea133871/latest_articles
  */
 public abstract class BaseActivity extends AppCompatActivity implements BaseHttpContract.View, View.OnClickListener {
+    private static final String TAG = "#BaseActivity#";
     protected Context context;
     private LoadingDialog loadingDialog;
     private ToastHelper toastHelper;
     private ViewHelper viewHelper;
     private SystemBarTintManager tintManager;
     private InputMethodManager inputMethodManager;
+    public Subscription subscription;
+    public SubscriptionList subscriptionList;
+
     @Override
+    @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
@@ -52,8 +61,8 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
         toastHelper = new ToastHelper();
         viewHelper = new ViewHelper(this);
         onGetIntentData();
-        if ((Status.resIdNo != getLayoutResID()) && (0 != getLayoutResID())) {
-            setContentView(getLayoutResID());
+        if ((Status.RES_ID_NO != getLayoutResId()) && (0 != getLayoutResId())) {
+            setContentView(getLayoutResId());
         }
         viewHelper.setOnLeftTitleViewClickListener(getLeftTitleViewId());
         viewHelper.setOnRightTitleViewClickListener(getRightTitleViewId());
@@ -64,10 +73,6 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
         onCreateData();
     }
 
-
-    public void main(){
-
-    }
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -78,14 +83,15 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
     /**
      * 配置 布局文件的 资源 id
      */
-    public abstract int getLayoutResID();
+    @Override
+    public abstract int getLayoutResId();
 
     /**
      * 获取 主布局视图 的 id
      */
     @Override
     public int getBodyViewId() {
-        return Status.layoutResIdNo;
+        return Status.RES_ID_NO;
     }
 
     /**
@@ -99,9 +105,9 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
      * 展示吐司
      */
     @Override
-    public void showToast(String text) {
+    public void toast(String text) {
         if ((toastHelper != null) && (context != null)) {
-            toastHelper.showToast(context, text);
+            toastHelper.toast(context, text);
         }
     }
 
@@ -164,21 +170,28 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
      */
     public void startActivity(@NonNull Class clazz) {
         if (clazz == null) {
-            Log.e(BaseActivity.class.getSimpleName(), "当前Class为空");
+            Log.e(TAG, "当前Class为空");
+            return;
+        }
+        try {
+            Activity activity = (Activity) clazz.newInstance();
+        } catch (Exception e) {
+            Log.e(TAG, clazz.getSimpleName() + " 不能转换成 Activity");
             return;
         }
         Intent intent = new Intent(this, clazz);
         startActivity(intent);
     }
 
+    @Override
     public StatusLayoutModel onGetStatusLayoutModel() {
         StatusLayoutModel statusLayoutModel = new StatusLayoutModel()
                 .setDefaultLayoutId(R.layout.alex_layout_default)
                 .setDefaultImageViewId(R.id.iv_logo)
                 .setDefaultTextViewId(R.id.tv_content)
                 .setLoadingLayoutId(R.layout.alex_layout_loading_circle_orange)
-                .setLoadingViewId(Status.resIdNo)
-                .setLoadingTextViewId(Status.resIdNo)
+                .setLoadingViewId(Status.RES_ID_NO)
+                .setLoadingTextViewId(Status.RES_ID_NO)
                 .setEmptyLayoutId(R.layout.alex_layout_empty)
                 .setEmptyImageViewId(R.id.iv_logo)
                 .setEmptyTextViewId(R.id.tv_content)
@@ -236,15 +249,13 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
     }
 
     @Override
+    @CallSuper
     protected void onStop() {
         super.onStop();
-        if (loadingDialog != null) {
-            loadingDialog.dismiss();
-            loadingDialog = null;
-        }
         if (toastHelper != null) {
-            toastHelper.dimissToast();
+            toastHelper.onDetachView();
         }
+        hiddenKeyPad();
     }
 
     /**
@@ -258,14 +269,14 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
      * 数据转换: dp---->px
      */
     public float dp2Px(float dp) {
-        return dp * context.getResources().getDisplayMetrics().density;
+        return dp * getResources().getDisplayMetrics().density;
     }
 
     /**
      * 多状态布局的 点击事件
      */
     @Override
-    public void onStatusLayoutClick(int status) {
+    public void onStatusLayoutClick(@Status int status) {
 
     }
 
@@ -305,6 +316,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
             tintManager.setStatusBarTintResource(R.color.qg_title_color_status_bar);
         }
     }
+
     /**
      * 设置状态栏的颜色值
      *
@@ -314,6 +326,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
         if (tintManager != null)
             tintManager.setStatusBarTintResource(colorId);
     }
+
     @TargetApi(19)
     private void setTranslucentStatus(boolean on) {
         Window win = getWindow();
@@ -326,28 +339,31 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
         }
         win.setAttributes(winParams);
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            return canhiddenKeyPad();
+            return canHiddenKeyPad();
         }
         return false;
     }
+
     @SuppressLint("ClickableViewAccessibility")
-    public final class ScrollOnTouchListener implements View.OnTouchListener
-    {
+    public final class ScrollOnTouchListener implements View.OnTouchListener {
         @Override
-        public boolean onTouch(View v, MotionEvent event)
-        {
+        public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                return canhiddenKeyPad();
+                return canHiddenKeyPad();
             }
             return false;
         }
 
     }
-    /**隐藏输入法*/
-    private boolean canhiddenKeyPad(){
+
+    /**
+     * 隐藏输入法
+     */
+    private boolean canHiddenKeyPad() {
         if (getCurrentFocus() != null) {
             if (getCurrentFocus().getWindowToken() != null) {
                 inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -356,4 +372,53 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
         }
         return false;
     }
+
+    /**
+     * 隐藏输入法
+     */
+    public void hiddenKeyPad() {
+        if ((inputMethodManager != null) && (getCurrentFocus() != null) && (getCurrentFocus().getWindowToken() != null)) {
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
+
+    /**
+     * 添加 Subscription
+     */
+    public void addSubscription(Subscription subscription) {
+        subscriptionList = (subscriptionList == null) ? new SubscriptionList() : subscriptionList;
+        subscriptionList.add(subscription);
+    }
+
+    /**销毁一切资源，防止内存泄漏问题*/
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+            loadingDialog = null;
+        }
+        if (viewHelper != null) {
+            viewHelper.onDetachView();
+            viewHelper = null;
+        }
+        if (toastHelper != null) {
+            toastHelper.onDetachView();
+            toastHelper = null;
+        }
+        tintManager = null;
+        hiddenKeyPad();
+        inputMethodManager = null;
+        if (subscription != null) {
+            /*防止 RxJava 出现内存泄漏问题*/
+            subscription.unsubscribe();
+            subscription = null;
+        }
+        if (subscriptionList != null) {
+            /*防止 RxJava 出现内存泄漏问题*/
+            subscriptionList.unsubscribe();
+            subscriptionList = null;
+        }
+    }
+
 }

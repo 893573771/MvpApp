@@ -14,19 +14,18 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.observables.GroupedObservable;
 
 public class MainActivity extends BaseActivity {
 
     TextView tvContent;
     private List<UserBean> userBeanList;
-    private Subscription subscription;
 
     @Override
-    public int getLayoutResID() {
+    public int getLayoutResId() {
         return R.layout.activity_main;
     }
 
@@ -35,29 +34,26 @@ public class MainActivity extends BaseActivity {
         tvContent = findView(R.id.tv_content);
         findView(R.id.tv_login).setOnClickListener(this);
         findView(R.id.tv_add_img).setOnClickListener(this);
-        Observable.timer(2000, 2000, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new ObjectSubscriber());
-        Observable<Long> observable1 = Observable.timer(0, 1000, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .map(new Func1<Long, Long>() {
+        subscription = Observable.interval(1, TimeUnit.SECONDS)
+                .groupBy(new Func1<Long, Long>() {
                     @Override
-                    public Long call(Long aLong) {
-                        return aLong * 5;
+                    public Long call(Long value) {
+                        return value % 3;
                     }
-                }).take(5);
-        /*使用 repeatWhen 延时6s 后，重订阅一次*/
-       /* Observable.range(1, 5)
-                .repeatWhen(new MyFunc1())
-                .subscribe(new ObjectSubscriber());*/
-
-    }
-
-    private final class MyFunc1 implements Func1<Observable<? extends Void>, Observable<?>> {
-        @Override
-        public Observable<?> call(Observable<? extends Void> observable) {
-            return Observable.timer(6, TimeUnit.SECONDS);
-        }
+                })
+                .subscribe(new Action1<GroupedObservable<Long, Long>>() {
+                    @Override
+                    public void call(final GroupedObservable<Long, Long> result) {
+                        Subscription subscription = result.subscribe(new Action1<Long>() {
+                                                                         @Override
+                                                                         public void call(Long value) {
+                                                                             KLog.e("key = " + result.getKey() + " value = " + value);
+                                                                         }
+                                                                     }
+                        );
+                        addSubscription(subscription);
+                    }
+                });
     }
 
     @Override
@@ -69,30 +65,5 @@ public class MainActivity extends BaseActivity {
             startActivity(UserDetailActivity.class);
         }
     }
-
-    private final class ObjectSubscriber extends Subscriber<Long> {
-        @Override
-        public void onCompleted() {
-            KLog.e("执行到... onCompleted");
-        }
-
-        @Override
-        public void onError(Throwable throwable) {
-            KLog.e("执行到... onError");
-        }
-
-        @Override
-        public void onNext(Long result) {
-            KLog.e("onNext = " + result);
-        }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (subscription != null) {
-            subscription.unsubscribe();
-            subscription = null;
-        }
-    }
+    
 }

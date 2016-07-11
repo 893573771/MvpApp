@@ -40,7 +40,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.View {
     private LoginPresenter loginPresenter;
 
     @Override
-    public int getLayoutResID() {
+    public int getLayoutResId() {
         return R.layout.activity_login;
     }
 
@@ -75,7 +75,7 @@ public class LoginActivity extends BaseActivity implements LoginContract.View {
 
     @Override
     public void onLocalValidateError(String message) {
-        showToast(message);
+        toast(message);
     }
 
 }

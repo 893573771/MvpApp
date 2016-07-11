@@ -1,15 +1,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:background="#FFFFFF"
-              android:clipChildren="false"
-              android:orientation="vertical"
-              tools:ignore="HardcodedText,ContentDescription">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:clipChildren="false"
+    android:orientation="vertical"
+    tools:ignore="HardcodedText,ContentDescription">
 
     <include
         android:id="@+id/layout_title"
-        layout="@layout/layout_title"/>
+        layout="@layout/layout_title" />
 
     <ImageView
         android:id="@+id/iv_user_man_logo"
@@ -20,7 +20,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="40dp"
         android:src="@drawable/logo_login"
-        tools:ignore="ContentDescription"/>
+        tools:ignore="ContentDescription" />
 
     <LinearLayout
         android:id="@+id/layout_center"
@@ -43,9 +43,9 @@
                 android:digits="0123456789"
                 android:drawableLeft="@drawable/ic_user_man_contact"
                 android:hint="请输入您的手机号码"
-                android:text="13146008029"
                 android:inputType="phone"
-                android:maxLength="11"/>
+                android:maxLength="11"
+                android:text="13146008029" />
 
             <ImageView
                 android:id="@+id/iv_clear"
@@ -56,14 +56,14 @@
                 android:paddingLeft="16dp"
 
                 android:paddingRight="28dp"
-                android:src="@drawable/ic_login_clear"/>
+                android:src="@drawable/ic_login_clear" />
         </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginRight="24dp"
-            android:background="@color/qg_line_1"/>
+            android:background="@color/qg_line_1" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -73,13 +73,13 @@
             <EditText
                 android:id="@+id/et_pwd"
                 style="@style/qg_input_layout_match_1"
-                android:text="123456"
                 android:layout_toLeftOf="@+id/iv_see"
                 android:digits="_0123456789abcdefghigklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 android:drawableLeft="@drawable/ic_user_man_pwd_normal"
                 android:hint="请输入您的登录密码"
                 android:inputType="textPassword"
-                android:maxLength="20"/>
+                android:maxLength="20"
+                android:text="123456" />
 
             <ImageView
                 android:id="@+id/iv_see"
@@ -90,14 +90,14 @@
                 android:clickable="true"
                 android:paddingLeft="16dp"
                 android:paddingRight="28dp"
-                android:src="@drawable/ic_user_man_see_cannot"/>
+                android:src="@drawable/ic_user_man_see_cannot" />
         </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginRight="24dp"
-            android:background="@color/qg_line_1"/>
+            android:background="@color/qg_line_1" />
     </LinearLayout>
 
     <RelativeLayout
@@ -114,8 +114,7 @@
             android:layout_centerVertical="true"
             android:layout_marginBottom="16dp"
             android:layout_marginLeft="22dp"
-            android:layout_marginTop="12dp"
-            />
+            android:layout_marginTop="12dp" />
 
         <TextView
             android:id="@+id/tv_rember"
@@ -133,7 +132,7 @@
             android:textColor="@color/qg_text_gray_33"
             android:textColorHint="@color/qg_text_gray_33"
             android:textSize="12sp"
-            tools:ignore="SmallSp"/>
+            tools:ignore="SmallSp" />
 
         <TextView
             android:id="@+id/tv_reget_login_pwd"
@@ -150,7 +149,7 @@
             android:textColor="@color/qg_text_gray_33"
             android:textColorHint="@color/qg_text_gray_33"
             android:textSize="12sp"
-            tools:ignore="SmallSp"/>
+            tools:ignore="SmallSp" />
     </RelativeLayout>
 
     <TextView
@@ -158,7 +157,7 @@
         style="@style/qg_submit_one"
         android:layout_below="@+id/layout_read"
         android:layout_marginTop="16dp"
-        android:text="登 录"/>
+        android:text="登 录" />
 
     <TextView
         android:id="@+id/tv_register"
@@ -173,6 +172,6 @@
         android:textColor="@color/qg_text_gray_33"
         android:textColorHint="@color/qg_text_gray_33"
         android:textSize="12sp"
-        tools:ignore="SmallSp"/>
+        tools:ignore="SmallSp" />
 
 </LinearLayout>

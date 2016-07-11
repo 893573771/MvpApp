@@ -1,15 +1,29 @@
 package github.alex.mvp;
 
 import android.support.annotation.IdRes;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 
 import github.alex.annotation.Status;
 
 /**
- * Created by hasee on 2016/6/28.
+ * Created by alex on 2016/6/28.
  */
 public interface BaseContract {
+    interface DetachView {
+        /**
+         * 从挂在 Activity | Fragment 之上解除，并销毁所有数据
+         */
+        void onDetachView();
+    }
+
     interface View {
+        /**
+         * 配置 布局文件的 资源 id
+         */
+        @LayoutRes
+        int getLayoutResId();
+
         /**
          * 获取bodyView的 资源id
          */
@@ -28,12 +42,11 @@ public interface BaseContract {
          *
          * @param text 吐司内容
          */
-        void showToast(@NonNull String text);
+        void toast(@NonNull String text);
 
         /**
          * 多状态布局的 点击事件
          */
-
         void onStatusLayoutClick(@Status int status);
 
         /**
@@ -46,6 +59,9 @@ public interface BaseContract {
          */
         void setText(@IdRes int id, @NonNull String text);
 
+        /**
+         * 获取标题的左部按钮，大多数情况下为 返回 按钮
+         */
         @IdRes
         int getLeftTitleViewId();
 
@@ -54,6 +70,9 @@ public interface BaseContract {
          */
         void onClickLeftTitleView(@IdRes int id);
 
+        /**
+         * 获取标题的左部按钮，大多数情况下为 更多 按钮
+         */
         @IdRes
         int getRightTitleViewId();
 

@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.TYPE, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@IntDef(value={Status.DEFAULT, Status.LOADING, Status.SUCCESS, Status.FAIL, Status.EMPTY})
+@IntDef(value = {Status.DEFAULT, Status.LOADING, Status.SUCCESS, Status.FAIL, Status.EMPTY})
 public @interface Status {
     /**
      * 默认
@@ -38,12 +38,13 @@ public @interface Status {
      * 空数据布局
      */
     public static final int EMPTY = 4;
+    
     /**
      * 布局文件不存在
      */
-    public static final int layoutResIdNo = -1;
+    public static final int LAYOUT_RES_ID_NO = -1;
     /**
-     * 布局文件不存在
+     * 控件资源id不存在
      */
-    public static final int resIdNo = -1;
+    public static final int RES_ID_NO = -1;
 }

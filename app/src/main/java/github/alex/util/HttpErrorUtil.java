@@ -1,5 +1,7 @@
 package github.alex.util;
 
+import android.util.Log;
+
 import java.net.ConnectException;
 import java.net.HttpRetryException;
 import java.net.MalformedURLException;
@@ -7,12 +9,14 @@ import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
 import java.net.ProtocolException;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.net.UnknownServiceException;
 import java.util.concurrent.TimeoutException;
 
 public class HttpErrorUtil
 {
+	public static final String TAG = "#网络请求异常#";
 	/**将状态码，转成普通话！*/
 	public static String getMessage(String  errorMessage)
 	{
@@ -28,7 +32,11 @@ public class HttpErrorUtil
 	public static String getMessage(Throwable e){
 		int code = 404;
 		String message = "网络不稳定";
+		Log.e(TAG, "有异常："+e);
 		if(e instanceof TimeoutException){
+			code = 404;
+			message = "请求超时";
+		}else if(e instanceof SocketTimeoutException){
 			code = 404;
 			message = "请求超时";
 		}else if(e instanceof ConnectException){

@@ -80,7 +80,7 @@ public abstract class BaseFragment extends Fragment implements BaseHttpContract.
     }
 
     @Override
-    public void showToast(@NonNull String text) {
+    public void toast(@NonNull String text) {
 
     }
 

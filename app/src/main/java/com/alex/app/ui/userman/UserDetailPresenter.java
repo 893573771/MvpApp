@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.alex.app.httpman.HttpMan;
 import com.alex.app.ui.App;
+import com.google.gson.Gson;
 import com.socks.library.KLog;
 
 import java.io.File;
@@ -12,11 +13,12 @@ import java.util.List;
 import java.util.Map;
 
 import github.alex.mvp.CancelablePresenter;
-import github.alex.okhttp.HeadParams;
 import github.alex.okhttp.OkHttpUtil;
+import github.alex.okhttp.RequestParams;
 import github.alex.retrofit.StringConverterFactory;
 import github.alex.rxjava.HttpSubscriber;
 import github.alex.util.DeviceUtil;
+import github.alex.util.GsonUtil;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -43,9 +45,15 @@ public class UserDetailPresenter extends CancelablePresenter implements UserDeta
             KLog.e("文件为空");
             return;
         }
-        OkHttpClient okHttpClient = OkHttpUtil.getInstance().headParams(new HeadParams().addHeader("phoneNum", "13146008029").addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp()))).build();
+        OkHttpClient okHttpClient = OkHttpUtil.getInstance()
+                .requestParams(new RequestParams()
+                        .addHeader("phoneNum", "13146008029")
+                        .addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp())))
+                .build();
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient).addConverterFactory(StringConverterFactory.create())//添加 json 转换器
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HttpMan.doMainApi)
+                .client(okHttpClient).addConverterFactory(StringConverterFactory.create())//添加 json 转换器
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
                 .build();
         HttpMan httpMan = retrofit.create(HttpMan.class);
@@ -61,7 +69,10 @@ public class UserDetailPresenter extends CancelablePresenter implements UserDeta
 
         paramsMap.put("phone", phoneBody);
         paramsMap.put("pwd", pwdBody);
-        subscription = httpMan.upLoad2(paramsMap).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
+        subscription = httpMan.upLoad2(paramsMap)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new MyHttpSubscriber());
 
     }
 
@@ -81,10 +92,9 @@ public class UserDetailPresenter extends CancelablePresenter implements UserDeta
 
         @Override
         public void onSuccess(String result) {
-            KLog.e(result);
-
+            Gson gson = GsonUtil.gson();
             view.dismissLoadingDialog();
-            view.showToast("上传成功");
+            view.toast("上传成功");
         }
     }
 

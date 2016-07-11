@@ -20,4 +20,12 @@ public class LoginBean {
 
         return new Gson().fromJson(str, LoginBean.class);
     }
+
+    @Override
+    public String toString() {
+        return "LoginBean{" +
+                "pwd='" + pwd + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

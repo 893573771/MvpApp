@@ -8,7 +8,7 @@ import com.alex.app.ui.base.BaseActivity;
  */
 public class IndexActivity extends BaseActivity {
     @Override
-    public int getLayoutResID() {
+    public int getLayoutResId() {
         return R.layout.activity_index;
     }
 

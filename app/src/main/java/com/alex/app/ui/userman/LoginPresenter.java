@@ -5,17 +5,19 @@ import android.support.annotation.NonNull;
 import com.alex.app.config.AppConst;
 import com.alex.app.httpman.HttpMan;
 import com.alex.app.model.UserBean;
+import com.alex.app.model.qianguan.LoginBean;
 import com.alex.app.ui.App;
 import com.socks.library.KLog;
 
 import java.util.HashMap;
 
 import github.alex.mvp.CancelablePresenter;
-import github.alex.okhttp.HeadParams;
 import github.alex.okhttp.OkHttpUtil;
+import github.alex.okhttp.RequestParams;
 import github.alex.retrofit.StringConverterFactory;
 import github.alex.rxjava.HttpSubscriber;
 import github.alex.util.DeviceUtil;
+import github.alex.util.GsonUtil;
 import github.alex.util.StringUtil;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
@@ -48,7 +50,7 @@ public class LoginPresenter extends CancelablePresenter implements LoginContract
 
     @Override
     public void login(@NonNull String phone, @NonNull String pwd) {
-        OkHttpClient okHttpClient = OkHttpUtil.getInstance().headParams(new HeadParams().addHeader("phoneNum", phone).addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp()))).build();
+        OkHttpClient okHttpClient = OkHttpUtil.getInstance().requestParams(new RequestParams().addHeader("phoneNum", phone).addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp()))).build();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient)
                 .addConverterFactory(StringConverterFactory.create())//添加 json 转换器
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
@@ -72,14 +74,16 @@ public class LoginPresenter extends CancelablePresenter implements LoginContract
 
         @Override
         public void onError(String message) {
-            view.showToast(message);
+            view.toast(message);
             view.dismissLoadingDialog();
         }
 
         @Override
         public void onSuccess(String result) {
-            KLog.e(result);
-            view.showToast("登录成功");
+            LoginBean bean = GsonUtil.gson().fromJson(result, LoginBean.class);
+            KLog.e(bean);
+
+            view.toast("登录成功");
             view.dismissLoadingDialog();
         }
     }

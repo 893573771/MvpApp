@@ -39,7 +39,7 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
     }
 
     @Override
-    public int getLayoutResID() {
+    public int getLayoutResId() {
         return R.layout.activity_user_detail;
     }
 
@@ -115,7 +115,7 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
          */
         @Override
         public void onFailure(int requestCode, String message) {
-            showToast(message);
+            toast(message);
         }
     }
 

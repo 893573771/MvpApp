@@ -24,7 +24,7 @@ public class OkHttpUtil {
     private static final String TAG = "#日志拦截器#";
     private boolean debug = true;
     private HttpLoggingInterceptor.Logger logInterceptor;
-    private HeadParams headParams;
+    private RequestParams requestParams;
     private long connectTimeout;
     private long readTimeout;
     private long writeTimeout;
@@ -65,8 +65,8 @@ public class OkHttpUtil {
     /**
      * 设置请求头
      */
-    public OkHttpUtil headParams(HeadParams headParams) {
-        this.headParams = headParams;
+    public OkHttpUtil requestParams(RequestParams requestParams) {
+        this.requestParams = requestParams;
         return this;
     }
 
@@ -118,13 +118,18 @@ public class OkHttpUtil {
         return this;
     }
 
-    /**设置log的等级*/
-    public OkHttpUtil level(HttpLoggingInterceptor.Level level){
+    /**
+     * 设置log的等级
+     */
+    public OkHttpUtil level(HttpLoggingInterceptor.Level level) {
         this.level = level;
         return this;
     }
-    /**设置处于 debug */
-    public OkHttpUtil debug(boolean debug){
+
+    /**
+     * 设置处于 debug
+     */
+    public OkHttpUtil debug(boolean debug) {
         this.debug = debug;
         return this;
     }
@@ -149,8 +154,8 @@ public class OkHttpUtil {
             /*要在 OkHttpClient.Builder().build(); 之前，否则日志出不来*/
             builder.addInterceptor(loggingInterceptor);
         }
-        if (headParams != null) {
-            builder.addInterceptor(new HeadInterceptor(headParams));
+        if (requestParams != null) {
+            builder.addInterceptor(new HeadInterceptor(requestParams));
         }
         if (cacheDir != null) {
             if (cacheMaxSize < 0) {
@@ -176,9 +181,9 @@ public class OkHttpUtil {
 
 
     final class HeadInterceptor implements Interceptor {
-        private HeadParams headParams;
+        private RequestParams headParams;
 
-        public HeadInterceptor(HeadParams headParams) {
+        public HeadInterceptor(RequestParams headParams) {
             this.headParams = headParams;
         }
 

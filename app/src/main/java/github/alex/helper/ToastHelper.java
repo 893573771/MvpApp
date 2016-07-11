@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import github.alex.mvp.BaseContract;
+
 /**
  * mvx 模式开发的 接口
  *
@@ -16,7 +18,7 @@ import android.widget.Toast;
  * @version 1.1
  * @blog http://www.jianshu.com/users/c3c4ea133871/latest_articles
  */
-public class ToastHelper {
+public class ToastHelper implements BaseContract.DetachView{
     private Toast toast;
     private TextView toastTextView;
     /**
@@ -24,7 +26,7 @@ public class ToastHelper {
      *
      * @param text 吐司内容
      */
-    public void showToast(Context context, String text) {
+    public void toast(Context context, String text) {
         if(context == null){
             return ;
         }
@@ -54,15 +56,7 @@ public class ToastHelper {
         toast.setView(toastTextView);
         toast.show();
     }
-    public void dimissToast(){
-        if (toast != null) {
-            toast.cancel();
-            toast = null;
-        }
-        if (toastTextView != null) {
-            toastTextView = null;
-        }
-    }
+
     /**
      * 数据转换: dp---->px
      */
@@ -70,4 +64,15 @@ public class ToastHelper {
         return dp * context.getResources().getDisplayMetrics().density;
     }
 
+    @Override
+    public void onDetachView() {
+        if(toastTextView !=null){
+            toastTextView.destroyDrawingCache();
+            toastTextView = null;
+        }
+        if(toast !=null){
+            toast.cancel();
+            toast = null;
+        }
+    }
 }

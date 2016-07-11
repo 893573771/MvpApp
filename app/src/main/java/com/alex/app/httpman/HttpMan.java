@@ -3,6 +3,8 @@ package com.alex.app.httpman;
 
 import com.alex.app.model.UserBean;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +27,7 @@ import rx.Observable;
  * Created by Alex on 2016/6/19.
  */
 public interface HttpMan {
-    public static final String doMainApi = "http://172.27.23.4:8080/AlexApp/";
+    public static final String doMainApi = "http://172.27.23.3:8080/AlexApp/";
     //public static final String doMainApi = "http://192.168.4.39:8080/AlexApp/";
     @GET("login/{phone}-{pwd}")
     Observable<String> loginQg(@Path("phone") String phone, @Path("pwd") String pwd);
@@ -53,6 +55,11 @@ public interface HttpMan {
     @Multipart
     @POST("upload")
     Observable<String> upLoad2(@PartMap Map<String, RequestBody> params);
+
+    @FormUrlEncoded
+    @POST("login")
+    Observable<JSONObject> postJson(@Field("userInfo") String content);
+
 
     @Multipart
     @POST("upload")
