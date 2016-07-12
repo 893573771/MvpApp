@@ -2,7 +2,7 @@ package com.alex.app.ui.userman;
 
 import android.support.annotation.NonNull;
 
-import com.alex.app.config.AppConst;
+import com.alex.app.config.AppCon;
 import com.alex.app.httpman.HttpMan;
 import com.alex.app.model.UserBean;
 import com.alex.app.model.qianguan.LoginBean;
@@ -29,24 +29,27 @@ import rx.schedulers.Schedulers;
 /**
  * Created by alex on 2016/6/21.
  */
-public class LoginPresenter extends CancelablePresenter implements LoginContract.Presenter {
-    private LoginContract.View view;
+public class LoginPresenter extends CancelablePresenter<LoginContract.View> implements LoginContract.Presenter {
 
-    public LoginPresenter(@NonNull LoginContract.View view) {
-        this.view = view;
+    public LoginPresenter(LoginContract.View view) {
+        super(view);
     }
 
     @Override
     public void localValidateLoginInfo(String phone, String pwd) {
         if (!StringUtil.isPhoneNum(phone)) {
-            view.onLocalValidateError(AppConst.userManPhone);
+            view.onLocalValidateError(AppCon.userManPhone);
             return;
         }
-        if (!StringUtil.isLengthOK(pwd, AppConst.loginPwdMinLength, AppConst.loginPwdMaxLength)) {
-            view.onLocalValidateError(AppConst.userLoginPwd);
+        if (!StringUtil.isLengthOK(pwd, AppCon.loginPwdMinLength, AppCon.loginPwdMaxLength)) {
+            view.onLocalValidateError(AppCon.userLoginPwd);
             return;
         }
-        login(phone, pwd);
+        if(view.isNetworkAvailable()){
+            login(phone, pwd);
+        }else{
+            view.toast(AppCon.netNo);
+        }
     }
 
     @Override

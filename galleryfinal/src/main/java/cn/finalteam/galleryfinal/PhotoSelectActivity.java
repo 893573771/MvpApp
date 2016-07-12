@@ -23,7 +23,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -127,9 +126,6 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Log.e(getClass().getSimpleName(), "啊历史的垃圾速度垃圾啊了圣诞节啦速度快 " );
-
         if ( GalleryFinal.getFunctionConfig() == null || GalleryFinal.getGalleryTheme() == null) {
             resultFailureDelayed(getString(R.string.please_reopen_gf), true);
         } else {

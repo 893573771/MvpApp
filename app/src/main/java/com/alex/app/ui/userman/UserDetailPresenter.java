@@ -2,6 +2,7 @@ package com.alex.app.ui.userman;
 
 import android.support.annotation.NonNull;
 
+import com.alex.app.config.AppCon;
 import com.alex.app.httpman.HttpMan;
 import com.alex.app.App;
 import com.google.gson.Gson;
@@ -31,15 +32,18 @@ import rx.schedulers.Schedulers;
 /**
  * Created by alex on 2016/6/21.
  */
-public class UserDetailPresenter extends CancelablePresenter implements UserDetailContract.Presenter {
-    private UserDetailContract.View view;
+public class UserDetailPresenter extends CancelablePresenter<UserDetailContract.View> implements UserDetailContract.Presenter {
 
     public UserDetailPresenter(@NonNull UserDetailContract.View view) {
-        this.view = view;
+        super(view);
     }
 
     @Override
     public void upLoadFile(List<File> fileList, String phone, String pwd) {
+        if(!view.isNetworkAvailable()){
+            view.toast(AppCon.netNo);
+            return ;
+        }
         if ((fileList == null) || (fileList.size() <= 0)) {
             KLog.e("文件为空");
             return;

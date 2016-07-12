@@ -23,13 +23,12 @@ import java.util.Map;
 import java.util.Set;
 
 import github.alex.annotation.Status;
-import github.alex.mvp.BaseContract;
 import github.alex.mvp.BaseHttpContract;
 
 /**
  * Created by Alex on 2016/6/20.
  */
-public class ViewHelper implements BaseContract.DetachView {
+public class ViewHelper {
     private static final String TAG = "#ViewHelper#";
     private BaseHttpContract.View view;
     private Map<String, View> layoutMap;
@@ -245,7 +244,6 @@ public class ViewHelper implements BaseContract.DetachView {
         }
     }
 
-    @Override
     public void onDetachView() {
         if (layoutMap != null) {
             Set<Map.Entry<String, View>> entrySet = layoutMap.entrySet();

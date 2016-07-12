@@ -4,7 +4,7 @@ package com.alex.app.config;
  * App的常量信息
  * Created by Alex on 2016/6/23.
  */
-public class AppConst {
+public class AppCon {
 
     /**登录密码的 最小长度*/
     public static final int loginPwdMinLength = 6;
@@ -36,7 +36,6 @@ public class AppConst {
     public static final String cashPwd = "请输入6位数字交易密码";
     public static final String cashPwdOld = "请输入6位原始数字交易密码";
     public static final String cashPwdNew = "请输入新的6位数字交易密码";
-    public static final String protocal = "请同意服务条款";
-
-
+    public static final String protocol = "请同意服务条款";
+    public static final String netNo = "没有网络";
 }

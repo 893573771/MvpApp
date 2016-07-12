@@ -3,6 +3,10 @@ package github.alex.model;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 
+import com.alex.app.R;
+
+import github.alex.annotation.Status;
+
 /**
  * Created by Alex on 2016/6/21.
  */
@@ -44,64 +48,91 @@ public class StatusLayoutModel {
     /**空数据视图的  文本控件 资源 id*/
     public int emptyTextViewId;
 
+    public static StatusLayoutModel instance;
 
-    public StatusLayoutModel setDefaultLayoutId(int defaultLayoutId){
+    public StatusLayoutModel setDefaultLayoutId(int defaultLayoutId) {
         this.defaultLayoutId = defaultLayoutId;
         return this;
     }
 
-    public StatusLayoutModel setDefaultImageViewId(int defaultImageViewId){
+    public StatusLayoutModel setDefaultImageViewId(int defaultImageViewId) {
         this.defaultImageViewId = defaultImageViewId;
         return this;
     }
 
-    public StatusLayoutModel setDefaultTextViewId(int defaultTextViewId){
+    public StatusLayoutModel setDefaultTextViewId(int defaultTextViewId) {
         this.defaultTextViewId = defaultTextViewId;
         return this;
     }
-    public StatusLayoutModel setLoadingLayoutId(int loadingLayoutId){
+
+    public StatusLayoutModel setLoadingLayoutId(int loadingLayoutId) {
         this.loadingLayoutId = loadingLayoutId;
         return this;
     }
 
-    public StatusLayoutModel setLoadingViewId(int loadingViewId){
+    public StatusLayoutModel setLoadingViewId(int loadingViewId) {
         this.loadingViewId = loadingViewId;
         return this;
     }
 
-    public StatusLayoutModel setLoadingTextViewId(int loadingTextViewId){
+    public StatusLayoutModel setLoadingTextViewId(int loadingTextViewId) {
         this.loadingTextViewId = loadingTextViewId;
         return this;
     }
 
-    public StatusLayoutModel setFailLayoutId(int failLayoutId){
-        this.failLayoutId  =failLayoutId;
+    public StatusLayoutModel setFailLayoutId(int failLayoutId) {
+        this.failLayoutId = failLayoutId;
         return this;
     }
 
-    public StatusLayoutModel setFailImageViewId(int failImageViewId){
+    public StatusLayoutModel setFailImageViewId(int failImageViewId) {
         this.failImageViewId = failImageViewId;
         return this;
     }
 
-    public StatusLayoutModel setFailTextViewId(int failTextViewId){
+    public StatusLayoutModel setFailTextViewId(int failTextViewId) {
         this.failTextViewId = failTextViewId;
         return this;
     }
 
-    public StatusLayoutModel setEmptyLayoutId(int emptyLayoutId){
+    public StatusLayoutModel setEmptyLayoutId(int emptyLayoutId) {
         this.emptyLayoutId = emptyLayoutId;
         return this;
     }
 
-    public StatusLayoutModel setEmptyImageViewId(int emptyImageViewId){
+    public StatusLayoutModel setEmptyImageViewId(int emptyImageViewId) {
         this.emptyImageViewId = emptyImageViewId;
         return this;
     }
 
-    public StatusLayoutModel setEmptyTextViewId(int emptyTextViewId){
+    public StatusLayoutModel setEmptyTextViewId(int emptyTextViewId) {
         this.emptyTextViewId = emptyTextViewId;
         return this;
+    }
+
+    /**
+     * 获取一个默认的多状态布局的模型
+     */
+    public static StatusLayoutModel defaultModel() {
+
+        if (instance == null) {
+            synchronized (StatusLayoutModel.class) {
+                instance = (instance == null) ? new StatusLayoutModel() : instance;
+            }
+        }
+        instance.setDefaultLayoutId(R.layout.alex_layout_default)
+                .setDefaultImageViewId(R.id.iv_logo)
+                .setDefaultTextViewId(R.id.tv_content)
+                .setLoadingLayoutId(R.layout.alex_layout_loading_circle_orange)
+                .setLoadingViewId(Status.RES_ID_NO)
+                .setLoadingTextViewId(Status.RES_ID_NO)
+                .setEmptyLayoutId(R.layout.alex_layout_empty)
+                .setEmptyImageViewId(R.id.iv_logo)
+                .setEmptyTextViewId(R.id.tv_content)
+                .setFailLayoutId(R.layout.alex_layout_fail)
+                .setFailImageViewId(R.id.iv_logo)
+                .setFailTextViewId(R.id.tv_content);
+        return instance;
     }
 
 }

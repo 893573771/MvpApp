@@ -26,7 +26,6 @@ import github.alex.util.FinalUtil;
  */
 public class UserDetailActivity extends BaseActivity<UserDetailPresenter> implements UserDetailContract.View {
     private final int requestCodeGallery = 1001;
-    private UserDetailPresenter presenter;
     /**
      * 文件 路径
      */
@@ -127,13 +126,4 @@ public class UserDetailActivity extends BaseActivity<UserDetailPresenter> implem
         }
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (presenter != null) {
-            presenter.detachView();
-            presenter = null;
-        }
-    }
 }

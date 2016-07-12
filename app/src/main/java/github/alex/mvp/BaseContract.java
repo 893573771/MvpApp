@@ -10,13 +10,6 @@ import github.alex.annotation.Status;
  * Created by alex on 2016/6/28.
  */
 public interface BaseContract {
-    interface DetachView {
-        /**
-         * 从挂在 Activity | Fragment 之上解除，并销毁所有数据
-         */
-        void onDetachView();
-    }
-
     interface View {
         /**
          * 配置 布局文件的 资源 id
@@ -88,6 +81,7 @@ public interface BaseContract {
     }
 
     interface Presenter {
+
 
     }
 

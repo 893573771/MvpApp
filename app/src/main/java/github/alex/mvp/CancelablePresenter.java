@@ -1,16 +1,19 @@
 package github.alex.mvp;
 
+import android.support.annotation.NonNull;
+
 import rx.Subscription;
 import rx.internal.util.SubscriptionList;
 
 /**
  * Created by alex on 2016/7/7.
  */
-public class CancelablePresenter {
-
+public class CancelablePresenter<V extends BaseContract.View> {
+    protected V view;
     private SubscriptionList subscriptionList;
 
-    public CancelablePresenter() {
+    public CancelablePresenter(@NonNull V view) {
+        this.view = view;
         subscriptionList = new SubscriptionList();
     }
 
@@ -25,11 +28,11 @@ public class CancelablePresenter {
     /**
      * 取消订阅事件， 防止内存泄漏
      */
-    public void detachView(){
+    public void detachView() {
         if (subscriptionList != null) {
             subscriptionList.unsubscribe();
             subscriptionList = null;
         }
+        view = null;
     }
-
 }

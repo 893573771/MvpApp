@@ -37,8 +37,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     @BindView(R.id.mcb)
     MaterialCheckBox materialCheckBox;
 
-    private LoginPresenter loginPresenter;
-
     @Override
     protected LoginPresenter createPresenter() {
         return new LoginPresenter(this);
@@ -58,7 +56,6 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     public void onCreateData() {
         super.onCreateData();
         ButterKnife.bind(this);
-        loginPresenter = new LoginPresenter(this);
         setText(R.id.tv_title, "登录");
         materialCheckBox.setBackgroundColor(Color.parseColor("#F5F5F5"));
         materialCheckBox.setDoneShapeColor(Color.parseColor("#FF5722"));
@@ -74,7 +71,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     @Override
     public void onClick(View v) {
         if (R.id.tv_login == v.getId()) {
-            loginPresenter.localValidateLoginInfo(etPhone.getText().toString(), etPwd.getText().toString());
+            presenter.localValidateLoginInfo(etPhone.getText().toString(), etPwd.getText().toString());
         }
     }
 

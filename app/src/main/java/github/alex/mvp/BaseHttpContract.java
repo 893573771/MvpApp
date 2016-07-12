@@ -62,7 +62,7 @@ public interface BaseHttpContract {
         /**
          * 获取当前网络是否可用
          */
-        boolean getNetworkIsAvailability();
+        boolean isNetworkAvailable();
 
     }
 

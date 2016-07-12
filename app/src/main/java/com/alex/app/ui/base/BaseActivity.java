@@ -2,7 +2,6 @@ package com.alex.app.ui.base;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -11,13 +10,11 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 
 import com.alex.app.R;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
@@ -31,6 +28,8 @@ import github.alex.helper.ViewHelper;
 import github.alex.model.StatusLayoutModel;
 import github.alex.mvp.BaseHttpContract;
 import github.alex.mvp.CancelablePresenter;
+import github.alex.util.ClassUtil;
+import github.alex.util.KeyPadUtil;
 import github.alex.util.NetUtil;
 import rx.Subscription;
 import rx.internal.util.SubscriptionList;
@@ -46,15 +45,13 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     private static final String TAG = "#BaseActivity#";
     protected Context context;
     /**
-     * Presenter 的基类
+     * Pre 的基类
      */
-    protected CancelablePresenter cancelablePresenter;
+    protected P presenter;
     private LoadingDialog loadingDialog;
     private ToastHelper toastHelper;
     private ViewHelper viewHelper;
     private SystemBarTintManager tintManager;
-    private InputMethodManager inputMethodManager;
-
     private SubscriptionList subscriptionList;
     /**
      * 上次点击的时间
@@ -66,8 +63,7 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
-        cancelablePresenter = createPresenter();
-        inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        presenter = createPresenter();
         toastHelper = new ToastHelper();
         viewHelper = new ViewHelper(this);
         onGetIntentData();
@@ -190,36 +186,12 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      * 页面跳转
      */
     public void startActivity(@NonNull Class clazz) {
-        if (clazz == null) {
-            Log.e(TAG, "当前Class为空");
-            return;
-        }
-        try {
-            Activity activity = (Activity) clazz.newInstance();
-        } catch (Exception e) {
-            Log.e(TAG, clazz.getSimpleName() + " 不能转换成 Activity");
-            return;
-        }
-        Intent intent = new Intent(this, clazz);
-        startActivity(intent);
+        ClassUtil.startActivity(this, clazz);
     }
 
     @Override
     public StatusLayoutModel onGetStatusLayoutModel() {
-        StatusLayoutModel statusLayoutModel = new StatusLayoutModel()
-                .setDefaultLayoutId(R.layout.alex_layout_default)
-                .setDefaultImageViewId(R.id.iv_logo)
-                .setDefaultTextViewId(R.id.tv_content)
-                .setLoadingLayoutId(R.layout.alex_layout_loading_circle_orange)
-                .setLoadingViewId(Status.RES_ID_NO)
-                .setLoadingTextViewId(Status.RES_ID_NO)
-                .setEmptyLayoutId(R.layout.alex_layout_empty)
-                .setEmptyImageViewId(R.id.iv_logo)
-                .setEmptyTextViewId(R.id.tv_content)
-                .setFailLayoutId(R.layout.alex_layout_fail)
-                .setFailImageViewId(R.id.iv_logo)
-                .setFailTextViewId(R.id.tv_content);
-        return statusLayoutModel;
+        return StatusLayoutModel.defaultModel();
     }
 
     @Override
@@ -276,7 +248,7 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
         if (toastHelper != null) {
             toastHelper.onDetachView();
         }
-        hiddenKeyPad();
+        KeyPadUtil.closeKeyPad(this);
     }
 
     /**
@@ -344,7 +316,7 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      * @param colorId 颜色id
      */
     public void setStatusBarTintResource(int colorId) {
-        if (tintManager != null){
+        if (tintManager != null) {
             tintManager.setStatusBarTintResource(colorId);
         }
     }
@@ -365,7 +337,7 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            return canHiddenKeyPad();
+            return KeyPadUtil.canHiddenKeyPad(BaseActivity.this);
         }
         return false;
     }
@@ -375,33 +347,11 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                return canHiddenKeyPad();
+                return KeyPadUtil.canHiddenKeyPad(BaseActivity.this);
             }
             return false;
         }
 
-    }
-
-    /**
-     * 隐藏输入法
-     */
-    private boolean canHiddenKeyPad() {
-        if (getCurrentFocus() != null) {
-            if (getCurrentFocus().getWindowToken() != null) {
-                inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 隐藏输入法
-     */
-    public void hiddenKeyPad() {
-        if ((inputMethodManager != null) && (getCurrentFocus() != null) && (getCurrentFocus().getWindowToken() != null)) {
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        }
     }
 
     /**
@@ -416,7 +366,7 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      * 获取当前网络是否可用
      */
     @Override
-    public boolean getNetworkIsAvailability() {
+    public boolean isNetworkAvailable() {
         return NetUtil.isAvailable(this);
     }
 
@@ -439,17 +389,16 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
             toastHelper = null;
         }
         tintManager = null;
-        hiddenKeyPad();
-        inputMethodManager = null;
-
+        KeyPadUtil.closeKeyPad(this);
         if (subscriptionList != null) {
             /*防止 RxJava 出现内存泄漏问题*/
             subscriptionList.unsubscribe();
             subscriptionList = null;
         }
-        if (cancelablePresenter != null) {
-            cancelablePresenter.detachView();
+        if (presenter != null) {
+            presenter.detachView();
         }
+        presenter = null;
     }
 
 }
