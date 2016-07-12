@@ -16,7 +16,10 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
-
+/**设备相关工具类
+ * @author Alex
+ * @time 2016-0712-1857
+ */
 public class DeviceUtil {
     /**
      * 获取手机DEVICE_ID | IMEI参数

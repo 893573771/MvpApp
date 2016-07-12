@@ -24,7 +24,7 @@ import github.alex.util.FinalUtil;
 /**
  * Created by alex on 2016/6/29.
  */
-public class UserDetailActivity extends BaseActivity implements UserDetailContract.View {
+public class UserDetailActivity extends BaseActivity<UserDetailPresenter> implements UserDetailContract.View {
     private final int requestCodeGallery = 1001;
     private UserDetailPresenter presenter;
     /**
@@ -36,6 +36,14 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
     @Override
     public int getBodyViewId() {
         return R.id.sv;
+    }
+
+    /**
+     * 创建 Presenter
+     */
+    @Override
+    protected UserDetailPresenter createPresenter() {
+        return new UserDetailPresenter(this);
     }
 
     @Override
@@ -124,7 +132,7 @@ public class UserDetailActivity extends BaseActivity implements UserDetailContra
     protected void onDestroy() {
         super.onDestroy();
         if (presenter != null) {
-            presenter.cancel();
+            presenter.detachView();
             presenter = null;
         }
     }

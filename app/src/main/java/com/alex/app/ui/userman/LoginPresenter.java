@@ -6,7 +6,7 @@ import com.alex.app.config.AppConst;
 import com.alex.app.httpman.HttpMan;
 import com.alex.app.model.UserBean;
 import com.alex.app.model.qianguan.LoginBean;
-import com.alex.app.ui.App;
+import com.alex.app.App;
 import com.socks.library.KLog;
 
 import java.util.HashMap;
@@ -15,13 +15,14 @@ import github.alex.mvp.CancelablePresenter;
 import github.alex.okhttp.OkHttpUtil;
 import github.alex.okhttp.RequestParams;
 import github.alex.retrofit.StringConverterFactory;
-import github.alex.rxjava.HttpSubscriber;
+import github.alex.rxjava.StringSubscriber;
 import github.alex.util.DeviceUtil;
 import github.alex.util.GsonUtil;
 import github.alex.util.StringUtil;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -50,7 +51,11 @@ public class LoginPresenter extends CancelablePresenter implements LoginContract
 
     @Override
     public void login(@NonNull String phone, @NonNull String pwd) {
-        OkHttpClient okHttpClient = OkHttpUtil.getInstance().requestParams(new RequestParams().addHeader("phoneNum", phone).addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp()))).build();
+        OkHttpClient okHttpClient = OkHttpUtil.getInstance()
+                .requestParams(new RequestParams()
+                        .addHeader("phoneNum", phone)
+                        .addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp())))
+                .build();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient)
                 .addConverterFactory(StringConverterFactory.create())//添加 json 转换器
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
@@ -63,21 +68,38 @@ public class LoginPresenter extends CancelablePresenter implements LoginContract
         map.put("phone", phone);
         map.put("pwd", pwd);
 
-        subscription = httpMan.loginPost3(phone,pwd).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new MyHttpSubscriber());
+        Subscription subscription = httpMan.loginPost3(phone, pwd)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new MyHttpSubscriber());
+        addSubscription(subscription);
     }
 
-    private final class MyHttpSubscriber extends HttpSubscriber<String> {
+    private final class MyHttpSubscriber extends StringSubscriber {
+        /**
+         * 开始网络请求
+         */
         @Override
         public void onStart() {
             view.showLoadingDialog();
         }
 
+        /**
+         * 网络请求失败
+         *
+         * @param message 请求失败的消息
+         */
         @Override
         public void onError(String message) {
             view.toast(message);
             view.dismissLoadingDialog();
         }
 
+        /**
+         * 网络请求成功
+         *
+         * @param result 网络请求的结果
+         */
         @Override
         public void onSuccess(String result) {
             LoginBean bean = GsonUtil.gson().fromJson(result, LoginBean.class);
@@ -86,5 +108,6 @@ public class LoginPresenter extends CancelablePresenter implements LoginContract
             view.toast("登录成功");
             view.dismissLoadingDialog();
         }
+
     }
 }

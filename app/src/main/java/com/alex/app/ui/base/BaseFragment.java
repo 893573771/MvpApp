@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 
 import github.alex.annotation.Status;
-import github.alex.callback.OnHttpCallback;
 import github.alex.model.StatusLayoutModel;
 import github.alex.mvp.BaseHttpContract;
 
@@ -14,10 +13,7 @@ import github.alex.mvp.BaseHttpContract;
  * Created by Alex on 2016/6/29.
  */
 public abstract class BaseFragment extends Fragment implements BaseHttpContract.View{
-    @Override
-    public void onHttpRequest(OnHttpCallback onHttpCallback) {
 
-    }
 
     @Override
     public void onInitLoadingDialog() {

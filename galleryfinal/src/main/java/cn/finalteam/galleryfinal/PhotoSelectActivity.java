@@ -17,11 +17,13 @@
 package cn.finalteam.galleryfinal;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -57,30 +59,30 @@ import cn.finalteam.toolsfinal.io.FilenameUtils;
  */
 public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnClickListener, AdapterView.OnItemClickListener{
 
-    private final int HANLDER_TAKE_PHOTO_EVENT = 1000;
+    private final int HANDLER_TAKE_PHOTO_EVENT = 1000;
     private final int HANDLER_REFRESH_LIST_EVENT = 1002;
 
-    private GridView mGvPhotoList;
-    private ListView mLvFolderList;
-    private LinearLayout mLlFolderPanel;
-    private ImageView mIvTakePhoto;
-    private ImageView mIvBack;
-    private ImageView mIvClear;
-    private ImageView mIvPreView;
-    private TextView mTvChooseCount;
-    private TextView mTvSubTitle;
-    private LinearLayout mLlTitle;
-    private FloatingActionButton mFabOk;
-    private TextView mTvEmptyView;
-    private RelativeLayout mTitlebar;
-    private TextView mTvTitle;
-    private ImageView mIvFolderArrow;
+    private GridView gvPhotoList;
+    private ListView lvFolderList;
+    private LinearLayout layoutFolderPanel;
+    private ImageView ivTakePhoto;
+    private ImageView ivBack;
+    private ImageView ivClear;
+    private ImageView ivPreView;
+    private TextView tvChooseCount;
+    private TextView tvSubTitle;
+    private LinearLayout layoutTitle;
+    private FloatingActionButton floatingActionButton;
+    private TextView tvEmptyView;
+    private RelativeLayout layoutTitlebar;
+    private TextView tvTitle;
+    private ImageView ivFolderArrow;
 
-    private List<PhotoFolderInfo> mAllPhotoFolderList;
-    private FolderListAdapter mFolderListAdapter;
+    private List<PhotoFolderInfo> allPhotoFolderList;
+    private FolderListAdapter folderListAdapter;
 
-    private List<PhotoInfo> mCurPhotoList;
-    private PhotoListAdapter mPhotoListAdapter;
+    private List<PhotoInfo> curPhotoList;
+    private PhotoListAdapter photoListAdapter;
 
     //是否需要刷新相册
     private boolean mHasRefreshGallery = false;
@@ -102,22 +104,22 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if ( msg.what == HANLDER_TAKE_PHOTO_EVENT ) {
+            if ( msg.what == HANDLER_TAKE_PHOTO_EVENT) {
                 PhotoInfo photoInfo = (PhotoInfo) msg.obj;
                 takeRefreshGallery(photoInfo);
                 refreshSelectCount();
             } else if ( msg.what == HANDLER_REFRESH_LIST_EVENT ){
                 refreshSelectCount();
-                mPhotoListAdapter.notifyDataSetChanged();
-                mFolderListAdapter.notifyDataSetChanged();
-                if (mAllPhotoFolderList.get(0).getPhotoList() == null ||
-                        mAllPhotoFolderList.get(0).getPhotoList().size() == 0) {
-                    mTvEmptyView.setText(R.string.no_photo);
+                photoListAdapter.notifyDataSetChanged();
+                folderListAdapter.notifyDataSetChanged();
+                if (allPhotoFolderList.get(0).getPhotoList() == null ||
+                        allPhotoFolderList.get(0).getPhotoList().size() == 0) {
+                    tvEmptyView.setText(R.string.no_photo);
                 }
 
-                mGvPhotoList.setEnabled(true);
-                mLlTitle.setEnabled(true);
-                mIvTakePhoto.setEnabled(true);
+                gvPhotoList.setEnabled(true);
+                layoutTitle.setEnabled(true);
+                ivTakePhoto.setEnabled(true);
             }
         }
     };
@@ -125,6 +127,8 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.e(getClass().getSimpleName(), "啊历史的垃圾速度垃圾啊了圣诞节啦速度快 " );
 
         if ( GalleryFinal.getFunctionConfig() == null || GalleryFinal.getGalleryTheme() == null) {
             resultFailureDelayed(getString(R.string.please_reopen_gf), true);
@@ -135,101 +139,101 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
             findViews();
             setListener();
 
-            mAllPhotoFolderList = new ArrayList<>();
-            mFolderListAdapter = new FolderListAdapter(this, mAllPhotoFolderList, GalleryFinal.getFunctionConfig());
-            mLvFolderList.setAdapter(mFolderListAdapter);
+            allPhotoFolderList = new ArrayList<>();
+            folderListAdapter = new FolderListAdapter(this, allPhotoFolderList, GalleryFinal.getFunctionConfig());
+            lvFolderList.setAdapter(folderListAdapter);
 
-            mCurPhotoList = new ArrayList<>();
-            mPhotoListAdapter = new PhotoListAdapter(this, mCurPhotoList, mSelectPhotoList, mScreenWidth);
-            mGvPhotoList.setAdapter(mPhotoListAdapter);
+            curPhotoList = new ArrayList<>();
+            photoListAdapter = new PhotoListAdapter(this, curPhotoList, mSelectPhotoList, mScreenWidth);
+            gvPhotoList.setAdapter(photoListAdapter);
 
             if (GalleryFinal.getFunctionConfig().isMutiSelect()) {
-                mTvChooseCount.setVisibility(View.VISIBLE);
-                mFabOk.setVisibility(View.VISIBLE);
+                tvChooseCount.setVisibility(View.VISIBLE);
+                floatingActionButton.setVisibility(View.VISIBLE);
             }
 
             setTheme();
-            mGvPhotoList.setEmptyView(mTvEmptyView);
+            gvPhotoList.setEmptyView(tvEmptyView);
 
             if (GalleryFinal.getFunctionConfig().isCamera()) {
-                mIvTakePhoto.setVisibility(View.VISIBLE);
+                ivTakePhoto.setVisibility(View.VISIBLE);
             } else {
-                mIvTakePhoto.setVisibility(View.GONE);
+                ivTakePhoto.setVisibility(View.GONE);
             }
 
             refreshSelectCount();
             requestGalleryPermission();
 
-            mGvPhotoList.setOnScrollListener(GalleryFinal.getCoreConfig().getPauseOnScrollListener());
+            gvPhotoList.setOnScrollListener(GalleryFinal.getCoreConfig().getPauseOnScrollListener());
         }
 
         Global.mPhotoSelectActivity = this;
     }
 
     private void setTheme() {
-        mIvBack.setImageResource(GalleryFinal.getGalleryTheme().getIconBack());
+        ivBack.setImageResource(GalleryFinal.getGalleryTheme().getIconBack());
         if (GalleryFinal.getGalleryTheme().getIconBack() == R.drawable.ic_gf_back) {
-            mIvBack.setColorFilter(GalleryFinal.getGalleryTheme().getTitleBarIconColor());
+            ivBack.setColorFilter(GalleryFinal.getGalleryTheme().getTitleBarIconColor());
         }
 
-        mIvFolderArrow.setImageResource(GalleryFinal.getGalleryTheme().getIconFolderArrow());
+        ivFolderArrow.setImageResource(GalleryFinal.getGalleryTheme().getIconFolderArrow());
         if (GalleryFinal.getGalleryTheme().getIconFolderArrow() == R.drawable.ic_gf_triangle_arrow) {
-            mIvFolderArrow.setColorFilter(GalleryFinal.getGalleryTheme().getTitleBarIconColor());
+            ivFolderArrow.setColorFilter(GalleryFinal.getGalleryTheme().getTitleBarIconColor());
         }
 
-        mIvClear.setImageResource(GalleryFinal.getGalleryTheme().getIconClear());
+        ivClear.setImageResource(GalleryFinal.getGalleryTheme().getIconClear());
         if (GalleryFinal.getGalleryTheme().getIconClear() == R.drawable.ic_gf_clear) {
-            mIvClear.setColorFilter(GalleryFinal.getGalleryTheme().getTitleBarIconColor());
+            ivClear.setColorFilter(GalleryFinal.getGalleryTheme().getTitleBarIconColor());
         }
 
-        mIvPreView.setImageResource(GalleryFinal.getGalleryTheme().getIconPreview());
+        ivPreView.setImageResource(GalleryFinal.getGalleryTheme().getIconPreview());
         if (GalleryFinal.getGalleryTheme().getIconPreview() == R.drawable.ic_gf_preview) {
-            mIvPreView.setColorFilter(GalleryFinal.getGalleryTheme().getTitleBarIconColor());
+            ivPreView.setColorFilter(GalleryFinal.getGalleryTheme().getTitleBarIconColor());
         }
 
-        mIvTakePhoto.setImageResource(GalleryFinal.getGalleryTheme().getIconCamera());
+        ivTakePhoto.setImageResource(GalleryFinal.getGalleryTheme().getIconCamera());
         if (GalleryFinal.getGalleryTheme().getIconCamera() == R.drawable.ic_gf_camera) {
-            mIvTakePhoto.setColorFilter(GalleryFinal.getGalleryTheme().getTitleBarIconColor());
+            ivTakePhoto.setColorFilter(GalleryFinal.getGalleryTheme().getTitleBarIconColor());
         }
-        mFabOk.setIcon(GalleryFinal.getGalleryTheme().getIconFab());
+        floatingActionButton.setIcon(GalleryFinal.getGalleryTheme().getIconFab());
 
-        mTitlebar.setBackgroundColor(GalleryFinal.getGalleryTheme().getTitleBarBgColor());
-        mTvSubTitle.setTextColor(GalleryFinal.getGalleryTheme().getTitleBarTextColor());
-        mTvTitle.setTextColor(GalleryFinal.getGalleryTheme().getTitleBarTextColor());
-        mTvChooseCount.setTextColor(GalleryFinal.getGalleryTheme().getTitleBarTextColor());
-        mFabOk.setColorPressed(GalleryFinal.getGalleryTheme().getFabPressedColor());
-        mFabOk.setColorNormal(GalleryFinal.getGalleryTheme().getFabNornalColor());
+        layoutTitlebar.setBackgroundColor(GalleryFinal.getGalleryTheme().getTitleBarBgColor());
+        tvSubTitle.setTextColor(GalleryFinal.getGalleryTheme().getTitleBarTextColor());
+        tvTitle.setTextColor(GalleryFinal.getGalleryTheme().getTitleBarTextColor());
+        tvChooseCount.setTextColor(GalleryFinal.getGalleryTheme().getTitleBarTextColor());
+        floatingActionButton.setColorPressed(GalleryFinal.getGalleryTheme().getFabPressedColor());
+        floatingActionButton.setColorNormal(GalleryFinal.getGalleryTheme().getFabNornalColor());
     }
 
     private void findViews() {
-        mGvPhotoList = (GridView) findViewById(R.id.gv_photo_list);
-        mLvFolderList = (ListView) findViewById(R.id.lv_folder_list);
-        mTvSubTitle = (TextView) findViewById(R.id.tv_sub_title);
-        mLlFolderPanel = (LinearLayout) findViewById(R.id.ll_folder_panel);
-        mIvTakePhoto = (ImageView) findViewById(R.id.iv_take_photo);
-        mTvChooseCount = (TextView) findViewById(R.id.tv_choose_count);
-        mIvBack = (ImageView) findViewById(R.id.iv_back);
-        mFabOk = (FloatingActionButton) findViewById(R.id.fab_ok);
-        mTvEmptyView = (TextView) findViewById(R.id.tv_empty_view);
-        mLlTitle = (LinearLayout) findViewById(R.id.ll_title);
-        mIvClear = (ImageView) findViewById(R.id.iv_clear);
-        mTitlebar = (RelativeLayout) findViewById(R.id.titlebar);
-        mTvTitle = (TextView) findViewById(R.id.tv_title);
-        mIvFolderArrow = (ImageView) findViewById(R.id.iv_folder_arrow);
-        mIvPreView = (ImageView) findViewById(R.id.iv_preview);
+        gvPhotoList = (GridView) findViewById(R.id.gv_photo_list);
+        lvFolderList = (ListView) findViewById(R.id.lv_folder_list);
+        tvSubTitle = (TextView) findViewById(R.id.tv_sub_title);
+        layoutFolderPanel = (LinearLayout) findViewById(R.id.ll_folder_panel);
+        ivTakePhoto = (ImageView) findViewById(R.id.iv_take_photo);
+        tvChooseCount = (TextView) findViewById(R.id.tv_choose_count);
+        ivBack = (ImageView) findViewById(R.id.iv_back);
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab_ok);
+        tvEmptyView = (TextView) findViewById(R.id.tv_empty_view);
+        layoutTitle = (LinearLayout) findViewById(R.id.ll_title);
+        ivClear = (ImageView) findViewById(R.id.iv_clear);
+        layoutTitlebar = (RelativeLayout) findViewById(R.id.titlebar);
+        tvTitle = (TextView) findViewById(R.id.tv_title);
+        ivFolderArrow = (ImageView) findViewById(R.id.iv_folder_arrow);
+        ivPreView = (ImageView) findViewById(R.id.iv_preview);
     }
 
     private void setListener() {
-        mLlTitle.setOnClickListener(this);
-        mIvTakePhoto.setOnClickListener(this);
-        mIvBack.setOnClickListener(this);
-        mIvFolderArrow.setOnClickListener(this);
+        layoutTitle.setOnClickListener(this);
+        ivTakePhoto.setOnClickListener(this);
+        ivBack.setOnClickListener(this);
+        ivFolderArrow.setOnClickListener(this);
 
-        mLvFolderList.setOnItemClickListener(this);
-        mGvPhotoList.setOnItemClickListener(this);
-        mFabOk.setOnClickListener(this);
-        mIvClear.setOnClickListener(this);
-        mIvPreView.setOnClickListener(this);
+        lvFolderList.setOnItemClickListener(this);
+        gvPhotoList.setOnItemClickListener(this);
+        floatingActionButton.setOnClickListener(this);
+        ivClear.setOnClickListener(this);
+        ivPreView.setOnClickListener(this);
     }
 
     protected void deleteSelect(int photoId) {
@@ -257,7 +261,7 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
 
         Message message = mHanlder.obtainMessage();
         message.obj = photoInfo;
-        message.what = HANLDER_TAKE_PHOTO_EVENT;
+        message.what = HANDLER_TAKE_PHOTO_EVENT;
         mSelectPhotoList.add(photoInfo);
         mHanlder.sendMessageDelayed(message, 100);
     }
@@ -268,19 +272,19 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
      * @param photoInfo
      */
     private void takeRefreshGallery(PhotoInfo photoInfo) {
-        mCurPhotoList.add(0, photoInfo);
-        mPhotoListAdapter.notifyDataSetChanged();
+        curPhotoList.add(0, photoInfo);
+        photoListAdapter.notifyDataSetChanged();
 
         //添加到集合中
-        List<PhotoInfo> photoInfoList = mAllPhotoFolderList.get(0).getPhotoList();
+        List<PhotoInfo> photoInfoList = allPhotoFolderList.get(0).getPhotoList();
         if (photoInfoList == null) {
             photoInfoList = new ArrayList<>();
         }
         photoInfoList.add(0, photoInfo);
-        mAllPhotoFolderList.get(0).setPhotoList(photoInfoList);
+        allPhotoFolderList.get(0).setPhotoList(photoInfoList);
 
-        if ( mFolderListAdapter.getSelectFolder() != null ) {
-            PhotoFolderInfo photoFolderInfo = mFolderListAdapter.getSelectFolder();
+        if ( folderListAdapter.getSelectFolder() != null ) {
+            PhotoFolderInfo photoFolderInfo = folderListAdapter.getSelectFolder();
             List<PhotoInfo> list = photoFolderInfo.getPhotoList();
             if ( list == null ) {
                 list = new ArrayList<>();
@@ -289,11 +293,11 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
             if ( list.size() == 1 ) {
                 photoFolderInfo.setCoverPhoto(photoInfo);
             }
-            mFolderListAdapter.getSelectFolder().setPhotoList(list);
+            folderListAdapter.getSelectFolder().setPhotoList(list);
         } else {
             String folderA = new File(photoInfo.getPhotoPath()).getParent();
-            for (int i = 1; i < mAllPhotoFolderList.size(); i++) {
-                PhotoFolderInfo folderInfo = mAllPhotoFolderList.get(i);
+            for (int i = 1; i < allPhotoFolderList.size(); i++) {
+                PhotoFolderInfo folderInfo = allPhotoFolderList.get(i);
                 String folderB = null;
                 if (!StringUtils.isEmpty(photoInfo.getPhotoPath())) {
                     folderB = new File(photoInfo.getPhotoPath()).getParent();
@@ -312,7 +316,7 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
             }
         }
 
-        mFolderListAdapter.notifyDataSetChanged();
+        folderListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -320,7 +324,7 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
 
         Message message = mHanlder.obtainMessage();
         message.obj = photoInfo;
-        message.what = HANLDER_TAKE_PHOTO_EVENT;
+        message.what = HANDLER_TAKE_PHOTO_EVENT;
 
         if ( !GalleryFinal.getFunctionConfig().isMutiSelect() ) { //单选
             mSelectPhotoList.clear();
@@ -355,12 +359,12 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
     public void onClick(View v) {
         int id = v.getId();
         if ( id == R.id.ll_title || id == R.id.iv_folder_arrow) {
-            if ( mLlFolderPanel.getVisibility() == View.VISIBLE ) {
-                mLlFolderPanel.setVisibility(View.GONE);
-                mLlFolderPanel.setAnimation(AnimationUtils.loadAnimation(this, R.anim.gf_flip_horizontal_out));
+            if ( layoutFolderPanel.getVisibility() == View.VISIBLE ) {
+                layoutFolderPanel.setVisibility(View.GONE);
+                layoutFolderPanel.setAnimation(AnimationUtils.loadAnimation(this, R.anim.gf_flip_horizontal_out));
             } else {
-                mLlFolderPanel.setAnimation(AnimationUtils.loadAnimation(this, R.anim.gf_flip_horizontal_in));
-                mLlFolderPanel.setVisibility(View.VISIBLE);
+                layoutFolderPanel.setAnimation(AnimationUtils.loadAnimation(this, R.anim.gf_flip_horizontal_in));
+                layoutFolderPanel.setVisibility(View.VISIBLE);
             }
         } else if ( id == R.id.iv_take_photo ) {
             //判断是否达到多选最大数量
@@ -376,8 +380,8 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
 
             takePhotoAction();
         } else if ( id == R.id.iv_back ) {
-            if ( mLlFolderPanel.getVisibility() == View.VISIBLE ) {
-                mLlTitle.performClick();
+            if ( layoutFolderPanel.getVisibility() == View.VISIBLE ) {
+                layoutTitle.performClick();
             } else {
                 finish();
             }
@@ -391,7 +395,7 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
             }
         } else if ( id == R.id.iv_clear ) {
             mSelectPhotoList.clear();
-            mPhotoListAdapter.notifyDataSetChanged();
+            photoListAdapter.notifyDataSetChanged();
             refreshSelectCount();
         } else if ( id == R.id.iv_preview ) {
             Intent intent = new Intent(this, PhotoPreviewActivity.class);
@@ -410,13 +414,13 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
         }
     }
     private void folderItemClick(int position) {
-        mLlFolderPanel.setVisibility(View.GONE);
-        mCurPhotoList.clear();
-        PhotoFolderInfo photoFolderInfo = mAllPhotoFolderList.get(position);
+        layoutFolderPanel.setVisibility(View.GONE);
+        curPhotoList.clear();
+        PhotoFolderInfo photoFolderInfo = allPhotoFolderList.get(position);
         if ( photoFolderInfo.getPhotoList() != null ) {
-            mCurPhotoList.addAll(photoFolderInfo.getPhotoList());
+            curPhotoList.addAll(photoFolderInfo.getPhotoList());
         }
-        mPhotoListAdapter.notifyDataSetChanged();
+        photoListAdapter.notifyDataSetChanged();
 
         if (position == 0) {
             mPhotoTargetFolder = null;
@@ -428,17 +432,17 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
                 mPhotoTargetFolder = null;
             }
         }
-        mTvSubTitle.setText(photoFolderInfo.getFolderName());
-        mFolderListAdapter.setSelectFolder(photoFolderInfo);
-        mFolderListAdapter.notifyDataSetChanged();
+        tvSubTitle.setText(photoFolderInfo.getFolderName());
+        folderListAdapter.setSelectFolder(photoFolderInfo);
+        folderListAdapter.notifyDataSetChanged();
 
-        if (mCurPhotoList.size() == 0) {
-            mTvEmptyView.setText(R.string.no_photo);
+        if (curPhotoList.size() == 0) {
+            tvEmptyView.setText(R.string.no_photo);
         }
     }
 
     private void photoItemClick(View view, int position) {
-        PhotoInfo info = mCurPhotoList.get(position);
+        PhotoInfo info = curPhotoList.get(position);
         if (!GalleryFinal.getFunctionConfig().isMutiSelect()) {
             mSelectPhotoList.clear();
             mSelectPhotoList.add(info);
@@ -484,22 +488,25 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
                 holder.mIvCheck.setBackgroundColor(GalleryFinal.getGalleryTheme().getCheckNornalColor());
             }
         } else {
-            mPhotoListAdapter.notifyDataSetChanged();
+            photoListAdapter.notifyDataSetChanged();
         }
     }
 
+    @SuppressLint("StringFormatMatches")
     public void refreshSelectCount() {
-        mTvChooseCount.setText(getString(R.string.selected, mSelectPhotoList.size(), GalleryFinal.getFunctionConfig().getMaxSize()));
+        if((tvChooseCount!=null) && (mSelectPhotoList!=null) && (GalleryFinal.getFunctionConfig()!=null)){
+            tvChooseCount.setText(getString(R.string.selected, mSelectPhotoList.size(), GalleryFinal.getFunctionConfig().getMaxSize()));
+        }
         if ( mSelectPhotoList.size() > 0 && GalleryFinal.getFunctionConfig().isMutiSelect() ) {
-            mIvClear.setVisibility(View.VISIBLE);
+            ivClear.setVisibility(View.VISIBLE);
         } else {
-            mIvClear.setVisibility(View.GONE);
+            ivClear.setVisibility(View.GONE);
         }
 
         if(GalleryFinal.getFunctionConfig().isEnablePreview()){
-            mIvPreView.setVisibility(View.VISIBLE);
+            ivPreView.setVisibility(View.VISIBLE);
         } else {
-            mIvPreView.setVisibility(View.GONE);
+            ivPreView.setVisibility(View.GONE);
         }
     }
 
@@ -510,8 +517,8 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
 
     @Override
     public void onPermissionsDenied(List<String> list) {
-        mTvEmptyView.setText(R.string.permissions_denied_tips);
-        mIvTakePhoto.setVisibility(View.GONE);
+        tvEmptyView.setText(R.string.permissions_denied_tips);
+        ivTakePhoto.setVisibility(View.GONE);
     }
 
     /**
@@ -529,23 +536,23 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
     }
 
     private void getPhotos() {
-        mTvEmptyView.setText(R.string.waiting);
-        mGvPhotoList.setEnabled(false);
-        mLlTitle.setEnabled(false);
-        mIvTakePhoto.setEnabled(false);
+        tvEmptyView.setText(R.string.waiting);
+        gvPhotoList.setEnabled(false);
+        layoutTitle.setEnabled(false);
+        ivTakePhoto.setEnabled(false);
         new Thread() {
             @Override
             public void run() {
                 super.run();
 
-                mAllPhotoFolderList.clear();
+                allPhotoFolderList.clear();
                 List<PhotoFolderInfo> allFolderList = PhotoTools.getAllPhotoFolder(PhotoSelectActivity.this, mSelectPhotoList);
-                mAllPhotoFolderList.addAll(allFolderList);
+                allPhotoFolderList.addAll(allFolderList);
 
-                mCurPhotoList.clear();
+                curPhotoList.clear();
                 if ( allFolderList.size() > 0 ) {
                     if ( allFolderList.get(0).getPhotoList() != null ) {
-                        mCurPhotoList.addAll(allFolderList.get(0).getPhotoList());
+                        curPhotoList.addAll(allFolderList.get(0).getPhotoList());
                     }
                 }
 
@@ -557,8 +564,8 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ( keyCode == KeyEvent.KEYCODE_BACK ) {
-            if ( mLlFolderPanel.getVisibility() == View.VISIBLE ) {
-                mLlTitle.performClick();
+            if ( layoutFolderPanel.getVisibility() == View.VISIBLE ) {
+                layoutTitle.performClick();
                 return true;
             }
         }
@@ -577,8 +584,7 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
     @Override
     public void onTrimMemory(int level) {
         super.onTrimMemory(level);
-        if ( GalleryFinal.getCoreConfig() != null &&
-                GalleryFinal.getCoreConfig().getImageLoader() != null ) {
+        if (GalleryFinal.getCoreConfig() != null &&GalleryFinal.getCoreConfig().getImageLoader() != null ) {
             GalleryFinal.getCoreConfig().getImageLoader().clearMemoryCache();
         }
     }
@@ -588,6 +594,11 @@ public class PhotoSelectActivity extends PhotoBaseActivity implements View.OnCli
         super.onDestroy();
         mPhotoTargetFolder = null;
         mSelectPhotoList.clear();
+        GalleryFinal.onHandlerResultCallback = null;
+        GalleryFinal.coreConfig = null;
+        GalleryFinal.currentFunctionConfig = null;
+        GalleryFinal.functionConfig = null;
+        GalleryFinal.themeConfig = null;
         System.gc();
     }
 }

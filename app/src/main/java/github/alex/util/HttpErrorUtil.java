@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 public class HttpErrorUtil
 {
-	public static final String TAG = "#网络请求异常#";
+	public static final String TAG = "#HttpErrorUtil#";
 	/**将状态码，转成普通话！*/
 	public static String getMessage(String  errorMessage)
 	{
@@ -32,22 +32,22 @@ public class HttpErrorUtil
 	public static String getMessage(Throwable e){
 		int code = 404;
 		String message = "网络不稳定";
-		Log.e(TAG, "有异常："+e);
+		Log.e(TAG, e+"");
 		if(e instanceof TimeoutException){
 			code = 404;
-			message = "请求超时";
+			message = "超时异常";
 		}else if(e instanceof SocketTimeoutException){
 			code = 404;
-			message = "请求超时";
+			message = "套接字超时异常";
 		}else if(e instanceof ConnectException){
 			code = 404;
-			message = "连接超时";
+			message = "连接服务器异常";
 		}else if(e instanceof UnknownServiceException){
 			code = 404;
-			message = "找不到服务器";
+			message = "未知服务异常";
 		}else if(e instanceof UnknownHostException){
 			code = 404;
-			message  ="找不到服务器";
+			message  ="未知的主机异常";
 		}else if(e instanceof SocketException){
 			code = 404;
 			message = "套接字异常";
@@ -59,7 +59,7 @@ public class HttpErrorUtil
 			message = "端口不能被访问";
 		}else if(e instanceof NoRouteToHostException){
 			code = 404;
-			message = "找不到服务器";
+			message = "无法访问主机路由";
 		}else if(e instanceof MalformedURLException){
 			code = 404;
 			message = "请求地址无法解析";
@@ -70,7 +70,7 @@ public class HttpErrorUtil
 			code = 404;
 			message = getMessage(e.getMessage());
 		}
-		return code+" "+message;
+		return getMessage(code, message);
 	}
 	/**将状态码，转成普通话！*/
 	public static String getMessage(int  code)
@@ -111,7 +111,11 @@ public class HttpErrorUtil
 			message = "其他异常";
 		}
 		//message = "网络问题";
-		return code+" "+message;
+		return getMessage(code, message);
+	}
+
+	public static String getMessage(int code, String message){
+		return /*code+" "+*/message;
 	}
 	
 }

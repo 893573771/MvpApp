@@ -3,7 +3,7 @@ package com.alex.app.ui.userman;
 import android.support.annotation.NonNull;
 
 import com.alex.app.httpman.HttpMan;
-import com.alex.app.ui.App;
+import com.alex.app.App;
 import com.google.gson.Gson;
 import com.socks.library.KLog;
 
@@ -24,6 +24,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -37,17 +38,16 @@ public class UserDetailPresenter extends CancelablePresenter implements UserDeta
         this.view = view;
     }
 
-
     @Override
     public void upLoadFile(List<File> fileList, String phone, String pwd) {
-
         if ((fileList == null) || (fileList.size() <= 0)) {
             KLog.e("文件为空");
             return;
         }
+
         OkHttpClient okHttpClient = OkHttpUtil.getInstance()
                 .requestParams(new RequestParams()
-                        .addHeader("phoneNum", "13146008029")
+                        .addHeader("phoneNum", phone)
                         .addHeader("uuid", DeviceUtil.getSafeDeviceSoleId(App.getApp())))
                 .build();
 
@@ -64,18 +64,15 @@ public class UserDetailPresenter extends CancelablePresenter implements UserDeta
             RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), fileList.get(i));
             paramsMap.put("userLogo\"; filename=\"" + file.getName() + ".png", fileBody);
         }
-        RequestBody phoneBody = RequestBody.create(null, phone);
-        RequestBody pwdBody = RequestBody.create(null, pwd);
+        paramsMap.put("phone", RequestBody.create(null, phone));
+        paramsMap.put("pwd", RequestBody.create(null, pwd));
 
-        paramsMap.put("phone", phoneBody);
-        paramsMap.put("pwd", pwdBody);
-        subscription = httpMan.upLoad2(paramsMap)
+        Subscription subscription = httpMan.upLoad2(paramsMap)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new MyHttpSubscriber());
-
+        addSubscription(subscription);
     }
-
 
     private final class MyHttpSubscriber extends HttpSubscriber<String> {
         @Override
@@ -98,8 +95,4 @@ public class UserDetailPresenter extends CancelablePresenter implements UserDeta
         }
     }
 
-    @Override
-    public void cancel() {
-
-    }
 }

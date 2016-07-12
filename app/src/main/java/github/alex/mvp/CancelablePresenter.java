@@ -6,38 +6,26 @@ import rx.internal.util.SubscriptionList;
 /**
  * Created by alex on 2016/7/7.
  */
-public abstract class CancelablePresenter {
+public class CancelablePresenter {
 
-    public Subscription subscription;
-    public SubscriptionList subscriptionList;
+    private SubscriptionList subscriptionList;
 
     public CancelablePresenter() {
         subscriptionList = new SubscriptionList();
     }
 
     /**
-     * 设置  Subscription
-     */
-    void setSubscription(Subscription subscription) {
-        this.subscription = subscription;
-    }
-
-    /**
      * 添加 Subscription
      */
-    void addSubscription(Subscription subscription) {
+    public void addSubscription(Subscription subscription) {
         subscriptionList = (subscriptionList == null) ? new SubscriptionList() : subscriptionList;
         subscriptionList.add(subscription);
     }
 
     /**
-     * 取消订阅事件
+     * 取消订阅事件， 防止内存泄漏
      */
-    public void cancel(){
-        if (subscription != null) {
-            subscription.unsubscribe();
-            subscription = null;
-        }
+    public void detachView(){
         if (subscriptionList != null) {
             subscriptionList.unsubscribe();
             subscriptionList = null;

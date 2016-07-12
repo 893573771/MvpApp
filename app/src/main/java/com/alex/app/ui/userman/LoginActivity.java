@@ -18,7 +18,7 @@ import github.hanks.checkbox.MaterialCheckBox;
  * Created by alex on 2016/6/23.
  *
  */
-public class LoginActivity extends BaseActivity implements LoginContract.View {
+public class LoginActivity extends BaseActivity<LoginPresenter> implements LoginContract.View {
 
     @BindView(R.id.et_phone)
     EditText etPhone;
@@ -38,6 +38,11 @@ public class LoginActivity extends BaseActivity implements LoginContract.View {
     MaterialCheckBox materialCheckBox;
 
     private LoginPresenter loginPresenter;
+
+    @Override
+    protected LoginPresenter createPresenter() {
+        return new LoginPresenter(this);
+    }
 
     @Override
     public int getLayoutResId() {

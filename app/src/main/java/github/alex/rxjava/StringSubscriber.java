@@ -7,18 +7,18 @@ import rx.Subscriber;
 /**
  * Created by Alex on 2016/6/21.
  */
-public abstract class HttpSubscriber<T> extends Subscriber<T> {
-    public static String TAG = "#HttpSubscriber#";
+public abstract class StringSubscriber extends Subscriber<String> {
+    public static String TAG = "#StringSubscriber#";
     /**
      * @param tag 网络请求的标志位
      */
     public Object tag;
 
-    public HttpSubscriber() {
+    public StringSubscriber() {
 
     }
 
-    public HttpSubscriber(Object tag) {
+    public StringSubscriber(Object tag) {
         this.tag = tag;
     }
 
@@ -39,7 +39,7 @@ public abstract class HttpSubscriber<T> extends Subscriber<T> {
     }
 
     @Override
-    public void onNext(T t) {
+    public void onNext(String t) {
         onSuccess(t);
     }
 
@@ -60,5 +60,5 @@ public abstract class HttpSubscriber<T> extends Subscriber<T> {
      *
      * @param result 网络请求的结果
      */
-    public abstract void onSuccess(T result);
+    public abstract void onSuccess(String result);
 }

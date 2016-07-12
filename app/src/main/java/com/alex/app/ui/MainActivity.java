@@ -11,18 +11,21 @@ import com.alex.app.ui.userman.UserDetailActivity;
 import com.socks.library.KLog;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
+import github.alex.mvp.CancelablePresenter;
 import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.observables.GroupedObservable;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity<CancelablePresenter> {
 
     TextView tvContent;
     private List<UserBean> userBeanList;
+
+    @Override
+    protected CancelablePresenter createPresenter() {
+        return null;
+    }
 
     @Override
     public int getLayoutResId() {
@@ -34,26 +37,24 @@ public class MainActivity extends BaseActivity {
         tvContent = findView(R.id.tv_content);
         findView(R.id.tv_login).setOnClickListener(this);
         findView(R.id.tv_add_img).setOnClickListener(this);
-        subscription = Observable.interval(1, TimeUnit.SECONDS)
-                .groupBy(new Func1<Long, Long>() {
-                    @Override
-                    public Long call(Long value) {
-                        return value % 3;
-                    }
-                })
-                .subscribe(new Action1<GroupedObservable<Long, Long>>() {
-                    @Override
-                    public void call(final GroupedObservable<Long, Long> result) {
-                        Subscription subscription = result.subscribe(new Action1<Long>() {
-                                                                         @Override
-                                                                         public void call(Long value) {
-                                                                             KLog.e("key = " + result.getKey() + " value = " + value);
-                                                                         }
-                                                                     }
-                        );
-                        addSubscription(subscription);
-                    }
-                });
+
+        Subscription subscription = Observable.just(1, 2, 3, 4, 5)
+                .skip(2)
+                .subscribe(new Subscriber<Integer>() {
+            @Override
+            public void onNext(Integer item) {
+                KLog.e("Next: " + item);
+            }
+            @Override
+            public void onError(Throwable error) {
+                KLog.e("Error: " + error.getMessage());
+            }
+            @Override
+            public void onCompleted() {
+                KLog.e("Sequence complete.");
+            }
+        });
+        addSubscription(subscription);
     }
 
     @Override
@@ -65,5 +66,5 @@ public class MainActivity extends BaseActivity {
             startActivity(UserDetailActivity.class);
         }
     }
-    
+
 }

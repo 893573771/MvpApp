@@ -1,4 +1,4 @@
-package com.alex.app.ui;
+package com.alex.app;
 
 import android.app.Application;
 import android.util.Log;

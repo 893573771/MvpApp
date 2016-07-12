@@ -23,7 +23,6 @@ import com.alex.app.R;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
 import github.alex.annotation.Status;
-import github.alex.callback.OnHttpCallback;
 import github.alex.dialog.LoadingDialog;
 import github.alex.dialog.basedialog.BaseDialog;
 import github.alex.dialog.callback.DialogOnKeyListener;
@@ -31,6 +30,8 @@ import github.alex.helper.ToastHelper;
 import github.alex.helper.ViewHelper;
 import github.alex.model.StatusLayoutModel;
 import github.alex.mvp.BaseHttpContract;
+import github.alex.mvp.CancelablePresenter;
+import github.alex.util.NetUtil;
 import rx.Subscription;
 import rx.internal.util.SubscriptionList;
 
@@ -41,22 +42,31 @@ import rx.internal.util.SubscriptionList;
  * @version 1.1
  * @blog http://www.jianshu.com/users/c3c4ea133871/latest_articles
  */
-public abstract class BaseActivity extends AppCompatActivity implements BaseHttpContract.View, View.OnClickListener {
+public abstract class BaseActivity<P extends CancelablePresenter> extends AppCompatActivity implements BaseHttpContract.View, View.OnClickListener {
     private static final String TAG = "#BaseActivity#";
     protected Context context;
+    /**
+     * Presenter 的基类
+     */
+    protected CancelablePresenter cancelablePresenter;
     private LoadingDialog loadingDialog;
     private ToastHelper toastHelper;
     private ViewHelper viewHelper;
     private SystemBarTintManager tintManager;
     private InputMethodManager inputMethodManager;
-    public Subscription subscription;
-    public SubscriptionList subscriptionList;
+
+    private SubscriptionList subscriptionList;
+    /**
+     * 上次点击的时间
+     */
+    private static long lastClickTime;
 
     @Override
     @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
+        cancelablePresenter = createPresenter();
         inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         toastHelper = new ToastHelper();
         viewHelper = new ViewHelper(this);
@@ -72,6 +82,11 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
         initStatusBar();
         onCreateData();
     }
+
+    /**
+     * 创建 Presenter
+     */
+    protected abstract P createPresenter();
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -109,14 +124,6 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
         if ((toastHelper != null) && (context != null)) {
             toastHelper.toast(context, text);
         }
-    }
-
-    /**
-     * 网络请求
-     */
-    @Override
-    public void onHttpRequest(OnHttpCallback onHttpCallback) {
-
     }
 
     @Override
@@ -158,11 +165,25 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
     }
 
     /**
-     * 处理点击事件
+     * 处理点击事件，过滤掉 500毫秒内连续 点击
      */
     @Override
     public void onClick(View v) {
+        if (isClickFrequently()) {
+            return;
+        }
+    }
 
+    /**
+     * 判断点击过快 时间间隔 为 500毫秒
+     */
+    private boolean isClickFrequently() {
+        long currClickTime = System.currentTimeMillis();
+        if ((currClickTime - lastClickTime) < 500) {
+            return true;
+        }
+        lastClickTime = currClickTime;
+        return false;
     }
 
     /**
@@ -259,7 +280,7 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
     }
 
     /**
-     * 扩展的findViewById
+     * 扩展的 findViewById
      */
     public <T extends View> T findView(int id) {
         return (T) findViewById(id);
@@ -323,8 +344,9 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
      * @param colorId 颜色id
      */
     public void setStatusBarTintResource(int colorId) {
-        if (tintManager != null)
+        if (tintManager != null){
             tintManager.setStatusBarTintResource(colorId);
+        }
     }
 
     @TargetApi(19)
@@ -390,7 +412,17 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
         subscriptionList.add(subscription);
     }
 
-    /**销毁一切资源，防止内存泄漏问题*/
+    /**
+     * 获取当前网络是否可用
+     */
+    @Override
+    public boolean getNetworkIsAvailability() {
+        return NetUtil.isAvailable(this);
+    }
+
+    /**
+     * 销毁一切资源，防止内存泄漏问题
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -409,15 +441,14 @@ public abstract class BaseActivity extends AppCompatActivity implements BaseHttp
         tintManager = null;
         hiddenKeyPad();
         inputMethodManager = null;
-        if (subscription != null) {
-            /*防止 RxJava 出现内存泄漏问题*/
-            subscription.unsubscribe();
-            subscription = null;
-        }
+
         if (subscriptionList != null) {
             /*防止 RxJava 出现内存泄漏问题*/
             subscriptionList.unsubscribe();
             subscriptionList = null;
+        }
+        if (cancelablePresenter != null) {
+            cancelablePresenter.detachView();
         }
     }
 

@@ -1,6 +1,5 @@
 package github.alex.mvp;
 
-import github.alex.callback.OnHttpCallback;
 import github.alex.model.StatusLayoutModel;
 
 /**
@@ -9,10 +8,6 @@ import github.alex.model.StatusLayoutModel;
 public interface BaseHttpContract {
 
     interface View extends BaseContract.View {
-        /**
-         * 进行网络请求
-         */
-        void onHttpRequest(OnHttpCallback onHttpCallback);
 
         /**
          * 初始化延时对话框
@@ -64,8 +59,14 @@ public interface BaseHttpContract {
          */
         void showFailLayout();
 
+        /**
+         * 获取当前网络是否可用
+         */
+        boolean getNetworkIsAvailability();
+
     }
-    interface Presenter extends BaseContract.Presenter{
+
+    interface Presenter extends BaseContract.Presenter {
 
     }
 }
