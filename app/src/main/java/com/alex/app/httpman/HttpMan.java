@@ -1,6 +1,7 @@
 package com.alex.app.httpman;
 
 
+import com.alex.app.model.MovieListBean;
 import com.alex.app.model.UserBean;
 
 import org.json.JSONObject;
@@ -27,8 +28,9 @@ import rx.Observable;
  * Created by Alex on 2016/6/19.
  */
 public interface HttpMan {
-    public static final String doMainApi = "http://172.27.23.3:8080/AlexApp/";
+    //public static final String doMainApi = "http://172.27.23.3:8080/AlexApp/";
     //public static final String doMainApi = "http://192.168.4.39:8080/AlexApp/";
+    public static final String doMainApi = "https://api.douban.com/v2/";
     @GET("login/{phone}-{pwd}")
     Observable<String> loginQg(@Path("phone") String phone, @Path("pwd") String pwd);
 
@@ -65,6 +67,7 @@ public interface HttpMan {
     @POST("upload")
     Observable<String> upLoad3(@Part List<MultipartBody.Part> userLogoList, @Part("phone") RequestBody phoneBody, @Part("pwd") RequestBody pwdBody);
 
-
+    @GET("movie/top250")
+    Observable<MovieListBean> loadMovieList(@Query("start") String start, @Query("count") String count);
 
 }

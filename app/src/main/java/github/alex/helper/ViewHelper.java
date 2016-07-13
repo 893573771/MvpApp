@@ -209,20 +209,6 @@ public class ViewHelper {
         }
     }
 
-    public void setOnLeftTitleViewClickListener(@IdRes int id) {
-        View view = this.view.findView(id);
-        if (view != null) {
-            view.setOnClickListener(new MyOnClickListener("左部"));
-        }
-    }
-
-    public void setOnRightTitleViewClickListener(@IdRes int id) {
-        View view = this.view.findView(id);
-        if (view != null) {
-            view.setOnClickListener(new MyOnClickListener("右部"));
-        }
-    }
-
     private final class MyOnClickListener implements View.OnClickListener {
         private String layoutName;
 
@@ -236,10 +222,6 @@ public class ViewHelper {
                 ViewHelper.this.view.onStatusLayoutClick(Status.FAIL);
             } else if (sEmptyLayout.equals(layoutName)) {
                 ViewHelper.this.view.onStatusLayoutClick(Status.EMPTY);
-            } else if ("左部".equals(layoutName)) {
-                ViewHelper.this.view.onClickLeftTitleView(view.getId());
-            } else if ("右部".equals(layoutName)) {
-                ViewHelper.this.view.onClickRightTitleView(view.getId());
             }
         }
     }

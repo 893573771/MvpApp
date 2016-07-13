@@ -53,31 +53,18 @@ public interface BaseContract {
         void setText(@IdRes int id, @NonNull String text);
 
         /**
-         * 获取标题的左部按钮，大多数情况下为 返回 按钮
+         * 获取标题左部返回按钮的id
          */
         @IdRes
-        int getLeftTitleViewId();
-
-        /**
-         * 处理点击标题的左部按钮，大多数情况下为返回 按钮
-         */
-        void onClickLeftTitleView(@IdRes int id);
-
-        /**
-         * 获取标题的左部按钮，大多数情况下为 更多 按钮
-         */
-        @IdRes
-        int getRightTitleViewId();
-
-        /**
-         * 处理点击标题的右部按钮，大多数情况下为分享 更多等功能 按钮
-         */
-        void onClickRightTitleView(@IdRes int id);
+        int getLeftFinishViewId();
 
         /**
          * 扩展的findViewById
          */
         <T extends android.view.View> T findView(@IdRes int id);
+
+        /**给控件添加点击事件*/
+        void setOnClickListener(int ... ids);
     }
 
     interface Presenter {

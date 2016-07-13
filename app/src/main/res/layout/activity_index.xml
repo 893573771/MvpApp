@@ -1,47 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
-    android:orientation="vertical"
-    >
+    android:background="@color/alex_root_bg_color"
+    android:orientation="vertical">
 
+    <include
+        android:id="@+id/layout_title"
+        layout="@layout/layout_title" />
 
-    <FrameLayout
-        android:id="@+id/layout_body"
+    <github.aspsine.swipetoloadlayout.SwipeToLoadLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/stll"
+        android:layout_below="@+id/layout_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        app:default_to_loading_more_scrolling_duration="500"
+        app:default_to_refreshing_scrolling_duration="1000"
+        app:load_more_complete_delay_duration="0"
+        app:load_more_final_drag_offset="@dimen/load_more_final_offset_google"
+        app:load_more_trigger_offset="@dimen/load_more_trigger_offset_google"
+        app:refresh_complete_delay_duration="0"
+        app:refresh_final_drag_offset="@dimen/refresh_final_offset_google"
+        app:refresh_trigger_offset="@dimen/refresh_trigger_offset_google"
+        app:swipe_style="above">
 
-    <RadioGroup
-        android:id="@+id/layout_foot_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal">
+        <include
+            android:id="@id/swipe_refresh_header"
+            layout="@layout/layout_google_hook_header" />
 
-        <RadioButton
-            android:id="@+id/rb_foot_bar_1"
-            style="@style/rb_activity_index_foot_navi"
-            android:checked="true"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/swipe_target"
+            android:clipToPadding="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_index_movie_list" />
 
-            android:drawableTop="@drawable/selector_activity_index_foot_iv1"
-            android:text="首页"/>
+        <include
+            android:id="@id/swipe_load_more_footer"
+            layout="@layout/layout_google_footer" />
 
-        <RadioButton
-            android:id="@+id/rb_foot_bar_2"
-            style="@style/rb_activity_index_foot_navi"
+    </github.aspsine.swipetoloadlayout.SwipeToLoadLayout>
 
-            android:drawableTop="@drawable/selector_activity_index_foot_iv2"
-            android:text="分类"/>
-
-
-        <RadioButton
-            android:id="@+id/rb_foot_bar_4"
-            style="@style/rb_activity_index_foot_navi"
-            android:drawableTop="@drawable/selector_activity_index_foot_iv4"
-            android:text="我的"/>
-    </RadioGroup>
 
 </RelativeLayout>

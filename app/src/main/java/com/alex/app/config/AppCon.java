@@ -5,6 +5,12 @@ package com.alex.app.config;
  * Created by Alex on 2016/6/23.
  */
 public class AppCon {
+    /**首次加载*/
+    public static final String loadFirst = "loadFirst";
+    /**下拉刷新*/
+    public static final String loadRefresh = "loadRefresh";
+    /**上拉加载*/
+    public static final String loadMore = "loadMore";
 
     /**登录密码的 最小长度*/
     public static final int loginPwdMinLength = 6;

@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
 
     <RelativeLayout
@@ -22,21 +20,24 @@
             android:singleLine="true"
             android:text="Mvp RxJava Retrofit OkHttp"
             android:textColor="#FFFFFF"
-            android:textSize="@dimen/alex_title_text_size"
-            />
+            android:textSize="@dimen/alex_title_text_size" />
     </RelativeLayout>
 
     <TextView
         android:id="@+id/tv_login"
         style="@style/submit_match_red"
         android:layout_marginTop="16dp"
-        android:text="登录"
-        />
+        android:text="登录" />
 
     <TextView
         android:id="@+id/tv_add_img"
         style="@style/submit_match_red"
         android:layout_marginTop="16dp"
-        android:text="添加图片"
-        />
+        android:text="添加图片" />
+
+    <TextView
+        android:id="@+id/tv_doubai"
+        style="@style/submit_match_red"
+        android:layout_marginTop="16dp"
+        android:text="豆瓣电影" />
 </LinearLayout>

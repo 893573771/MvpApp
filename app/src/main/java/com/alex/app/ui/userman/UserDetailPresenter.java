@@ -2,9 +2,9 @@ package com.alex.app.ui.userman;
 
 import android.support.annotation.NonNull;
 
+import com.alex.app.App;
 import com.alex.app.config.AppCon;
 import com.alex.app.httpman.HttpMan;
-import com.alex.app.App;
 import com.google.gson.Gson;
 import com.socks.library.KLog;
 
@@ -17,7 +17,7 @@ import github.alex.mvp.CancelablePresenter;
 import github.alex.okhttp.OkHttpUtil;
 import github.alex.okhttp.RequestParams;
 import github.alex.retrofit.StringConverterFactory;
-import github.alex.rxjava.HttpSubscriber;
+import github.alex.rxjava.BaseSubscriber;
 import github.alex.util.DeviceUtil;
 import github.alex.util.GsonUtil;
 import okhttp3.MediaType;
@@ -78,7 +78,7 @@ public class UserDetailPresenter extends CancelablePresenter<UserDetailContract.
         addSubscription(subscription);
     }
 
-    private final class MyHttpSubscriber extends HttpSubscriber<String> {
+    private final class MyHttpSubscriber extends BaseSubscriber<String> {
         @Override
         public void onStart() {
             view.showLoadingDialog();

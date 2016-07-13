@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/layout_body"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/selector_item_layout"
+        android:clickable="true"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp">
+
+        <github.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/iv_logo"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+
+            app:civ_border_color="#009688"
+            app:civ_border_overlay="true"
+            app:civ_border_width="2dp"
+            android:layout_marginLeft="16dp"
+            android:src="@drawable/logo_data_empty" />
+
+        <TextView
+            android:id="@+id/tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/iv_logo"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="按理说啦是的" />
+    </RelativeLayout>
+
+
+</LinearLayout>

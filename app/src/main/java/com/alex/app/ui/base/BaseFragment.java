@@ -96,23 +96,8 @@ public abstract class BaseFragment extends Fragment implements BaseHttpContract.
     }
 
     @Override
-    public int getLeftTitleViewId() {
+    public int getLeftFinishViewId() {
         return 0;
-    }
-
-    @Override
-    public void onClickLeftTitleView(@IdRes int id) {
-
-    }
-
-    @Override
-    public int getRightTitleViewId() {
-        return 0;
-    }
-
-    @Override
-    public void onClickRightTitleView(@IdRes int id) {
-
     }
 
     @Override

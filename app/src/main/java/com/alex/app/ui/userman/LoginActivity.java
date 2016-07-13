@@ -48,7 +48,7 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     }
 
     @Override
-    public int getLeftTitleViewId() {
+    public int getLeftFinishViewId() {
         return R.id.iv_back;
     }
 

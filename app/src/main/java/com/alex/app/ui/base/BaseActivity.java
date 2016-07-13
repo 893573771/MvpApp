@@ -70,13 +70,15 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
         if ((Status.RES_ID_NO != getLayoutResId()) && (0 != getLayoutResId())) {
             setContentView(getLayoutResId());
         }
-        viewHelper.setOnLeftTitleViewClickListener(getLeftTitleViewId());
-        viewHelper.setOnRightTitleViewClickListener(getRightTitleViewId());
+        if(findViewById(getLeftFinishViewId())!=null){
+            findViewById(getLeftFinishViewId()).setOnClickListener(this);
+        }
         onGetStatusLayoutModel();
         getBodyViewId();
         viewHelper.initMultiModeBodyLayout(this, getBodyViewId());
         initStatusBar();
         onCreateData();
+
     }
 
     /**
@@ -110,6 +112,21 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      */
     protected void onGetIntentData() {
 
+    }
+
+    /**
+     * 给控件添加点击事件
+     *
+     * @param ids
+     */
+    @Override
+    public void setOnClickListener(int... ids) {
+        for (int i = 0; (ids != null) && (i < ids.length); i++) {
+            View view = findViewById(ids[i]);
+            if(view != null){
+                view.setOnClickListener(this);
+            }
+        }
     }
 
     /**
@@ -167,6 +184,9 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     public void onClick(View v) {
         if (isClickFrequently()) {
             return;
+        }
+        if(getLeftFinishViewId() == v.getId()){
+            finish();
         }
     }
 
@@ -242,6 +262,16 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
     @CallSuper
     protected void onStop() {
         super.onStop();
@@ -273,25 +303,15 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
 
     }
 
+    /**
+     * 获取标题的左部按钮，大多数情况下为 返回 按钮
+     */
     @Override
-    public int getLeftTitleViewId() {
-        return 0;
+    public int getLeftFinishViewId() {
+        return Status.RES_ID_NO;
     }
 
-    @Override
-    public void onClickLeftTitleView(@IdRes int id) {
-        finish();
-    }
 
-    @Override
-    public int getRightTitleViewId() {
-        return 0;
-    }
-
-    @Override
-    public void onClickRightTitleView(@IdRes int id) {
-
-    }
 
     /**
      * 设置沉浸式状态栏

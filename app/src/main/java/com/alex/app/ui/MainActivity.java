@@ -5,6 +5,7 @@ import android.widget.TextView;
 
 import com.alex.app.R;
 import com.alex.app.ui.base.BaseActivity;
+import com.alex.app.ui.index.IndexActivity;
 import com.alex.app.ui.userman.LoginActivity;
 import com.alex.app.ui.userman.UserDetailActivity;
 
@@ -24,13 +25,22 @@ public class MainActivity extends BaseActivity<CancelablePresenter> {
         return R.layout.activity_main;
     }
 
+    /**
+     * 执行在 onCreateView 中
+     * 通过 findViewById 初始主视图化控件
+     * 初始化所有基础数据，
+     */
     @Override
     public void onCreateData() {
         tvContent = findView(R.id.tv_content);
-        findView(R.id.tv_login).setOnClickListener(this);
-        findView(R.id.tv_add_img).setOnClickListener(this);
+        setOnClickListener(R.id.tv_login, R.id.tv_add_img, R.id.tv_doubai);
     }
 
+    /**
+     * 处理点击事件，过滤掉 500毫秒内连续 点击
+     *
+     * @param v
+     */
     @Override
     public void onClick(View v) {
         super.onClick(v);
@@ -38,7 +48,10 @@ public class MainActivity extends BaseActivity<CancelablePresenter> {
             startActivity(LoginActivity.class);
         } else if (R.id.tv_add_img == v.getId()) {
             startActivity(UserDetailActivity.class);
+        } else if(R.id.tv_doubai == v.getId()){
+            startActivity(IndexActivity.class);
         }
     }
+
 
 }

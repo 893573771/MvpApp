@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="alex_item_layout">#EEEEEE</color>
+    <color name="alex_item_layout">#FFFFFF</color>
     <color name="alex_item_layout_press">#F7F7F7</color>
     <color name="alex_item_layout_ripple">#E1E1E1</color>
+    <color name="alex_root_bg_color">#EEEEEE</color>
 </resources>
