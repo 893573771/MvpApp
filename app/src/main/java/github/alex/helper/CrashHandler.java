@@ -6,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Process;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,11 +16,15 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import github.alex.util.LogUtil;
+
 /**
- * Created by Alex on 2016/3/28.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
-    private final String TAG = CrashHandler.class.getSimpleName();
+
     /**
      * 存储 错误日志的 路径
      */
@@ -41,14 +44,18 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
     public void uncaughtException(Thread thread, Throwable ex) {
         StringBuilder errorBuilder = new StringBuilder();
         errorBuilder.append("\n" + getStackTraceString(ex));
-        if (onCrashListener != null) {
-            onCrashListener.onCrash(errorBuilder.toString());
-        }
+
         long currentTime = System.currentTimeMillis();
         String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(currentTime));
         String phoneInfo = getPhoneInfo();
-        saveFile(" " + time + "\n" + phoneInfo + "\n" + errorBuilder.toString(), false);
+        String cashMessage =  time + "\n" + phoneInfo + errorBuilder.toString();
+        if (onCrashListener != null) {
+            onCrashListener.onCrash(cashMessage);
+        }
+        saveFile(cashMessage, false);
+
         Process.killProcess(Process.myPid());
+
     }
 
     private String getPhoneInfo() {
@@ -56,7 +63,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
         try {
             PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), PackageManager.GET_ACTIVITIES);
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("\n versionName : " + packageInfo.versionName);
+            stringBuilder.append(" versionName : " + packageInfo.versionName);
             stringBuilder.append("\n versionCode : " + packageInfo.versionCode);
             stringBuilder.append("\n OS  version : " + Build.VERSION.RELEASE);
             stringBuilder.append("\n 制造商 : " + Build.MANUFACTURER);
@@ -64,7 +71,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             stringBuilder.append("\n cpu架构 : " + Build.CPU_ABI + "  " + Build.CPU_ABI2);
             return stringBuilder.toString();
         } catch (Exception e) {
-            Log.e(TAG, e.toString());
+            LogUtil.e("有异常：" + e);
         }
         return "";
     }
@@ -88,14 +95,14 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             output.flush();
             return true;
         } catch (Exception e) {
-            Log.e(TAG, "有异常：" + e);
+            LogUtil.e("有异常：" + e);
         } finally {
             try {
                 if (output != null) {
                     output.close();
                 }
             } catch (IOException e) {
-                Log.e(TAG, "有异常：" + e);
+                LogUtil.e("有异常：" + e);
             }
         }
         return false;

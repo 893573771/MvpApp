@@ -8,7 +8,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
+ */
 public class StringUtil 
 {
 	private static final char CHAR_CHINESE_SPACE = '\u3000';//中文（全角）空格

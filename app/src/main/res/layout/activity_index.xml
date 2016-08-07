@@ -3,46 +3,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/alex_root_bg_color"
+    android:background="@color/alex_background_color"
     android:orientation="vertical">
 
     <include
         android:id="@+id/layout_title"
         layout="@layout/layout_title" />
 
-    <github.aspsine.swipetoloadlayout.SwipeToLoadLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/stll"
-        android:layout_below="@+id/layout_title"
+    <github.liaoinstan.springview.RefreshLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/rl"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:default_to_loading_more_scrolling_duration="500"
-        app:default_to_refreshing_scrolling_duration="1000"
-        app:load_more_complete_delay_duration="0"
-        app:load_more_final_drag_offset="@dimen/load_more_final_offset_google"
-        app:load_more_trigger_offset="@dimen/load_more_trigger_offset_google"
-        app:refresh_complete_delay_duration="0"
-        app:refresh_final_drag_offset="@dimen/refresh_final_offset_google"
-        app:refresh_trigger_offset="@dimen/refresh_trigger_offset_google"
-        app:swipe_style="above">
+        android:layout_below="@+id/layout_title">
 
-        <include
-            android:id="@id/swipe_refresh_header"
-            layout="@layout/layout_google_hook_header" />
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/swipe_target"
-            android:clipToPadding="false"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
+            android:id="@+id/rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
             tools:listitem="@layout/item_index_movie_list" />
 
-        <include
-            android:id="@id/swipe_load_more_footer"
-            layout="@layout/layout_google_footer" />
 
-    </github.aspsine.swipetoloadlayout.SwipeToLoadLayout>
+    </github.liaoinstan.springview.RefreshLayout>
 
 
 </RelativeLayout>

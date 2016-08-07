@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.zhihu.ZhiHuActivity">
+
+    <include
+        android:id="@+id/layout_title"
+        layout="@layout/layout_title" />
+
+    <github.astuetz.PagerSlidingTabStrip
+        android:id="@+id/psts"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:pstsDividerPadding="5dp"
+        app:pstsIndicatorColor="#009688"
+        app:pstsIndicatorHeight="2dp"
+        app:pstsIndicatorPaddingLR="10dp"
+        app:pstsScrollOffset="60dp"
+        app:pstsTextColor="#9E9E9E"
+        app:pstsTextColorSelected="#009688"
+        app:pstsTextSize="14sp"
+        app:pstsTextSizeSelected="14sp" />
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

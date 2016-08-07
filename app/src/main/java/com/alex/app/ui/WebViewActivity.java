@@ -1,22 +1,26 @@
 package com.alex.app.ui;
 
-import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.alex.app.R;
-import com.alex.app.config.Key;
 import com.alex.app.ui.base.BaseActivity;
+
+import java.util.Iterator;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import github.alex.mvp.CancelablePresenter;
+import github.alex.util.LogUtil;
 import github.alex.view.ClickWebView;
 
 /**
- * Created by hasee on 2016/7/13.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class WebViewActivity extends BaseActivity<CancelablePresenter> {
     @BindView(R.id.wv)
@@ -43,12 +47,24 @@ public class WebViewActivity extends BaseActivity<CancelablePresenter> {
         return R.layout.activity_webview;
     }
 
+    /**
+     * 获取启动者通过Intent传递过来的 数据
+     *
+     * @param map
+     */
     @Override
-    protected void onGetIntentData() {
-        super.onGetIntentData();
-        Intent intent = getIntent();
-        title = intent.getStringExtra(Key.h5Title);
-        url = intent.getStringExtra(Key.h5Url);
+    public void onGetIntentData(Map map) {
+        super.onGetIntentData(map);
+        printMap(map);
+    }
+
+    public void printMap(Map mp) {
+        Iterator it = mp.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            LogUtil.e(pair.getKey() + " = " + pair.getValue().getClass().getSimpleName()+" = "+pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
     }
 
     @Override

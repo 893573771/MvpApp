@@ -1,10 +1,15 @@
 package com.alex.app.config;
 
 /**
- * App的常量信息
- * Created by Alex on 2016/6/23.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class AppCon {
+    public static final String key = "key";
+    public static final String h5Url = "h5Url";
+    public static final String h5Title = "h5Title";
+    //＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊＊
     /**首次加载*/
     public static final String loadFirst = "loadFirst";
     /**下拉刷新*/

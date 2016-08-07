@@ -2,37 +2,49 @@ package github.alex.mvp;
 
 import android.support.annotation.NonNull;
 
+import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
-import rx.internal.util.SubscriptionList;
-
+import rx.subscriptions.CompositeSubscription;
 /**
- * Created by alex on 2016/7/7.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class CancelablePresenter<V extends BaseContract.View> {
     protected V view;
-    private SubscriptionList subscriptionList;
-
+    private CompositeSubscription compositeSubscription;
+    /**加载类型*/
+    protected String loadType;
     public CancelablePresenter(@NonNull V view) {
         this.view = view;
-        subscriptionList = new SubscriptionList();
+        compositeSubscription = new CompositeSubscription();
     }
 
     /**
      * 添加 Subscription
      */
     public void addSubscription(Subscription subscription) {
-        subscriptionList = (subscriptionList == null) ? new SubscriptionList() : subscriptionList;
-        subscriptionList.add(subscription);
+        compositeSubscription = (compositeSubscription == null) ? new CompositeSubscription() : compositeSubscription;
+        compositeSubscription.add(subscription);
     }
 
     /**
      * 取消订阅事件， 防止内存泄漏
      */
     public void detachView() {
-        if (subscriptionList != null) {
-            subscriptionList.unsubscribe();
-            subscriptionList = null;
+        if (compositeSubscription != null) {
+            compositeSubscription.clear();
         }
+        compositeSubscription = null;
         view = null;
+    }
+
+    public final class AddSubscriberOperator<T> implements Observable.Operator<T, T> {
+        @Override
+        public Subscriber<? super T> call(Subscriber<? super T> subscriber) {
+            addSubscription(subscriber);
+            return subscriber;
+        }
     }
 }

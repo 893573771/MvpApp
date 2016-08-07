@@ -1,9 +1,10 @@
 package github.alex.adapter;
 
 import java.util.List;
-
 /**
- * Created by hasee on 2016/7/13.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public interface IHandData<T> {
 

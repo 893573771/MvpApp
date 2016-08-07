@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.socks.library.KLog;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-public class ClassUtil 
+/**
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
+ */
+public class ClassUtil
 {
 	public static String TAG = "#ClassUtil#";
 	/**获取 JavaBean的成员变量的 个数  成员修饰符 必须是 public
@@ -45,7 +48,7 @@ public class ClassUtil
 			return Class.forName(className);
 		} catch (ClassNotFoundException e){
 			e.printStackTrace();
-			KLog.e(e);
+			LogUtil.e(e);
 		}
 		return null;
 	}

@@ -1,14 +1,22 @@
 package github.alex.adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import github.alex.model.ParcelableMap;
+
+import static github.alex.model.ParcelableMap.extraBundle;
+
 /**
- * Created by hasee on 2016/7/13.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<RecyclerViewHolder> implements IHandData<T> {
     protected List<T> list;
@@ -36,6 +44,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
     public void onBindViewHolder(RecyclerViewHolder holder, int position) {
         convert(holder, position);
     }
+
 
     @Override
     public int getItemCount() {
@@ -175,6 +184,25 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<Recycl
         }
         list.set(position, bean);
         notifyDataSetChanged();
+    }
+
+    /**
+     * 页面跳转
+     */
+    public void startActivity(@NonNull Class clazz) {
+        Intent intent = new Intent(context, clazz);
+        context.startActivity(intent);
+    }
+
+    public <M extends ParcelableMap> void startActivity(@NonNull Class clazz, M parcelableMap ){
+        Intent intent = new Intent(context, clazz);
+        intent.putExtra(extraBundle, parcelableMap);
+        context.startActivity(intent);
+    }
+    public <M extends ParcelableMap> void startActivity(@NonNull Class clazz,  String key, M parcelableMap ){
+        Intent intent = new Intent(context, clazz);
+        intent.putExtra(key, parcelableMap);
+        context.startActivity(intent);
     }
     /**
      * 关联 View 和 Bean 以及 处理点击事件

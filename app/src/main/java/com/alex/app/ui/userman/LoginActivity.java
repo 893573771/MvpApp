@@ -8,15 +8,16 @@ import android.widget.TextView;
 
 import com.alex.app.R;
 import com.alex.app.ui.base.BaseActivity;
+import com.jakewharton.rxbinding.widget.RxTextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import github.alex.util.ViewUtil;
 import github.hanks.checkbox.MaterialCheckBox;
-
+import rx.Observable;
 /**
- * Created by alex on 2016/6/23.
- *
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class LoginActivity extends BaseActivity<LoginPresenter> implements LoginContract.View {
 
@@ -36,6 +37,8 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     TextView tvRegister;
     @BindView(R.id.mcb)
     MaterialCheckBox materialCheckBox;
+    private Observable<CharSequence> phoneObservable;
+    private Observable<CharSequence> pwdObservable;
 
     @Override
     protected LoginPresenter createPresenter() {
@@ -55,18 +58,22 @@ public class LoginActivity extends BaseActivity<LoginPresenter> implements Login
     @Override
     public void onCreateData() {
         super.onCreateData();
+        setBackgroundColor(Color.parseColor("#FFFFFF"));
         ButterKnife.bind(this);
         setText(R.id.tv_title, "登录");
         materialCheckBox.setBackgroundColor(Color.parseColor("#F5F5F5"));
         materialCheckBox.setDoneShapeColor(Color.parseColor("#FF5722"));
         materialCheckBox.setPaintCenterColor(Color.parseColor("#FFFFFF"));
         materialCheckBox.setBorderColor(Color.parseColor("#E8E8E8"));
-
-        ViewUtil.setSelection(etPhone);
-        ViewUtil.setSelection(etPwd);
+        setSelection(etPhone);
+        setSelection(etPwd);
         findView(R.id.tv_login).setOnClickListener(this);
+        phoneObservable = RxTextView.textChanges(etPhone);
+        pwdObservable = RxTextView.textChanges(etPwd);
 
     }
+
+
 
     @Override
     public void onClick(View v) {

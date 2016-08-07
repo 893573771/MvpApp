@@ -9,6 +9,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import github.alex.util.font.FontUtil;
+/**
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
+ */
 public class RecyclerViewHolder extends RecyclerView.ViewHolder {
     private SparseArray<View> viewSparseArray;
     private View itemView;
@@ -27,6 +33,7 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
     public static RecyclerViewHolder getViewHolder(Context context, ViewGroup parent, int layoutId, int viewType) {
         View itemView = LayoutInflater.from(context).inflate(layoutId, parent, false);
         RecyclerViewHolder holder = new RecyclerViewHolder(context, itemView, parent);
+        FontUtil.setFontTypeface(holder.getConvertView());
         return holder;
     }
 
@@ -37,7 +44,7 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public <T extends View> T findViewById(int id) {
+    public <T extends View> T findView(int id) {
         View view = viewSparseArray.get(id);
         if (view == null) {
             view = itemView.findViewById(id);
@@ -46,7 +53,7 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
         return (T) view;
     }
 
-    public View getItemView() {
+    public View getConvertView() {
         return itemView;
     }
 
@@ -54,7 +61,7 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
      * 给TextView 设置文本
      */
     public RecyclerViewHolder setText(int id, String text) {
-        TextView textView = findViewById(id);
+        TextView textView = findView(id);
         if ((textView != null) && (!TextUtils.isEmpty(text))) {
             textView.setText(text);
         }
@@ -62,7 +69,7 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
     }
 
     public RecyclerViewHolder setOnClickListener(int id, View.OnClickListener listener) {
-        View view = findViewById(id);
+        View view = findView(id);
         if (view == null) {
             return this;
         }
@@ -71,7 +78,7 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
     }
 
     public RecyclerViewHolder setVisibility(int id, int visibility) {
-        View view = findViewById(id);
+        View view = findView(id);
         if (view == null) {
             return this;
         }
@@ -82,7 +89,7 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
     }
 
     public RecyclerViewHolder setTag(int id, Object tag) {
-        View view = findViewById(id);
+        View view = findView(id);
         if (view == null) {
             return this;
         }
@@ -91,7 +98,7 @@ public class RecyclerViewHolder extends RecyclerView.ViewHolder {
     }
 
     public RecyclerViewHolder setTag(int id, int key, Object tag) {
-        View view = findViewById(id);
+        View view = findView(id);
         if (view == null) {
             return this;
         }

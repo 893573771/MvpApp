@@ -1,68 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.alex.app">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.alex.app"
+    tools:ignore="MissingLeanbackLauncher">
 
     <!-- 在SDCard中创建与删除文件权限 -->
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"/>
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <!-- 往SDCard写入数据权限 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- 从SDCard读取数据权限 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <!-- 申请联网权限-->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- 检测网络状态 -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- 申请读通讯录权限-->
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <!-- 申请写通讯录权限-->
-    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <!-- 申请拨号权限-->
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <!-- 申请写通话记录权限-->
-    <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <!-- 申请读通话记录权限-->
-    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <!-- 申请发送短信权限-->
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
     <!-- 申请写短信记录权限-->
-    <uses-permission android:name="android.permission.WRITE_SMS"/>
+    <uses-permission android:name="android.permission.WRITE_SMS" />
     <!-- 申请读短信记录权限-->
-    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.READ_SMS" />
     <!-- 申请监控电量变化 -->
-    <uses-permission android:name="android.permission.BATTERY_STATS"/>
+    <uses-permission android:name="android.permission.BATTERY_STATS" />
     <!-- 申请开机启动权限 -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <!-- 打开Camera的权限 -->
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
-    <uses-feature android:name="android.hardware.camera"/>
-    <uses-feature android:name="android.hardware.autofocus"/>
+    <uses-feature
+        android:name="android.hardware.camera"
+        tools:ignore="UnsupportedTvHardware" />
+    <uses-feature android:name="android.hardware.autofocus" />
+
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
     <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
     <!-- 开启闪光灯权限 -->
-    <uses-permission android:name="android.permission.FLASHLIGHT"/>
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
 
     <!-- 开启闪光灯权限 -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:persistent="true"
         android:supportsRtl="true"
         android:theme="@style/alex_theme_no_title">
+
         <activity
             android:name=".ui.MainActivity"
-            android:theme="@style/alex_theme_cold_start"
-            >
+            android:alwaysRetainTaskState="true"
+            android:clearTaskOnLaunch="false"
+            android:theme="@style/alex_theme_cold_start">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <!--登录页面↓-->
@@ -70,25 +81,46 @@
             android:name=".ui.userman.LoginActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/alex_theme_swipe_activity" />
         <!--默认首页-->
         <activity
             android:name=".ui.index.IndexActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/alex_theme_swipe_activity" />
         <!--用户详情-->
         <activity
             android:name=".ui.userman.UserDetailActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            />
+            android:theme="@style/alex_theme_swipe_activity" />
         <!--用户详情-->
         <activity
             android:name=".ui.WebViewActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
+            android:theme="@style/alex_theme_swipe_activity" />
+        <activity
+            android:name=".ui.zhihu.ZhiHuActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/alex_theme_swipe_activity" />
+        <!--图片选择器：开始-->
+        <activity android:name="github.yongchun.imageselector.view.ImageSelectorActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
             />
+
+        <activity android:name="github.yongchun.imageselector.view.ImagePreviewActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            />
+
+        <activity android:name="github.yongchun.imageselector.view.ImageCropActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop"
+            />
+        <!--图片选择器：结束-->
     </application>
 
 </manifest>

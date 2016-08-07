@@ -5,24 +5,20 @@ import com.alex.app.httpman.HttpMan;
 import com.alex.app.model.MovieListBean;
 
 import github.alex.mvp.CancelablePresenter;
-import github.alex.okhttp.OkHttpUtil;
+import github.alex.retrofit.RetrofitClient;
 import github.alex.rxjava.BaseSubscriber;
-import github.alex.util.GsonUtil;
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
-
+import github.alex.rxjava.RxUtil;
 /**
- * Created by alex on 2016/6/21.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class IndexPresenter extends CancelablePresenter<IndexContract.View> implements IndexContract.Presenter {
+    public static final String baseUrl = "https://api.douban.com/v2/";
     private String loadType;
     private int start;
     private int count;
+
     public IndexPresenter(IndexContract.View view) {
         super(view);
         start = 0;
@@ -35,35 +31,30 @@ public class IndexPresenter extends CancelablePresenter<IndexContract.View> impl
     @Override
     public void loadMovieList(String loadType) {
         this.loadType = loadType;
-        if((AppCon.loadFirst.equals(loadType) || (AppCon.loadRefresh.equals(loadType)))){
+        if ((AppCon.loadFirst.equals(loadType) || (AppCon.loadRefresh.equals(loadType)))) {
             start = 0;
             count = 10;
-        }else{
+        } else {
             start += count;
             count = 10;
         }
-        OkHttpClient okHttpClient = OkHttpUtil.getInstance()
-                .build();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(HttpMan.doMainApi).client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create(GsonUtil.gson()))//添加 json 转换器
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())//添加 RxJava 适配器
-                .build();
-        HttpMan httpMan = retrofit.create(HttpMan.class);
+        new RetrofitClient.Builder()
+                .baseUrl(baseUrl)
+                .build()
+                .create(HttpMan.class).loadMovieList(start + "", count + "")
+                .compose(RxUtil.<MovieListBean>rxHttp())
+                .lift(new AddSubscriberOperator())
+                .subscribe(new MyBaseSubscriber());
 
-        Subscription subscription = httpMan.loadMovieList(start+"", count+"")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new MyHttpSubscriber());
-        addSubscription(subscription);
     }
 
-    private final class MyHttpSubscriber extends BaseSubscriber<MovieListBean> {
+    private final class MyBaseSubscriber extends BaseSubscriber<MovieListBean> {
         /**
          * 开始网络请求
          */
         @Override
         public void onStart() {
-            if(AppCon.loadFirst.equals(loadType)){
+            if (AppCon.loadFirst.equals(loadType)) {
                 view.showLoadingDialog();
             }
         }

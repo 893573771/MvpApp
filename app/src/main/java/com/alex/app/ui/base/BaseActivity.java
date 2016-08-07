@@ -4,9 +4,9 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -19,66 +19,73 @@ import android.view.WindowManager;
 import com.alex.app.R;
 import com.readystatesoftware.systembartint.SystemBarTintManager;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import github.alex.annotation.Status;
 import github.alex.dialog.LoadingDialog;
 import github.alex.dialog.basedialog.BaseDialog;
 import github.alex.dialog.callback.DialogOnKeyListener;
-import github.alex.helper.ToastHelper;
 import github.alex.helper.ViewHelper;
+import github.alex.model.ParcelableMap;
 import github.alex.model.StatusLayoutModel;
 import github.alex.mvp.BaseHttpContract;
 import github.alex.mvp.CancelablePresenter;
-import github.alex.util.ClassUtil;
 import github.alex.util.KeyPadUtil;
-import github.alex.util.NetUtil;
+import github.alex.util.LogUtil;
+import github.alex.util.font.FontUtil;
+import rx.Observable;
+import rx.Subscriber;
 import rx.Subscription;
-import rx.internal.util.SubscriptionList;
+import rx.subscriptions.CompositeSubscription;
 
+import static github.alex.model.ParcelableMap.bundleKey;
+import static github.alex.model.ParcelableMap.extraBundle;
 /**
- * mvx 模式开发的 基类
- *
- * @author AlexCheung
- * @version 1.1
- * @blog http://www.jianshu.com/users/c3c4ea133871/latest_articles
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public abstract class BaseActivity<P extends CancelablePresenter> extends AppCompatActivity implements BaseHttpContract.View, View.OnClickListener {
-    private static final String TAG = "#BaseActivity#";
+
     protected Context context;
     /**
      * Pre 的基类
      */
     protected P presenter;
     private LoadingDialog loadingDialog;
-    private ToastHelper toastHelper;
     private ViewHelper viewHelper;
     private SystemBarTintManager tintManager;
-    private SubscriptionList subscriptionList;
+    private CompositeSubscription compositeSubscription;
     /**
      * 上次点击的时间
      */
     private static long lastClickTime;
 
     @Override
-    @CallSuper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = this;
         presenter = createPresenter();
-        toastHelper = new ToastHelper();
         viewHelper = new ViewHelper(this);
-        onGetIntentData();
-        if ((Status.RES_ID_NO != getLayoutResId()) && (0 != getLayoutResId())) {
+        if ((Status.NO_RES_ID != getLayoutResId()) && (0 != getLayoutResId())) {
             setContentView(getLayoutResId());
+            setBackgroundColor(Color.parseColor("#EEEEEE"));
         }
-        if(findViewById(getLeftFinishViewId())!=null){
+        if (findViewById(getLeftFinishViewId()) != null) {
             findViewById(getLeftFinishViewId()).setOnClickListener(this);
         }
         onGetStatusLayoutModel();
         getBodyViewId();
         viewHelper.initMultiModeBodyLayout(this, getBodyViewId());
         initStatusBar();
-        onCreateData();
+        /*获取上个页面 传递的数据*/
+        Map<String, Object> intentMap = getStringObjectMap();
+        onGetIntentData(intentMap);
 
+        onCreateData();
+        FontUtil.setFontTypeface(findViewById(android.R.id.content));
     }
 
     /**
@@ -86,11 +93,28 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      */
     protected abstract P createPresenter();
 
+    /**
+     * 获取上个页面 传递的数据
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
-        onGetIntentData();
+        Map<String, Object> intentMap = getStringObjectMap();
+        onGetIntentData(intentMap);
+    }
+
+    @NonNull
+    private Map<String, Object> getStringObjectMap() {
+        Bundle intentBundle = getIntent().getParcelableExtra(extraBundle);
+        List<String> bundleKeyList = getIntent().getStringArrayListExtra(bundleKey);
+        Map<String, Object> intentMap = new HashMap<>();
+        for (int i = 0; (bundleKeyList != null) && (i < bundleKeyList.size()); i++) {
+            String key = bundleKeyList.get(i);
+            Object value = intentBundle.get(key);
+            intentMap.put(key, value);
+        }
+        return intentMap;
     }
 
     /**
@@ -104,13 +128,16 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      */
     @Override
     public int getBodyViewId() {
-        return Status.RES_ID_NO;
+        return Status.NO_RES_ID;
     }
 
     /**
      * 获取启动者通过Intent传递过来的 数据
+     *
+     * @param map
      */
-    protected void onGetIntentData() {
+    @Override
+    public void onGetIntentData(Map<String, Object> map) {
 
     }
 
@@ -120,10 +147,10 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      * @param ids
      */
     @Override
-    public void setOnClickListener(int... ids) {
+    public void setOnClickListener(@IdRes int... ids) {
         for (int i = 0; (ids != null) && (i < ids.length); i++) {
             View view = findViewById(ids[i]);
-            if(view != null){
+            if (view != null) {
                 view.setOnClickListener(this);
             }
         }
@@ -133,16 +160,15 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      * 展示吐司
      */
     @Override
-    public void toast(String text) {
-        if ((toastHelper != null) && (context != null)) {
-            toastHelper.toast(context, text);
+    public void toast(@NonNull String text) {
+        if ((viewHelper != null) && (context != null)) {
+            viewHelper.toast(context, text);
         }
     }
 
     @Override
     public void onInitLoadingDialog() {
         loadingDialog = new LoadingDialog(this);
-        loadingDialog.setCancelable(true);
         loadingDialog.setOnKeyListener(new DialogOnKeyListener(this, DialogOnKeyListener.DialogOnKeyType.dismissKillActivity));
     }
 
@@ -152,7 +178,7 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     @Override
     public void showLoadingDialog() {
         if (loadingDialog == null) {
-            loadingDialog = new LoadingDialog(this);
+            onInitLoadingDialog();
         }
         loadingDialog.show(BaseDialog.AnimType.centerNormal);
     }
@@ -169,7 +195,7 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
 
     /**
      * 执行在 onCreateView 中
-     * 通过 findViewById 初始主视图化控件
+     * 通过 findView 初始主视图化控件
      * 初始化所有基础数据，
      */
     @Override
@@ -185,17 +211,17 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
         if (isClickFrequently()) {
             return;
         }
-        if(getLeftFinishViewId() == v.getId()){
+        if (getLeftFinishViewId() == v.getId()) {
             finish();
         }
     }
 
     /**
-     * 判断点击过快 时间间隔 为 500毫秒
+     * 判断点击过快 时间间隔 为 300毫秒
      */
     private boolean isClickFrequently() {
         long currClickTime = System.currentTimeMillis();
-        if ((currClickTime - lastClickTime) < 500) {
+        if ((currClickTime - lastClickTime) < 300) {
             return true;
         }
         lastClickTime = currClickTime;
@@ -203,10 +229,21 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     }
 
     /**
-     * 页面跳转
+     * 页面跳转，无传值
      */
     public void startActivity(@NonNull Class clazz) {
-        ClassUtil.startActivity(this, clazz);
+        Intent intent = new Intent(this, clazz);
+        startActivity(intent);
+    }
+
+    /**
+     * 页面跳转，有传值
+     */
+    public <M extends ParcelableMap> void startActivity(@NonNull Class clazz, @NonNull M parcelableMap) {
+        Intent intent = new Intent(this, clazz);
+        intent.putExtra(extraBundle, parcelableMap.getBundle());
+        intent.putStringArrayListExtra(bundleKey, parcelableMap.getKeyList());
+        startActivity(intent);
     }
 
     @Override
@@ -253,11 +290,29 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      */
     @Override
     public void setText(@IdRes int id, String text) {
-        viewHelper.setText(findView(id), text);
+        setText(findView(id), text);
+    }
+
+    /**
+     * 将EditText的光标移至最后
+     *
+     * @param view
+     */
+    @Override
+    public void setSelection(@NonNull View view) {
+        if (viewHelper == null) {
+            LogUtil.e("viewHelper 为空");
+            return;
+        }
+        viewHelper.setSelection(view);
     }
 
     @Override
     public void showFailLayout() {
+        if (viewHelper == null) {
+            LogUtil.e("viewHelper 为空");
+            return;
+        }
         viewHelper.showFailLayout();
     }
 
@@ -269,20 +324,19 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     @Override
     protected void onPause() {
         super.onPause();
+        if (viewHelper != null) {
+            viewHelper.cancelToast();
+        }
     }
 
     @Override
-    @CallSuper
     protected void onStop() {
         super.onStop();
-        if (toastHelper != null) {
-            toastHelper.onDetachView();
-        }
-        KeyPadUtil.closeKeyPad(this);
+        KeyPadUtil.instance().closeKeyPad(this);
     }
 
     /**
-     * 扩展的 findViewById
+     * 扩展的 findView
      */
     public <T extends View> T findView(int id) {
         return (T) findViewById(id);
@@ -304,13 +358,19 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     }
 
     /**
+     * 下拉刷新 或 加载 完成
+     */
+    @Override
+    public void onRefreshFinish() {
+
+    }
+    /**
      * 获取标题的左部按钮，大多数情况下为 返回 按钮
      */
     @Override
     public int getLeftFinishViewId() {
-        return Status.RES_ID_NO;
+        return Status.NO_RES_ID;
     }
-
 
 
     /**
@@ -354,10 +414,18 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
         win.setAttributes(winParams);
     }
 
+    /**
+     * 给整体 Activity 设置背景色
+     */
+    public void setBackgroundColor(int color) {
+        ViewGroup contentFrameLayout = (ViewGroup) findViewById(Window.ID_ANDROID_CONTENT);
+        contentFrameLayout.setBackgroundColor(color);
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            return KeyPadUtil.canHiddenKeyPad(BaseActivity.this);
+            return KeyPadUtil.instance().canHiddenKeyPad(BaseActivity.this);
         }
         return false;
     }
@@ -367,7 +435,7 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                return KeyPadUtil.canHiddenKeyPad(BaseActivity.this);
+                return KeyPadUtil.instance().canHiddenKeyPad(BaseActivity.this);
             }
             return false;
         }
@@ -378,16 +446,8 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      * 添加 Subscription
      */
     public void addSubscription(Subscription subscription) {
-        subscriptionList = (subscriptionList == null) ? new SubscriptionList() : subscriptionList;
-        subscriptionList.add(subscription);
-    }
-
-    /**
-     * 获取当前网络是否可用
-     */
-    @Override
-    public boolean isNetworkAvailable() {
-        return NetUtil.isAvailable(this);
+        compositeSubscription = (compositeSubscription == null) ? new CompositeSubscription() : compositeSubscription;
+        compositeSubscription.add(subscription);
     }
 
     /**
@@ -401,24 +461,37 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
             loadingDialog = null;
         }
         if (viewHelper != null) {
-            viewHelper.onDetachView();
+            viewHelper.detachView();
             viewHelper = null;
         }
-        if (toastHelper != null) {
-            toastHelper.onDetachView();
-            toastHelper = null;
-        }
         tintManager = null;
-        KeyPadUtil.closeKeyPad(this);
-        if (subscriptionList != null) {
-            /*防止 RxJava 出现内存泄漏问题*/
-            subscriptionList.unsubscribe();
-            subscriptionList = null;
-        }
+        KeyPadUtil.instance().closeKeyPad(this);
+        KeyPadUtil.detachView();
+        unSubscribeRxJava();
         if (presenter != null) {
             presenter.detachView();
         }
         presenter = null;
     }
 
+    /**
+     * 解除订阅，防止内存泄漏
+     */
+    @Override
+    public void unSubscribeRxJava() {
+        if (compositeSubscription != null) {
+            /*防止 RxJava 出现内存泄漏问题*/
+            compositeSubscription.clear();
+            compositeSubscription = null;
+        }
+    }
+
+    /*操作符 - 转换类**/
+    public final class AddSubscriberOperator<T> implements Observable.Operator<T, T> {
+        @Override
+        public Subscriber<? super T> call(Subscriber<? super T> subscriber) {
+            addSubscription(subscriber);
+            return subscriber;
+        }
+    }
 }

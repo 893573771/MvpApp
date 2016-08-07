@@ -11,17 +11,17 @@ import com.alex.app.ui.base.BaseActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import github.aspsine.swipetoloadlayout.SwipeToLoadLayout;
-import github.aspsine.swipetoloadlayout.callback.OnSwipeToLoadListener;
-
+import github.liaoinstan.springview.RefreshLayout;
 /**
- * Created by Alex on 2016/6/28.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class IndexActivity extends BaseActivity<IndexPresenter> implements IndexContract.View {
-    @BindView(R.id.swipe_target)
+    @BindView(R.id.rv)
     RecyclerView recyclerView;
-    @BindView(R.id.stll)
-    SwipeToLoadLayout swipeToLoadLayout;
+    @BindView(R.id.rl)
+    RefreshLayout refreshLayout;
     private IndexAdapter adapter;
 
     /**
@@ -32,6 +32,9 @@ public class IndexActivity extends BaseActivity<IndexPresenter> implements Index
         return new IndexPresenter(this);
     }
 
+    /**
+     * 配置 布局文件的 资源 id
+     */
     @Override
     public int getLayoutResId() {
         return R.layout.activity_index;
@@ -54,11 +57,11 @@ public class IndexActivity extends BaseActivity<IndexPresenter> implements Index
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        swipeToLoadLayout.setOnSwipeToLoadListener(new MyOnSwipeToLoadListener());
+        refreshLayout.setOnRefreshListener(new MyOnSwipeToLoadListener());
         loadJsonData(AppCon.loadFirst);
     }
 
-    private final class MyOnSwipeToLoadListener implements OnSwipeToLoadListener {
+    private final class MyOnSwipeToLoadListener implements RefreshLayout.OnRefreshListener {
         @Override
         public void onRefresh() {
             loadJsonData(AppCon.loadRefresh);
@@ -71,10 +74,6 @@ public class IndexActivity extends BaseActivity<IndexPresenter> implements Index
     }
 
     private void loadJsonData(String loadType) {
-        if(!isNetworkAvailable()){
-            toast(AppCon.netNo);
-            return ;
-        }
         presenter.loadMovieList(loadType);
     }
 
@@ -92,6 +91,6 @@ public class IndexActivity extends BaseActivity<IndexPresenter> implements Index
         }else if(AppCon.loadMore.equals(loadType)){
             adapter.addItem(bean.subjects);
         }
-        swipeToLoadLayout.stopSwipeToLoad();
+        refreshLayout.stopRefreshLayout();
     }
 }

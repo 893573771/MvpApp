@@ -7,9 +7,10 @@ import com.alex.app.R;
 
 import github.alex.dialog.basedialog.BaseDialog;
 import github.alex.dialog.basedialog.StatusBarUtils;
-
 /**
- * Created by Alex on 2016/5/27.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class LoadingDialog extends BaseDialog {
     public LoadingDialog(Context context) {

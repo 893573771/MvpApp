@@ -1,19 +1,21 @@
 package github.alex.helper;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
+import android.text.Editable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alex.app.R;
 
@@ -23,13 +25,18 @@ import java.util.Map;
 import java.util.Set;
 
 import github.alex.annotation.Status;
+import github.alex.dialog.LoadingDialog;
 import github.alex.mvp.BaseHttpContract;
-
+import github.alex.util.LogUtil;
 /**
- * Created by Alex on 2016/6/20.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class ViewHelper {
-    private static final String TAG = "#ViewHelper#";
+    private LoadingDialog loadingDialog;
+    private Toast toast;
+    private TextView toastTextView;
     private BaseHttpContract.View view;
     private Map<String, View> layoutMap;
 
@@ -44,12 +51,12 @@ public class ViewHelper {
     }
 
     public void initMultiModeBodyLayout(@NonNull  Context context, @IdRes int bodyLayoutId) {
-        if (bodyLayoutId == Status.LAYOUT_RES_ID_NO) {
-            Log.e(TAG, "主布局文件为空");
+        if (bodyLayoutId == Status.NO_LAYOUT_RES_ID) {
+            LogUtil.w("主布局文件为空");
             return;
         }
         if (context == null) {
-            Log.e(TAG, "上下文为空");
+            LogUtil.e("上下文为空");
             return;
         }
         layoutMap = new HashMap<>();
@@ -68,7 +75,7 @@ public class ViewHelper {
         /*FrameLayout 第二层视图*/
 
         /**默认 布局*/
-        if (view.onGetStatusLayoutModel().defaultLayoutId != Status.LAYOUT_RES_ID_NO) {
+        if (view.onGetStatusLayoutModel().defaultLayoutId != Status.NO_LAYOUT_RES_ID) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().defaultLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setVisibility(View.GONE);
@@ -76,7 +83,7 @@ public class ViewHelper {
         }
 
         /**loading布局*/
-        if (view.onGetStatusLayoutModel().loadingLayoutId != Status.LAYOUT_RES_ID_NO) {
+        if (view.onGetStatusLayoutModel().loadingLayoutId != Status.NO_LAYOUT_RES_ID) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().loadingLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setVisibility(View.GONE);
@@ -84,7 +91,7 @@ public class ViewHelper {
         }
 
         /**空数据 布局*/
-        if (view.onGetStatusLayoutModel().emptyLayoutId != Status.LAYOUT_RES_ID_NO) {
+        if (view.onGetStatusLayoutModel().emptyLayoutId != Status.NO_LAYOUT_RES_ID) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().emptyLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setOnClickListener(new MyOnClickListener(sEmptyLayout));
@@ -93,7 +100,7 @@ public class ViewHelper {
         }
 
         /**加载出错 布局*/
-        if (view.onGetStatusLayoutModel().failLayoutId != Status.LAYOUT_RES_ID_NO) {
+        if (view.onGetStatusLayoutModel().failLayoutId != Status.NO_LAYOUT_RES_ID) {
             View layout = LayoutInflater.from(context).inflate(view.onGetStatusLayoutModel().failLayoutId, null);
             bodyFrameLayout.addView(layout, layoutParams);
             layout.setOnClickListener(new MyOnClickListener(sFailLayout));
@@ -112,7 +119,7 @@ public class ViewHelper {
     public void setFailMessage(@NonNull String message) {
         TextView textView = (TextView) layoutMap.get(sFailLayout).findViewById(view.onGetStatusLayoutModel().failTextViewId);
         if ((textView == null) || TextUtils.isEmpty(message)) {
-            Log.e(TAG, "出错信息为空");
+            LogUtil.e("出错信息为空");
             return;
         }
         textView.setText(message);
@@ -151,33 +158,31 @@ public class ViewHelper {
      */
     public void setText(@NonNull View view, @NonNull String text) {
         if (view == null) {
-            Log.e(TAG, "view 为空 ");
+            LogUtil.e("view 为空 ");
             return;
         }
         if (TextUtils.isEmpty(text)) {
-            Log.e(TAG, "文本 为空");
+            LogUtil.e("文本 为空");
             return;
         }
         if (view instanceof TextView) {
             TextView textView = (TextView) view;
             textView.setText(text);
-        } else if (view instanceof Button) {
-            Button button = (Button) view;
-            button.setText(text);
-        } else if (view instanceof EditText) {
-            EditText editText = (EditText) view;
-            editText.setText(text);
-            editText.setSelection(text.length());
         } else {
-            Log.e(TAG, "view 不能被强转成 TextView  或 Button 或 EditText");
+            LogUtil.e("view 不能被强转成 TextView  或 Button 或 EditText");
         }
+
     }
 
     /**
      * 给文本控件设置文本
      */
     public void setText(@IdRes int id, @NonNull String text) {
-        setText(view.findView(id), text);
+        View view = this.view.findView(id);
+        if (view instanceof TextView) {
+            TextView textView = (TextView) this.view;
+            setText(textView, text);
+        }
     }
 
     /**
@@ -187,7 +192,7 @@ public class ViewHelper {
         switchLayout(sFailLayout);
     }
 
-    private void switchLayout(String layoutName) {
+    private void switchLayout(@NonNull String layoutName) {
         if (layoutMap == null) {
             return;
         }
@@ -226,7 +231,59 @@ public class ViewHelper {
         }
     }
 
-    public void onDetachView() {
+    /**
+     * 展示吐司, 默认居中偏上
+     *
+     * @param text 吐司内容
+     */
+    public void toast(@NonNull Context context, @NonNull String text) {
+        if(context == null){
+            return ;
+        }
+        if (toast == null) {
+            toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 100);
+        }
+        if (toastTextView == null) {
+            int padding = (int) dp2Px(context, 8);
+            toastTextView = new TextView(context);
+            toastTextView.setTextColor(Color.parseColor("#FFFFFF"));
+            toastTextView.setPadding(padding, padding, padding, padding);
+            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            toastTextView.setLayoutParams(params);
+            GradientDrawable gradientDrawableNormal = new GradientDrawable();
+            gradientDrawableNormal.setShape(GradientDrawable.RECTANGLE);
+            gradientDrawableNormal.setColor(Color.parseColor("#99353535"));
+            float radius = dp2Px(context, 4);
+            gradientDrawableNormal.setCornerRadii(new float[]{radius, radius, radius, radius, radius, radius, radius, radius});
+            toastTextView.setBackgroundDrawable(gradientDrawableNormal);
+        }
+        if (!TextUtils.isEmpty(text)) {
+            toastTextView.setText(text);
+        } else {
+            toastTextView.setText("  ");
+        }
+        toast.setView(toastTextView);
+        toast.show();
+    }
+
+    public void cancelToast(){
+        if(toast !=null){
+            toast.cancel();
+        }
+    }
+
+
+    public void detachView() {
+        if(toast !=null){
+            toast.cancel();
+            toast = null;
+        }
+        if(toastTextView !=null){
+            toastTextView.destroyDrawingCache();
+            toastTextView = null;
+        }
+
         if (layoutMap != null) {
             Set<Map.Entry<String, View>> entrySet = layoutMap.entrySet();
             for (Iterator<Map.Entry<String, View>> ir = entrySet.iterator(); ir.hasNext(); ) {
@@ -241,5 +298,34 @@ public class ViewHelper {
             layoutMap = null;
         }
         view = null;
+    }
+    /**
+     * 将EditText的光标移至最后
+     *
+     * @param view
+     */
+    public void setSelection(@NonNull View view) {
+        if(view == null) {
+            LogUtil.e("View 为空");
+            return ;
+        }
+        if( !(view  instanceof EditText)){
+            LogUtil.e("View 不能被强转成 EditText");
+            return ;
+        }
+        EditText editText = (EditText) view;
+        Editable text = editText.getText();
+        if(TextUtils.isEmpty(text)){
+            return ;
+        }
+        editText.setSelection(text.length());
+    }
+    /**数据转换: dp---->px*/
+    public static float dp2Px(Context context, float dp)
+    {
+        if (context == null) {
+            return -1;
+        }
+        return dp * context.getResources().getDisplayMetrics().density;
     }
 }

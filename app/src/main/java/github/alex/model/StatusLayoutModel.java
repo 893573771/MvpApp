@@ -6,9 +6,10 @@ import android.support.annotation.LayoutRes;
 import com.alex.app.R;
 
 import github.alex.annotation.Status;
-
 /**
- * Created by Alex on 2016/6/21.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class StatusLayoutModel {
     @LayoutRes
@@ -38,6 +39,15 @@ public class StatusLayoutModel {
     @IdRes
     /**加载失败视图的  文本控件 资源 id*/
     public int failTextViewId;
+    @LayoutRes
+    /**加载失败视图的  xml 资源 id*/
+    public int netErrorLayoutId;
+    @IdRes
+    /**加载失败视图的  图片控件 资源 id*/
+    public int netErrorImageViewId;
+    @IdRes
+    /**加载失败视图的  文本控件 资源 id*/
+    public int netErrorTextViewId;
     @LayoutRes
     /**空数据视图的  xml 资源 id*/
     public int emptyLayoutId;
@@ -95,6 +105,21 @@ public class StatusLayoutModel {
         return this;
     }
 
+    public StatusLayoutModel setNeErrorLayoutId(int netErrorLayoutId) {
+        this.netErrorLayoutId = netErrorLayoutId;
+        return this;
+    }
+
+    public StatusLayoutModel setNeErrorImageViewId(int netErrorImageViewId) {
+        this.netErrorImageViewId = netErrorImageViewId;
+        return this;
+    }
+
+    public StatusLayoutModel setNeErrorTextViewId(int netErrorTextViewId) {
+        this.netErrorTextViewId = netErrorTextViewId;
+        return this;
+    }
+
     public StatusLayoutModel setEmptyLayoutId(int emptyLayoutId) {
         this.emptyLayoutId = emptyLayoutId;
         return this;
@@ -124,11 +149,14 @@ public class StatusLayoutModel {
                 .setDefaultImageViewId(R.id.iv_logo)
                 .setDefaultTextViewId(R.id.tv_content)
                 .setLoadingLayoutId(R.layout.alex_layout_loading_circle_orange)
-                .setLoadingViewId(Status.RES_ID_NO)
-                .setLoadingTextViewId(Status.RES_ID_NO)
+                .setLoadingViewId(Status.NO_RES_ID)
+                .setLoadingTextViewId(Status.NO_RES_ID)
                 .setEmptyLayoutId(R.layout.alex_layout_empty)
                 .setEmptyImageViewId(R.id.iv_logo)
                 .setEmptyTextViewId(R.id.tv_content)
+                .setNeErrorLayoutId(R.layout.alex_layout_net_error)
+                .setNeErrorImageViewId(R.id.iv_logo)
+                .setNeErrorTextViewId(R.id.tv_content)
                 .setFailLayoutId(R.layout.alex_layout_fail)
                 .setFailImageViewId(R.id.iv_logo)
                 .setFailTextViewId(R.id.tv_content);

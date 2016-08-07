@@ -1,21 +1,21 @@
 package com.alex.app.ui.index;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.alex.app.R;
-import com.alex.app.config.Key;
 import com.alex.app.model.MovieListBean;
 import com.alex.app.ui.WebViewActivity;
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Picasso;
 
 import github.alex.adapter.BaseRecyclerAdapter;
 import github.alex.adapter.RecyclerViewHolder;
-
+import github.alex.model.ParcelableMap;
 /**
- * Created by alex on 2016/7/13.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class IndexAdapter extends BaseRecyclerAdapter<MovieListBean.SubjectsBean> {
     public IndexAdapter(Context context) {
@@ -31,9 +31,9 @@ public class IndexAdapter extends BaseRecyclerAdapter<MovieListBean.SubjectsBean
     public void convert(RecyclerViewHolder holder, int position) {
         MovieListBean.SubjectsBean bean = list.get(position);
         holder.setText(R.id.tv, bean.title);
-        Glide.with(context).load(bean.images.large).placeholder(R.drawable.logo_data_empty).error(R.drawable.logo_data_empty).into((ImageView) holder.findViewById(R.id.iv_logo));
+        Picasso.with(context).load(bean.images.large).placeholder(R.drawable.logo_data_empty).error(R.drawable.logo_data_empty).into((ImageView) holder.findView(R.id.iv_logo));
         MyOnClickListener onClickListener = new MyOnClickListener(position);
-        holder.findViewById(R.id.layout_body).setOnClickListener(onClickListener);
+        holder.findView(R.id.layout_body).setOnClickListener(onClickListener);
     }
 
     private final class MyOnClickListener implements View.OnClickListener{
@@ -46,10 +46,8 @@ public class IndexAdapter extends BaseRecyclerAdapter<MovieListBean.SubjectsBean
         @Override
         public void onClick(View view) {
             MovieListBean.SubjectsBean bean = list.get(position);
-            Intent intent = new Intent(context, WebViewActivity.class);
-            intent.putExtra(Key.h5Url, bean.alt);
-            intent.putExtra(Key.h5Title, bean.title);
-            context.startActivity(intent);
+            ParcelableMap map = new ParcelableMap().put("url", bean.alt).put("title", bean.title);
+            startActivity(WebViewActivity.class, map);
         }
     }
 }

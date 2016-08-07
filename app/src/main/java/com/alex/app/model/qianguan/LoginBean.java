@@ -1,31 +1,20 @@
 package com.alex.app.model.qianguan;
-
-import com.google.gson.Gson;
-
 /**
- * Created by Alex on 2016/6/22.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class LoginBean {
 
 
     /**
-     * pwd : 123123
-     * name : Alex
+     * code : 2
+     * data : {}
+     * message : 由于你在新设备登录，需要
+     验证你的手机号
+     （131****8029）
      */
 
-    public String pwd;
-    public String name;
-
-    public static LoginBean objectFromData(String str) {
-
-        return new Gson().fromJson(str, LoginBean.class);
-    }
-
-    @Override
-    public String toString() {
-        return "LoginBean{" +
-                "pwd='" + pwd + '\'' +
-                ", name='" + name + '\'' +
-                '}';
-    }
+    public String code;
+    public String message;
 }

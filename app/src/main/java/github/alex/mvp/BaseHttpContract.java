@@ -1,9 +1,13 @@
 package github.alex.mvp;
 
+import android.support.annotation.NonNull;
+
 import github.alex.model.StatusLayoutModel;
 
 /**
- * Created by hasee on 2016/6/28.
+ * 作者：Alex
+ * 时间：2016年08月06日    08:06
+ * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public interface BaseHttpContract {
 
@@ -52,7 +56,7 @@ public interface BaseHttpContract {
         /**
          * 展示出错消息
          */
-        void setFailMessage(String message);
+        void setFailMessage(@NonNull String message);
 
         /**
          * 展示加载失败的布局
@@ -60,10 +64,9 @@ public interface BaseHttpContract {
         void showFailLayout();
 
         /**
-         * 获取当前网络是否可用
+         * 下拉刷新 或 加载 完成
          */
-        boolean isNetworkAvailable();
-
+        void onRefreshFinish();
     }
 
     interface Presenter extends BaseContract.Presenter {

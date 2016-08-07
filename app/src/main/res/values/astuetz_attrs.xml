@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="PagerSlidingTabStrip">
+
+        <!-- tabs下面的小滑块的 颜色 -->
+        <attr name="pstsIndicatorColor" format="color" />
+        <!-- tabs下面的小滑块的 高度 -->
+        <attr name="pstsIndicatorHeight" format="dimension" />
+        <!-- tabs下面的小滑块的 左右padding -->
+        <attr name="pstsIndicatorPaddingLR" format="dimension" />
+        <!-- tabs下面的直线 颜色 -->
+        <attr name="pstsUnderlineColor" format="color" />
+        <!-- tabs下面的直线 高度 -->
+        <attr name="pstsUnderlineHeight" format="dimension" />
+        <!-- tabs中间的 垂直细线的 颜色 -->
+        <attr name="pstsDividerColor" format="color" />
+        <!-- tabs中间的 垂直细线的 上下间距 -->
+        <attr name="pstsDividerPadding" format="dimension" />
+        <!-- tabs 整体的左右padding -->
+        <attr name="pstsTabPaddingLeftRight" format="dimension" />
+        <!-- 点击item产生的 滑动偏移量， -->
+        <attr name="pstsScrollOffset" format="dimension" />
+        <attr name="pstsTabBackground" format="reference" />
+        <!-- 所有的标签，宽度一样，默认为 否 -->
+        <attr name="pstsShouldExpand" format="boolean" />
+        <!-- 标签英文大写，默认大写 -->
+        <attr name="pstsTextAllCaps" format="boolean" />
+        <!-- 标签字体色 -->
+        <attr name="pstsTextColor" format="color|reference" />
+        <!-- 标签字体色，被选中的字体色 -->
+        <attr name="pstsTextColorSelected" format="color|reference" />
+        <!-- 标签字体大小 -->
+        <attr name="pstsTextSize" format="dimension" />
+        <!-- 标签字体大小，被选中的字体大小  -->
+        <attr name="pstsTextSizeSelected" format="dimension" />
+    </declare-styleable>
+
+</resources>
