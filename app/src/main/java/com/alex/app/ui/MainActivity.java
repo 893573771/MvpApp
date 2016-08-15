@@ -6,7 +6,7 @@ import android.widget.TextView;
 import com.alex.app.R;
 import com.alex.app.model.UserBean;
 import com.alex.app.ui.base.BaseActivity;
-import com.alex.app.ui.index.IndexActivity;
+import com.alex.app.ui.douban.DouBanActivity;
 import com.alex.app.ui.userman.LoginActivity;
 import com.alex.app.ui.userman.UserDetailActivity;
 import com.alex.app.ui.zhihu.ZhiHuActivity;
@@ -60,9 +60,8 @@ public class MainActivity extends BaseActivity<CancelablePresenter> {
         } else if (R.id.tv_add_img == v.getId()) {
             startActivity(UserDetailActivity.class, parcelableMap);
         } else if (R.id.tv_doubai == v.getId()) {
-            startActivity(IndexActivity.class, parcelableMap);
+            startActivity(DouBanActivity.class, parcelableMap);
         } else if (R.id.tv_zhihu == v.getId()) {
-            //startTimer();
             startActivity(ZhiHuActivity.class, parcelableMap);
         }
     }

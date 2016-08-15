@@ -1,12 +1,5 @@
 package github.alex.util;
 
-import android.app.Application;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Build;
-
-import java.lang.reflect.Method;
 import java.net.ConnectException;
 import java.net.HttpRetryException;
 import java.net.MalformedURLException;
@@ -27,11 +20,6 @@ import retrofit2.adapter.rxjava.HttpException;
  * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class HttpErrorUtil {
-    private static Application application;
-    public static void init(Application application){
-        HttpErrorUtil.application = application;
-    }
-
     public static String getMessage(Throwable e) {
         int code = 404;
         String message = "网络不稳定";
@@ -128,53 +116,4 @@ public class HttpErrorUtil {
         return message;
     }
 
-    /**
-     *  确定是否 网络的连接。
-     */
-    private static boolean isNetworkAvailable() {
-        if(application == null){
-            LogUtil.e("请在Application 中调用 HttpErrorUtil.init(this); ");
-            return false;
-        }
-        ConnectivityManager connectivity = (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE);
-        Class<?> connectivityManagerClass = connectivity.getClass();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            try {
-                Method getAllNetworksMethod = connectivityManagerClass.getMethod("getAllNetworks");
-                getAllNetworksMethod.setAccessible(true);
-                Object[] networkArray = (Object[]) getAllNetworksMethod.invoke(connectivity);
-                for (Object network : networkArray) {
-                    Method getNetworkInfoMethod = connectivityManagerClass.getMethod("getNetworkInfo", Class.forName("android.net.Network"));
-                    getNetworkInfoMethod.setAccessible(true);
-                    NetworkInfo networkInfo = (NetworkInfo) getNetworkInfoMethod.invoke(connectivity, network);
-                    if (isConnected(networkInfo)){
-                        return true;
-                    }
-                }
-            } catch (Throwable e) {
-                LogUtil.e("有异常："+e);
-            }
-        } else {
-            try {
-                Method getAllNetworkInfoMethod = connectivityManagerClass.getMethod("getAllNetworkInfo");
-                getAllNetworkInfoMethod.setAccessible(true);
-                Object[] networkInfoArray = (Object[]) getAllNetworkInfoMethod.invoke(connectivity);
-                for (Object object : networkInfoArray) {
-                    if (isConnected((NetworkInfo) object)){
-                        return true;
-                    }
-                }
-            } catch (Throwable e) {
-                LogUtil.e("有异常："+e);
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 根据不同类型的网络，以确定是否该网络的连接。
-     */
-    private static boolean isConnected(NetworkInfo networkInfo) {
-        return networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected();
-    }
 }

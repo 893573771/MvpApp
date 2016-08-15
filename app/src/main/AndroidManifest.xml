@@ -84,7 +84,7 @@
             android:theme="@style/alex_theme_swipe_activity" />
         <!--默认首页-->
         <activity
-            android:name=".ui.index.IndexActivity"
+            android:name=".ui.douban.DouBanActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/alex_theme_swipe_activity" />

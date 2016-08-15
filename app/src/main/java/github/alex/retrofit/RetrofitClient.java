@@ -4,8 +4,10 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import java.io.File;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import github.alex.retrofit.httpman.BaseHttpMan;
 import github.alex.retrofit.interceptor.CacheInterceptor;
 import github.alex.retrofit.interceptor.GzipRequestInterceptor;
 import github.alex.retrofit.interceptor.RequestInterceptor;
@@ -17,7 +19,9 @@ import retrofit2.CallAdapter;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import retrofit2.converter.fastjson.FastJsonConverterFactory;
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * 作者：Alex
@@ -27,6 +31,7 @@ import retrofit2.converter.fastjson.FastJsonConverterFactory;
 @SuppressWarnings("ALL")
 public class RetrofitClient {
     private static RetrofitClient retrofitClient;
+    private static BaseHttpMan baseHttpMan;
     private Builder builder;
 
     private RetrofitClient() {
@@ -37,15 +42,30 @@ public class RetrofitClient {
         this.builder = builder;
     }
 
-    public static RetrofitClient getInstance() {
-        if (retrofitClient == null) {
-            synchronized (RetrofitClient.class) {
-                retrofitClient = (retrofitClient == null) ? new RetrofitClient() : retrofitClient;
-            }
-        }
-        return retrofitClient;
+    /**
+     * 不需要请求行的（拼接路径）， get 请求
+     */
+    public Observable<String> get() {
+        return get("");
     }
 
+    /**
+     * 需要请求行的（拼接路径）， get 请求
+     */
+    public Observable<String> get(String url) {
+          return get(url, null);
+    }
+    /**
+     * 需要请求行的（拼接路径）， get 请求
+     */
+    public Observable<String> get(String url, Map<String, String> paramsMap) {
+        baseHttpMan = retrofitClient.create(BaseHttpMan.class);
+        if((paramsMap!=null) && (paramsMap.size()>0)){
+            return baseHttpMan.get(url, paramsMap).subscribeOn(Schedulers.io()).unsubscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread());
+        }else{
+            return baseHttpMan.get(url).subscribeOn(Schedulers.io()).unsubscribeOn(AndroidSchedulers.mainThread()).observeOn(AndroidSchedulers.mainThread());
+        }
+    }
 
     public <T> T create(Class<T> service, String baseUrl, Converter.Factory converterFactory, OkHttpClient okhttpClient) {
         builder.baseUrl = baseUrl;
@@ -60,11 +80,17 @@ public class RetrofitClient {
     }
 
     public <T> T create(Class<T> service) {
-        Retrofit.Builder builder = new Retrofit.Builder();
-        if (!TextUtils.isEmpty(this.builder.baseUrl)) {
-            builder.baseUrl(this.builder.baseUrl);
+        if (!service.isInterface()) {
+            LogUtil.e(service.getClass().getSimpleName() + " 不是 Interface 类型");
+            return null;
         }
-
+        Retrofit.Builder builder = new Retrofit.Builder();
+        if (TextUtils.isEmpty(this.builder.baseUrl)) {
+            LogUtil.e("baseUrl 不可以为空");
+            return null;
+        }
+        builder.baseUrl(this.builder.baseUrl);
+        LogUtil.e("baseUrl = " + this.builder.baseUrl);
         /*关联 okhttp*/
         if (this.builder.okHttpClient != null) {
             builder.client(this.builder.okHttpClient);
@@ -76,7 +102,7 @@ public class RetrofitClient {
         if (this.builder.converterFactory != null) {
             builder.addConverterFactory(this.builder.converterFactory);
         } else {
-            builder.addConverterFactory(FastJsonConverterFactory.create());
+            builder.addConverterFactory(StringConverterFactory.create());
         }
 
         /*关联 rxjava*/
@@ -316,7 +342,9 @@ public class RetrofitClient {
 
         public RetrofitClient build() {
             initClient();
-            return new RetrofitClient(this);
+            RetrofitClient retrofitClient = new RetrofitClient(this);
+            RetrofitClient.retrofitClient = retrofitClient;
+            return retrofitClient;
         }
     }
 

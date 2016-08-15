@@ -11,7 +11,6 @@ import android.widget.TextView;
 
 import java.io.File;
 
-import github.alex.util.KeyPadUtil;
 /**
  * 作者：Alex
  * 时间：2016年08月06日    08:06
@@ -21,22 +20,10 @@ import github.alex.util.KeyPadUtil;
 public class FontUtil {
     public static final String TAG = "FontUtil";
     public static Typeface typeface;
-    private  static FontUtil instance;
 
-    private FontUtil() {
-
-    }
-    public static FontUtil instance(){
-        if(instance == null){
-            synchronized (KeyPadUtil.class){
-                instance = (instance==null) ? new FontUtil():instance;
-            }
-        }
-        return instance;
-    }
-    public static void initFormAssets(Context context, String fontPath){
+    public static void initFormAssets(Context context, String fontPath) {
         try {
-             typeface = Typeface.createFromAsset(context.getAssets(), fontPath);
+            typeface = Typeface.createFromAsset(context.getAssets(), fontPath);
         } catch (Exception e) {
             Log.w(TAG, "初始化失败，请检查fontsPath是否错误");
         }
@@ -44,6 +31,7 @@ public class FontUtil {
 
     /**
      * 初始化
+     *
      * @param fontPath 字体包存放路径（例如：sdcard/font.ttf）
      */
     public static void initFormFile(String fontPath) {
@@ -59,7 +47,7 @@ public class FontUtil {
      *
      * @param fontFile 字体包文件
      */
-    public static void  initFormFile(File fontFile) {
+    public static void initFormFile(File fontFile) {
         try {
             typeface = Typeface.createFromFile(fontFile);
         } catch (Exception e) {
@@ -75,6 +63,7 @@ public class FontUtil {
     public static void setFontTypeface(View view) {
         setFontTypeface(view, typeface);
     }
+
     /**
      * 更改字体
      *
@@ -83,26 +72,27 @@ public class FontUtil {
     public static void setFontTypeface(View view, Typeface typeface) {
         if (typeface == null) {
             Log.w(TAG, "字体为空");
-            return ;
+            return;
         }
-        if(view == null){
+        if (view == null) {
             Log.w(TAG, "控件为空");
-            return ;
+            return;
         }
         try {
             if (view instanceof ViewGroup) {
                 setFontTypeface((ViewGroup) view, typeface);
             } else if (view instanceof TextView) {
                 ((TextView) view).setTypeface(typeface);
-            }else if (view instanceof Button) {
+            } else if (view instanceof Button) {
                 ((Button) view).setTypeface(typeface);
-            }else if (view instanceof EditText) {
+            } else if (view instanceof EditText) {
                 ((EditText) view).setTypeface(typeface);
             }
         } catch (Exception e) {
             Log.w(TAG, e.toString());
         }
     }
+
     /**
      * 更换字体
      *
@@ -115,7 +105,7 @@ public class FontUtil {
                 View v = viewGroup.getChildAt(i);
                 if (v instanceof ViewGroup) {
                     setFontTypeface((ViewGroup) v, typeface);
-                } else if ((v != null) && (v instanceof  View)) {
+                } else if ((v != null) && (v instanceof View)) {
                     setFontTypeface((View) v, typeface);
                 }
             }
@@ -123,7 +113,8 @@ public class FontUtil {
             Log.w(TAG, e.toString());
         }
     }
-    public void detachView(){
+
+    public void detachView() {
 
     }
 }

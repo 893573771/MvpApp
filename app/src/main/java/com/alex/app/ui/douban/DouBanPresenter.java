@@ -1,25 +1,28 @@
-package com.alex.app.ui.index;
+package com.alex.app.ui.douban;
 
 import com.alex.app.config.AppCon;
-import com.alex.app.httpman.HttpMan;
+import com.alex.app.httpman.UrlMan;
 import com.alex.app.model.MovieListBean;
+import com.alibaba.fastjson.JSON;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import github.alex.mvp.CancelablePresenter;
 import github.alex.retrofit.RetrofitClient;
-import github.alex.rxjava.BaseSubscriber;
-import github.alex.rxjava.RxUtil;
+import github.alex.rxjava.StringSubscriber;
+
 /**
  * 作者：Alex
  * 时间：2016年08月06日    08:06
  * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
-public class IndexPresenter extends CancelablePresenter<IndexContract.View> implements IndexContract.Presenter {
-    public static final String baseUrl = "https://api.douban.com/v2/";
+public class DouBanPresenter extends CancelablePresenter<DouBanContract.View> implements DouBanContract.Presenter {
     private String loadType;
     private int start;
     private int count;
 
-    public IndexPresenter(IndexContract.View view) {
+    public DouBanPresenter(DouBanContract.View view) {
         super(view);
         start = 0;
         count = 10;
@@ -38,25 +41,24 @@ public class IndexPresenter extends CancelablePresenter<IndexContract.View> impl
             start += count;
             count = 10;
         }
+        Map<String, String> paramsMap = new LinkedHashMap<>();
+        paramsMap.put("start", start + "");
+        paramsMap.put("count", count + "");
         new RetrofitClient.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(UrlMan.DouBan.baseUrl)
                 .build()
-                .create(HttpMan.class).loadMovieList(start + "", count + "")
-                .compose(RxUtil.<MovieListBean>rxHttp())
-                .lift(new AddSubscriberOperator())
+                .get(UrlMan.DouBan.movieList, paramsMap)
+                .lift(new ReplaceSubscriberOperator())
                 .subscribe(new MyBaseSubscriber());
-
     }
 
-    private final class MyBaseSubscriber extends BaseSubscriber<MovieListBean> {
+    private final class MyBaseSubscriber extends StringSubscriber {
         /**
          * 开始网络请求
          */
         @Override
         public void onStart() {
-            if (AppCon.loadFirst.equals(loadType)) {
-                view.showLoadingDialog();
-            }
+            view.showLoadingDialog();
         }
 
         /**
@@ -76,8 +78,9 @@ public class IndexPresenter extends CancelablePresenter<IndexContract.View> impl
          * @param result 网络请求的结果
          */
         @Override
-        public void onSuccess(MovieListBean result) {
-            view.onShowMovieList(loadType, result);
+        public void onSuccess(String result) {
+            MovieListBean movieListBean = JSON.parseObject(result, MovieListBean.class);
+            view.onShowMovieList(loadType, movieListBean);
             view.dismissLoadingDialog();
         }
     }

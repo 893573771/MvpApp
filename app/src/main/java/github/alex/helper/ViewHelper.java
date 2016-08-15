@@ -1,8 +1,7 @@
 package github.alex.helper;
 
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.text.Editable;
@@ -26,8 +25,11 @@ import java.util.Set;
 
 import github.alex.annotation.Status;
 import github.alex.dialog.LoadingDialog;
+import github.alex.dialog.basedialog.BaseDialog;
+import github.alex.dialog.callback.DialogOnKeyListener;
 import github.alex.mvp.BaseHttpContract;
 import github.alex.util.LogUtil;
+
 /**
  * 作者：Alex
  * 时间：2016年08月06日    08:06
@@ -50,7 +52,39 @@ public class ViewHelper {
         this.view = view;
     }
 
-    public void initMultiModeBodyLayout(@NonNull  Context context, @IdRes int bodyLayoutId) {
+    /**
+     * 展示延时对话框
+     */
+    public void showLoadingDialog() {
+        if (loadingDialog != null) {
+            loadingDialog.show(BaseDialog.AnimType.centerNormal);
+        } else {
+            LogUtil.e("loadingDialog 空了");
+        }
+    }
+
+    /**
+     * 隐藏延时对话框
+     */
+    public void dismissLoadingDialog() {
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+        }
+    }
+
+    /**
+     * 初始化延时对话框
+     */
+    public void initLoadingDialog() {
+        loadingDialog = new LoadingDialog(view.getViewContext());
+        loadingDialog.setOnKeyListener(new DialogOnKeyListener((Activity) view.getViewContext(), DialogOnKeyListener.DialogOnKeyType.dismissKillActivity));
+    }
+
+
+    /**
+     * 初始化 多状态布局
+     */
+    public void initMultiModeBodyLayout(@NonNull Context context, @IdRes int bodyLayoutId) {
         if (bodyLayoutId == Status.NO_LAYOUT_RES_ID) {
             LogUtil.w("主布局文件为空");
             return;
@@ -237,26 +271,15 @@ public class ViewHelper {
      * @param text 吐司内容
      */
     public void toast(@NonNull Context context, @NonNull String text) {
-        if(context == null){
-            return ;
+        if (context == null) {
+            return;
         }
         if (toast == null) {
             toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
-            toast.setGravity(Gravity.CENTER, 0, 100);
+            toast.setGravity(Gravity.CENTER, 0, -100);
         }
         if (toastTextView == null) {
-            int padding = (int) dp2Px(context, 8);
-            toastTextView = new TextView(context);
-            toastTextView.setTextColor(Color.parseColor("#FFFFFF"));
-            toastTextView.setPadding(padding, padding, padding, padding);
-            ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            toastTextView.setLayoutParams(params);
-            GradientDrawable gradientDrawableNormal = new GradientDrawable();
-            gradientDrawableNormal.setShape(GradientDrawable.RECTANGLE);
-            gradientDrawableNormal.setColor(Color.parseColor("#99353535"));
-            float radius = dp2Px(context, 4);
-            gradientDrawableNormal.setCornerRadii(new float[]{radius, radius, radius, radius, radius, radius, radius, radius});
-            toastTextView.setBackgroundDrawable(gradientDrawableNormal);
+            toastTextView = (TextView) LayoutInflater.from(context).inflate(R.layout.alex_toast_meizu, null);
         }
         if (!TextUtils.isEmpty(text)) {
             toastTextView.setText(text);
@@ -267,21 +290,30 @@ public class ViewHelper {
         toast.show();
     }
 
-    public void cancelToast(){
-        if(toast !=null){
+    /**
+     * 取消吐司
+     */
+    public void cancelToast() {
+        if (toast != null) {
             toast.cancel();
         }
     }
 
-
-    public void detachView() {
-        if(toast !=null){
+    /**
+     * 销毁资源，防止内存泄漏
+     */
+    public void detachFromView() {
+        if (toast != null) {
             toast.cancel();
             toast = null;
         }
-        if(toastTextView !=null){
+        if (toastTextView != null) {
             toastTextView.destroyDrawingCache();
             toastTextView = null;
+        }
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+            loadingDialog = null;
         }
 
         if (layoutMap != null) {
@@ -299,30 +331,33 @@ public class ViewHelper {
         }
         view = null;
     }
+
     /**
      * 将EditText的光标移至最后
      *
      * @param view
      */
     public void setSelection(@NonNull View view) {
-        if(view == null) {
+        if (view == null) {
             LogUtil.e("View 为空");
-            return ;
+            return;
         }
-        if( !(view  instanceof EditText)){
+        if (!(view instanceof EditText)) {
             LogUtil.e("View 不能被强转成 EditText");
-            return ;
+            return;
         }
         EditText editText = (EditText) view;
         Editable text = editText.getText();
-        if(TextUtils.isEmpty(text)){
-            return ;
+        if (TextUtils.isEmpty(text)) {
+            return;
         }
         editText.setSelection(text.length());
     }
-    /**数据转换: dp---->px*/
-    public static float dp2Px(Context context, float dp)
-    {
+
+    /**
+     * 数据转换: dp---->px
+     */
+    public static float dp2Px(Context context, float dp) {
         if (context == null) {
             return -1;
         }

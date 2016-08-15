@@ -1,13 +1,12 @@
 package com.alex.app.ui.zhihu;
 
-import com.alex.app.httpman.HttpMan;
+import com.alex.app.httpman.UrlMan;
 import com.alex.app.model.zhihu.NewsListBean;
+import com.alibaba.fastjson.JSON;
 
 import github.alex.mvp.CancelablePresenter;
 import github.alex.retrofit.RetrofitClient;
-import github.alex.rxjava.BaseSubscriber;
-import github.alex.rxjava.RxUtil;
-import rx.Observable;
+import github.alex.rxjava.StringSubscriber;
 
 /**
  * 作者：Alex
@@ -15,7 +14,7 @@ import rx.Observable;
  * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
 public class ZhiHuPresenter extends CancelablePresenter<ZhiHuContract.View> implements ZhiHuContract.Presenter {
-    public static String baseUrl = "http://news-at.zhihu.com";
+
 
     public ZhiHuPresenter(ZhiHuContract.View view) {
         super(view);
@@ -24,26 +23,26 @@ public class ZhiHuPresenter extends CancelablePresenter<ZhiHuContract.View> impl
     @Override
     public void loadNewsList(String loadType, int index) {
         this.loadType = loadType;
-
-        Observable<NewsListBean> newsListBeanObservable = null;
-        HttpMan httpMan = new RetrofitClient.Builder()
-                .baseUrl(baseUrl)
-                .build().create(HttpMan.class);
+        String theme = "9";
         if (0 == index) {
-            newsListBeanObservable = httpMan.loadZhiHuLatestNews();
+            theme = "9";
         } else if (1 == index) {
-            newsListBeanObservable = httpMan.loadZhiHuSafety();
+            theme = "10";
         } else if (2 == index) {
-            newsListBeanObservable = httpMan.loadZhiHuInterest();
+            theme = "11";
         } else if (3 == index) {
-            newsListBeanObservable = httpMan.loadZhiHuSport();
+            theme = "8";
         }
-        newsListBeanObservable.compose(RxUtil.<NewsListBean>rxHttp())
-                .lift(new AddSubscriberOperator())
+
+        new RetrofitClient.Builder()
+                .baseUrl(UrlMan.ZhiHu.baseUrl)
+                .build()
+                .get(UrlMan.ZhiHu.articleList + theme)
+                .lift(new ReplaceSubscriberOperator())
                 .subscribe(new MyBaseSubscriber());
     }
 
-    private final class MyBaseSubscriber extends BaseSubscriber<NewsListBean> {
+    private final class MyBaseSubscriber extends StringSubscriber {
         /**
          * 开始网络请求
          */
@@ -70,9 +69,10 @@ public class ZhiHuPresenter extends CancelablePresenter<ZhiHuContract.View> impl
          * @param result 网络请求的结果
          */
         @Override
-        public void onSuccess(NewsListBean result) {
+        public void onSuccess(String result) {
+            NewsListBean newsListBean = JSON.parseObject(result, NewsListBean.class);
             view.dismissLoadingDialog();
-            view.onShowNewsList(loadType, result);
+            view.onShowNewsList(loadType, newsListBean);
         }
     }
 }

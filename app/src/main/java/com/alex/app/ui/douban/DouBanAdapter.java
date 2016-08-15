@@ -1,4 +1,4 @@
-package com.alex.app.ui.index;
+package com.alex.app.ui.douban;
 
 import android.content.Context;
 import android.view.View;
@@ -17,8 +17,8 @@ import github.alex.model.ParcelableMap;
  * 时间：2016年08月06日    08:06
  * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
-public class IndexAdapter extends BaseRecyclerAdapter<MovieListBean.SubjectsBean> {
-    public IndexAdapter(Context context) {
+public class DouBanAdapter extends BaseRecyclerAdapter<MovieListBean.SubjectsBean> {
+    public DouBanAdapter(Context context) {
         super(context, R.layout.item_index_movie_list);
     }
 

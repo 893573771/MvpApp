@@ -1,5 +1,6 @@
 package github.alex.mvp;
 
+import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
@@ -7,6 +8,8 @@ import android.support.annotation.NonNull;
 import java.util.Map;
 
 import github.alex.annotation.Status;
+import rx.Subscription;
+
 /**
  * 作者：Alex
  * 时间：2016年08月06日    08:06
@@ -72,6 +75,12 @@ public interface BaseContract {
         int getLeftFinishViewId();
 
         /**
+         * 得到上下文对象
+         */
+        @NonNull
+        Context getViewContext();
+
+        /**
          * 扩展的findViewById
          */
         <T extends android.view.View> T findView(@IdRes int id);
@@ -81,8 +90,16 @@ public interface BaseContract {
          */
         void setOnClickListener(@IdRes int... ids);
 
-        /**解除订阅，防止内存泄漏*/
-        void unSubscribeRxJava();
+        /**
+         * 添加 Subscription， 管理订阅事件
+         */
+        void addSubscription(@NonNull Subscription subscription);
+
+        /**
+         * 销毁资源，防止内存泄漏
+         */
+        void onDetachFromView();
+
     }
 
     interface Presenter {

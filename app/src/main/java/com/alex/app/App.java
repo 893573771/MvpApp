@@ -6,13 +6,12 @@ import android.os.Bundle;
 
 import com.squareup.leakcanary.LeakCanary;
 
+import github.alex.AlexTools;
 import github.alex.callback.ForegroundCallbacks;
 import github.alex.callback.SimpleActivityLifecycleCallbacks;
 import github.alex.helper.CrashHandler;
 import github.alex.util.AppUtil;
-import github.alex.util.HttpErrorUtil;
 import github.alex.util.LogUtil;
-import github.alex.util.NetUtil;
 import github.alex.util.font.FontUtil;
 
 /**
@@ -27,12 +26,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         app = this;
-        LogUtil.IS_SHOW_LOG = true;
+        AlexTools.init(app);
         /*捕获崩溃信息*/
-        new CrashHandler(this, "mvp模式/cash.java").setOnCrashListener(new MyOnCrashListener());
+        new CrashHandler(this, new MyOnCrashListener());
         FontUtil.initFormAssets(this, "font/simkai.ttf");
-        HttpErrorUtil.init(this);
-        NetUtil.init(this);
         /*管理 Activity 任务栈*/
         registerActivityLifecycleCallbacks(new MyActivityLifecycleCallbacks());
         /*判断是否从后台进入到前台来*/

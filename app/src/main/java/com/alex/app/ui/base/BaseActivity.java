@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import github.alex.annotation.Status;
-import github.alex.dialog.LoadingDialog;
-import github.alex.dialog.basedialog.BaseDialog;
-import github.alex.dialog.callback.DialogOnKeyListener;
 import github.alex.helper.ViewHelper;
 import github.alex.model.ParcelableMap;
 import github.alex.model.StatusLayoutModel;
@@ -42,6 +39,7 @@ import rx.subscriptions.CompositeSubscription;
 
 import static github.alex.model.ParcelableMap.bundleKey;
 import static github.alex.model.ParcelableMap.extraBundle;
+
 /**
  * 作者：Alex
  * 时间：2016年08月06日    08:06
@@ -54,9 +52,9 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      * Pre 的基类
      */
     protected P presenter;
-    private LoadingDialog loadingDialog;
     private ViewHelper viewHelper;
     private SystemBarTintManager tintManager;
+    private Subscription subscription;
     private CompositeSubscription compositeSubscription;
     /**
      * 上次点击的时间
@@ -161,15 +159,16 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      */
     @Override
     public void toast(@NonNull String text) {
-        if ((viewHelper != null) && (context != null)) {
+        if (viewHelper != null){
             viewHelper.toast(context, text);
         }
     }
 
     @Override
     public void onInitLoadingDialog() {
-        loadingDialog = new LoadingDialog(this);
-        loadingDialog.setOnKeyListener(new DialogOnKeyListener(this, DialogOnKeyListener.DialogOnKeyType.dismissKillActivity));
+        if (viewHelper != null){
+            viewHelper.initLoadingDialog();
+        }
     }
 
     /**
@@ -177,10 +176,9 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      */
     @Override
     public void showLoadingDialog() {
-        if (loadingDialog == null) {
-            onInitLoadingDialog();
+        if (viewHelper != null){
+            viewHelper.showLoadingDialog();
         }
-        loadingDialog.show(BaseDialog.AnimType.centerNormal);
     }
 
     /**
@@ -188,8 +186,8 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      */
     @Override
     public void dismissLoadingDialog() {
-        if (loadingDialog != null) {
-            loadingDialog.dismiss();
+        if (viewHelper != null){
+            viewHelper.dismissLoadingDialog();
         }
     }
 
@@ -364,6 +362,7 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     public void onRefreshFinish() {
 
     }
+
     /**
      * 获取标题的左部按钮，大多数情况下为 返回 按钮
      */
@@ -372,6 +371,14 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
         return Status.NO_RES_ID;
     }
 
+    /**
+     * 得到上下文对象
+     */
+    @NonNull
+    @Override
+    public Context getViewContext() {
+        return this;
+    }
 
     /**
      * 设置沉浸式状态栏
@@ -445,6 +452,7 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     /**
      * 添加 Subscription
      */
+    @Override
     public void addSubscription(Subscription subscription) {
         compositeSubscription = (compositeSubscription == null) ? new CompositeSubscription() : compositeSubscription;
         compositeSubscription.add(subscription);
@@ -456,20 +464,16 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (loadingDialog != null) {
-            loadingDialog.dismiss();
-            loadingDialog = null;
-        }
         if (viewHelper != null) {
-            viewHelper.detachView();
+            viewHelper.detachFromView();
             viewHelper = null;
         }
         tintManager = null;
         KeyPadUtil.instance().closeKeyPad(this);
         KeyPadUtil.detachView();
-        unSubscribeRxJava();
+        onDetachFromView();
         if (presenter != null) {
-            presenter.detachView();
+            presenter.detachFromView();
         }
         presenter = null;
     }
@@ -478,12 +482,16 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
      * 解除订阅，防止内存泄漏
      */
     @Override
-    public void unSubscribeRxJava() {
+    public void onDetachFromView() {
         if (compositeSubscription != null) {
             /*防止 RxJava 出现内存泄漏问题*/
             compositeSubscription.clear();
             compositeSubscription = null;
         }
+        if (subscription != null) {
+            subscription.unsubscribe();
+        }
+        subscription = null;
     }
 
     /*操作符 - 转换类**/
@@ -491,6 +499,14 @@ public abstract class BaseActivity<P extends CancelablePresenter> extends AppCom
         @Override
         public Subscriber<? super T> call(Subscriber<? super T> subscriber) {
             addSubscription(subscriber);
+            return subscriber;
+        }
+    }
+
+    public final class ReplaceSubscriberOperator<T> implements Observable.Operator<T, T> {
+        @Override
+        public Subscriber<? super T> call(Subscriber<? super T> subscriber) {
+            subscription = subscriber;
             return subscriber;
         }
     }

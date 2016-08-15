@@ -6,15 +6,14 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.alex.app.R;
+import com.alex.app.config.Util;
 import com.alex.app.ui.base.BaseActivity;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import github.alex.mvp.CancelablePresenter;
-import github.alex.util.LogUtil;
 import github.alex.view.ClickWebView;
 
 /**
@@ -55,16 +54,7 @@ public class WebViewActivity extends BaseActivity<CancelablePresenter> {
     @Override
     public void onGetIntentData(Map map) {
         super.onGetIntentData(map);
-        printMap(map);
-    }
-
-    public void printMap(Map mp) {
-        Iterator it = mp.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            LogUtil.e(pair.getKey() + " = " + pair.getValue().getClass().getSimpleName()+" = "+pair.getValue());
-            it.remove(); // avoids a ConcurrentModificationException
-        }
+        Util.printMap(map);
     }
 
     @Override

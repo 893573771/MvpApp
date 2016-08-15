@@ -1,4 +1,5 @@
 package com.alex.app.model.qianguan;
+
 /**
  * 作者：Alex
  * 时间：2016年08月06日    08:06
@@ -17,4 +18,9 @@ public class LoginBean {
 
     public String code;
     public String message;
+
+    public DataBean data;
+
+    public static class DataBean {
+    }
 }

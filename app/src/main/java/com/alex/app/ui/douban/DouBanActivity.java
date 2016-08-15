@@ -1,4 +1,4 @@
-package com.alex.app.ui.index;
+package com.alex.app.ui.douban;
 
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,19 +17,19 @@ import github.liaoinstan.springview.RefreshLayout;
  * 时间：2016年08月06日    08:06
  * 博客：http://www.jianshu.com/users/c3c4ea133871/subscriptions
  */
-public class IndexActivity extends BaseActivity<IndexPresenter> implements IndexContract.View {
+public class DouBanActivity extends BaseActivity<DouBanPresenter> implements DouBanContract.View {
     @BindView(R.id.rv)
     RecyclerView recyclerView;
     @BindView(R.id.rl)
     RefreshLayout refreshLayout;
-    private IndexAdapter adapter;
+    private DouBanAdapter adapter;
 
     /**
      * 创建 Presenter
      */
     @Override
-    protected IndexPresenter createPresenter() {
-        return new IndexPresenter(this);
+    protected DouBanPresenter createPresenter() {
+        return new DouBanPresenter(this);
     }
 
     /**
@@ -53,7 +53,7 @@ public class IndexActivity extends BaseActivity<IndexPresenter> implements Index
         super.onCreateData();
         ButterKnife.bind(this);
         setText(R.id.tv_title, "豆瓣电影");
-        adapter = new IndexAdapter(this);
+        adapter = new DouBanAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setItemAnimator(new DefaultItemAnimator());

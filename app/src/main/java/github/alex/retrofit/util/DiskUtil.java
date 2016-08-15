@@ -1,4 +1,4 @@
-package github.alex.retrofit;
+package github.alex.retrofit.util;
 
 import android.content.Context;
 import android.os.Environment;

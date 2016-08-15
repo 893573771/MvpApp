@@ -3,6 +3,7 @@ package com.alex.app.ui.userman;
 import android.support.annotation.NonNull;
 
 import com.alex.app.httpman.HttpMan;
+import com.alex.app.httpman.UrlMan;
 import com.alex.app.model.qianguan.LoginBean;
 
 import java.io.File;
@@ -18,7 +19,6 @@ import github.alex.util.LogUtil;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
-import static com.alex.app.ui.zhihu.ZhiHuPresenter.baseUrl;
 /**
  * 作者：Alex
  * 时间：2016年08月06日    08:06
@@ -50,11 +50,11 @@ public class UserDetailPresenter extends CancelablePresenter<UserDetailContract.
         paramsMap.put("pwd", RequestBody.create(null, pwd));
 
         new RetrofitClient.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(UrlMan.ZhiHu.baseUrl)
                 .build()
                 .create(HttpMan.class).upLoad2(paramsMap)
                 .compose(RxUtil.<LoginBean>rxHttp())
-                .lift(new AddSubscriberOperator())
+                .lift(new ReplaceSubscriberOperator())
                 .subscribe(new MyHttpSubscriber());
 
     }
